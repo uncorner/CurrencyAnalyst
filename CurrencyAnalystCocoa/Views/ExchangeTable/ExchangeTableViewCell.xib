@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ExchangeTableViewCell" rowHeight="182" id="KGk-i7-Jjw" customClass="ExchangeTableViewCell" customModule="CurrencyAnalystCocoa" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="420" height="202"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="420" height="202"/>
+                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="cQX-kc-p3F">
+                        <rect key="frame" x="20" y="10" width="380" height="182"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I99-Vf-tEi" userLabel="HeaderView">
+                                <rect key="frame" x="0.0" y="0.0" width="380" height="40.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BankTitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EXG-zr-c90">
+                                        <rect key="frame" x="155" y="10" width="70.5" height="20.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" secondItem="EXG-zr-c90" secondAttribute="height" constant="20" id="2cV-ia-rvk"/>
+                                    <constraint firstItem="EXG-zr-c90" firstAttribute="centerY" secondItem="I99-Vf-tEi" secondAttribute="centerY" id="4H4-xt-6V5"/>
+                                    <constraint firstItem="EXG-zr-c90" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="I99-Vf-tEi" secondAttribute="leading" constant="8" id="6lZ-gH-zB6"/>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EXG-zr-c90" secondAttribute="trailing" constant="8" id="KzQ-pF-9CR"/>
+                                    <constraint firstItem="EXG-zr-c90" firstAttribute="centerX" secondItem="I99-Vf-tEi" secondAttribute="centerX" id="trT-L7-1O3"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6ht-kG-eyG" userLabel="MainView">
+                                <rect key="frame" x="0.0" y="40.5" width="380" height="141.5"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" placeholderIntrinsicWidth="260" placeholderIntrinsicHeight="85" translatesAutoresizingMaskIntoConstraints="NO" id="pIJ-qo-1he" customClass="ExchangeBoxView" customModule="CurrencyAnalystCocoa" customModuleProvider="target">
+                                        <rect key="frame" x="60" y="10" width="260" height="121.5"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemYellowColor" red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="pIJ-qo-1he" firstAttribute="top" secondItem="6ht-kG-eyG" secondAttribute="top" constant="10" id="2Iq-FS-9sI"/>
+                                    <constraint firstItem="pIJ-qo-1he" firstAttribute="centerY" secondItem="6ht-kG-eyG" secondAttribute="centerY" id="7t1-pG-KWE"/>
+                                    <constraint firstAttribute="height" secondItem="pIJ-qo-1he" secondAttribute="height" constant="20" id="BeT-iR-Dla"/>
+                                    <constraint firstItem="pIJ-qo-1he" firstAttribute="centerX" secondItem="6ht-kG-eyG" secondAttribute="centerX" id="hpn-1I-BLa"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="2Iq-FS-9sI"/>
+                                    </mask>
+                                </variation>
+                            </view>
+                        </subviews>
+                    </stackView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="cQX-kc-p3F" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="03l-Ib-7QP"/>
+                    <constraint firstAttribute="trailing" secondItem="cQX-kc-p3F" secondAttribute="trailing" constant="20" id="Hpa-9m-wr5"/>
+                    <constraint firstAttribute="bottom" secondItem="cQX-kc-p3F" secondAttribute="bottom" constant="10" id="Sae-oN-Ujr"/>
+                    <constraint firstItem="cQX-kc-p3F" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="SeU-7b-8Wg"/>
+                </constraints>
+            </tableViewCellContentView>
+            <constraints>
+                <constraint firstItem="cQX-kc-p3F" firstAttribute="centerY" secondItem="njF-e1-oar" secondAttribute="centerY" id="8lz-nQ-4NG"/>
+                <constraint firstItem="cQX-kc-p3F" firstAttribute="centerX" secondItem="njF-e1-oar" secondAttribute="centerX" id="hpD-bZ-V44"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="bankTitleLabel" destination="EXG-zr-c90" id="ssB-KP-Cef"/>
+                <outlet property="exchangeBoxView" destination="pIJ-qo-1he" id="Kbp-Rq-XtZ"/>
+                <outlet property="headerView" destination="I99-Vf-tEi" id="b5u-bX-Naf"/>
+                <outlet property="mainView" destination="6ht-kG-eyG" id="zDS-RB-tQD"/>
+            </connections>
+            <point key="canvasLocation" x="-193.125" y="-120.4225352112676"/>
+        </tableViewCell>
+    </objects>
+</document>
