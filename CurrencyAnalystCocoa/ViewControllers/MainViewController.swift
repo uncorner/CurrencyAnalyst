@@ -2,7 +2,7 @@
 //  MainViewController.swift
 //  CurrencyAnalystCocoa
 //
-//  Created by denis2 on 05.07.2020.
+//  Created by Denis Uncorner on 05.07.2020.
 //  Copyright © 2020 uncorner. All rights reserved.
 //
 
@@ -10,7 +10,7 @@ import UIKit
 import Alamofire
 import SwiftEntryKit
 
-class MainViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
+class MainViewController: BaseViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var settingsButtonItem: UIBarButtonItem!
@@ -243,7 +243,52 @@ class MainViewController: BaseViewController, UITableViewDelegate, UITableViewDa
         return url
     }
     
-    // MARK: - Table view data source
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showBankDetailSegue {
+            if let indexPath = tableView.indexPathForSelectedRow {
+                guard let controller = segue.destination as? DetailBankViewController else { return }
+                controller.exchange = exchangeListResult.exchanges[indexPath.row]
+            }
+        }
+        else if segue.identifier == showPickCitySegue {
+            guard cities.count > 0 else {
+                return
+            }
+            guard let controller = segue.destination as? PickCityViewController else { return }
+            controller.cities = cities
+            controller.selectedCityId = selectedCityId
+            
+            // set callback
+            controller.setSelectedCityIdCallback = { [weak self] cityId in
+                guard let strongSelf = self else {return}
+                
+                strongSelf.isNeedUpdate = strongSelf.selectedCityId != cityId
+                if strongSelf.isNeedUpdate {
+                    strongSelf.selectedCityId = cityId
+                    
+                    let userDefaults = UserDefaults.standard
+                    userDefaults.setCityId(cityId: cityId)
+                }
+            }
+        }
+    }
+    
+}
+
+// MARK: UITableViewDelegate
+extension MainViewController : UITableViewDelegate {
+    
+    // selected row
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 1 && exchangeListResult.exchanges.count > 0 {
+            performSegue(withIdentifier: showBankDetailSegue, sender: self)
+        }
+    }
+    
+}
+
+// MARK: UITableViewDataSource
+extension MainViewController : UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         2
@@ -270,7 +315,7 @@ class MainViewController: BaseViewController, UITableViewDelegate, UITableViewDa
         
         return 0
     }
-
+    
     // show cell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -311,43 +356,5 @@ class MainViewController: BaseViewController, UITableViewDelegate, UITableViewDa
         
         return UITableViewCell()
     }
-    
-    // selected row
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 && exchangeListResult.exchanges.count > 0 {
-            performSegue(withIdentifier: showBankDetailSegue, sender: self)
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showBankDetailSegue {
-            if let indexPath = tableView.indexPathForSelectedRow {
-                guard let controller = segue.destination as? DetailBankViewController else { return }
-                controller.exchange = exchangeListResult.exchanges[indexPath.row]
-            }
-        }
-        else if segue.identifier == showPickCitySegue {
-            guard cities.count > 0 else {
-                return
-            }
-            guard let controller = segue.destination as? PickCityViewController else { return }
-            controller.cities = cities
-            controller.selectedCityId = selectedCityId
-            
-            // set callback
-            controller.setSelectedCityIdCallback = { [weak self] cityId in
-                guard let strongSelf = self else {return}
-                
-                strongSelf.isNeedUpdate = strongSelf.selectedCityId != cityId
-                if strongSelf.isNeedUpdate {
-                    strongSelf.selectedCityId = cityId
-                    
-                    let userDefaults = UserDefaults.standard
-                    userDefaults.setCityId(cityId: cityId)
-                }
-            }
-        }
-    }
-    
     
 }

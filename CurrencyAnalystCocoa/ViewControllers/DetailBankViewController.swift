@@ -2,14 +2,14 @@
 //  DetailBankViewController.swift
 //  CurrencyAnalystCocoa
 //
-//  Created by denis2 on 27.07.2020.
+//  Created by Denis Uncorner on 27.07.2020.
 //  Copyright © 2020 uncorner. All rights reserved.
 //
 
 import UIKit
 import Alamofire
 
-class DetailBankViewController: BaseViewController, UITableViewDelegate, UITableViewDataSource {
+class DetailBankViewController: BaseViewController {
     
     @IBOutlet weak var detailBoxTitleLabel: UILabel!
     @IBOutlet weak var exchangeBoxView: ExchangeBoxView!
@@ -236,12 +236,43 @@ class DetailBankViewController: BaseViewController, UITableViewDelegate, UITable
         officeTableView.reloadData()
     }
     
-    // MARK: Table data processing
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == showMapSegue {
+            guard let destination = segue.destination as? MapViewController else { return }
+            destination.mapUrl = mapUrl
+            destination.title = "\(exchange.bankName) Офисы"
+        }
+    }
+    
+}
+
+// MARK: UITableViewDelegate
+extension DetailBankViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let data = officeCellDatas[indexPath.section]
+        
+        if data.isExpanded == true {
+            officeCellDatas[indexPath.section].isExpanded = false
+            let sections = IndexSet.init(integer: indexPath.section)
+            officeTableView.reloadSections(sections, with: .automatic)
+        }
+        else {
+            officeCellDatas[indexPath.section].isExpanded = true
+            let sections = IndexSet.init(integer: indexPath.section)
+            officeTableView.reloadSections(sections, with: .automatic)
+        }
+    }
+    
+}
+
+// MARK: UITableViewDataSource
+extension DetailBankViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return officeCellDatas.count
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let data = officeCellDatas[section]
         if data.isExpanded {
@@ -289,29 +320,4 @@ class DetailBankViewController: BaseViewController, UITableViewDelegate, UITable
         }
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let data = officeCellDatas[indexPath.section]
-        
-        if data.isExpanded == true {
-            officeCellDatas[indexPath.section].isExpanded = false
-            let sections = IndexSet.init(integer: indexPath.section)
-            officeTableView.reloadSections(sections, with: .automatic)
-        }
-        else {
-            officeCellDatas[indexPath.section].isExpanded = true
-            let sections = IndexSet.init(integer: indexPath.section)
-            officeTableView.reloadSections(sections, with: .automatic)
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showMapSegue {
-            guard let destination = segue.destination as? MapViewController else { return }
-            destination.mapUrl = mapUrl
-            destination.title = "\(exchange.bankName) Офисы"
-        }
-    }
-    
-    
 }
-

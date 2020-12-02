@@ -2,7 +2,7 @@
 //  SettingsViewController.swift
 //  CurrencyAnalystCocoa
 //
-//  Created by denis2 on 10.08.2020.
+//  Created by Denis Uncorner on 10.08.2020.
 //  Copyright © 2020 uncorner. All rights reserved.
 //
 
