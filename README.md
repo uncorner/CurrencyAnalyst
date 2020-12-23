@@ -24,3 +24,9 @@ Currency Analyst for iOS is compatible with iOS 13.0+.
 ## Author
 
 * [Denis Uncorner](https://www.denisuncorner.ru/)
+
+## License
+
+Copyright 2020 Denis Uncorner.
+
+Licensed under MIT License: https://opensource.org/licenses/MIT
