@@ -67,7 +67,7 @@ class MainViewController: BaseViewController {
         navigationController?.navigationBar.barStyle = .black
     }
     
-    fileprivate func setupTableView() {
+    private func setupTableView() {
         tableView.register(ExchangeTableViewCell.nib(), forCellReuseIdentifier: ExchangeTableViewCell.cellId)
         tableView.register(InfoExchangeTableViewCell.nib(), forCellReuseIdentifier: InfoExchangeTableViewCell.cellId)
         tableView.register(HeadExchangeTableViewCell.nib(), forCellReuseIdentifier: HeadExchangeTableViewCell.cellId)
@@ -88,7 +88,7 @@ class MainViewController: BaseViewController {
         tableView.backgroundColor = .clear
     }
     
-    fileprivate func setupOtherViews() {
+    private func setupOtherViews() {
         title = "Курсы валют"
         cbDollarImageView.image = UIImage(systemName: "dollarsign.circle")
         cbDollarImageView.tintColor = Styles.MainViewController.Cb.currencySignColor
@@ -162,10 +162,9 @@ class MainViewController: BaseViewController {
                     
                     DispatchQueue.main.async {
                         strongSelf.cities = result
+                        // load exchanges
+                        strongSelf.loadExchanges()
                     }
-                    // load exchanges next
-                    strongSelf.loadExchanges()
-                    
                 case .failure(let error):
                     print(error)
                     strongSelf.stopAllActivityAnimation(strongSelf)
