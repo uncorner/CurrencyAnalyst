@@ -14,69 +14,69 @@ class SiteParser: ExchangeDataSource {
     
     func getBankDetail(html: String, url: URL) throws -> BankDetailResult {
         
-            let doc: Document = try SwiftSoup.parseBodyFragment(html)
-            // body
-            let body = doc.body()
+        let doc: Document = try SwiftSoup.parseBodyFragment(html)
+        // body
+        let body = doc.body()
+        
+        // #maket > section > div:nth-child(6) > article:nth-child(2)
+        let table = try body?.select(".plain-bank-content article table.bankshow").first()
+        if let table = table {
+            let rowNodes = try table.select("tr")
+            var officeDataTables: [DataTable] = []
+            var officeDataTable: DataTable = DataTable()
             
-            // #maket > section > div:nth-child(6) > article:nth-child(2)
-            let table = try body?.select(".plain-bank-content article table.bankshow").first()
-            if let tableNode = table {
-                let rowNodes = try tableNode.select("tr")
-                var officeDataTables: [DataTable] = []
-                var officeDataTable: DataTable = DataTable()
-                
-                for rowNode in rowNodes {
-                    if rowNode.hasClass("br-head") {
-                        var headerText = try rowNode.select("td").text().trimming()
-                        officeDataTable = DataTable()
-                        
-                        if isNamelessOffice(inputStr: headerText) {
-                            headerText += " Офис"
-                        }
-                        officeDataTable.header = headerText
-                        officeDataTables.append(officeDataTable)
-                    }
+            for rowNode in rowNodes {
+                if rowNode.hasClass("br-head") {
+                    var headerText = try rowNode.select("td").text().trimming()
+                    officeDataTable = DataTable()
                     
-                    let thNode = try rowNode.select("th").first()
-                    let thText = try thNode?.text()
-                    
-                    guard let strongThText = thText else {continue}
-                    var datas: [String] = []
-                    
-                    let subtableNode = try rowNode.select("td table").first()
-                    if let subtable = subtableNode {
-                        let subDatas = try parseSubtable(tableElement: subtable)
-                        datas.append(contentsOf: subDatas)
+                    if isNamelessOffice(inputStr: headerText) {
+                        headerText += " Офис"
                     }
-                    else {
-                        let tdNodes = try rowNode.select("td")
-                        
-                        let textList = tdNodes.map({ (value: Element) -> String? in
-                            return try? value.text()
-                        }).filter({ (value: String?) -> Bool in
-                            return value != nil && value!.isEmptyOrWhitespace() == false
-                        }).map({ (value: String?) -> String in
-                            return value!
-                        })
-                        
-                        datas.append(contentsOf: textList)
-                    }
-                    
-                    if datas.isEmpty == false {
-                        let tableRow = DataTableRow(header: strongThText, datas: datas)
-                        officeDataTable.addRow(row: tableRow)
-                    }
-                } //for rowNode
-                
-                var mapUrl: URL?
-                let mapRefNode = try body?.select("#menu-map li a").last()
-                if let mapRef = mapRefNode {
-                    let rawUrl = try mapRef.attr("href")
-                    mapUrl = URL(string: rawUrl, relativeTo: url)
+                    officeDataTable.header = headerText
+                    officeDataTables.append(officeDataTable)
                 }
                 
-                return BankDetailResult(dataTables: officeDataTables, mapUrl: mapUrl)
+                let thNode = try rowNode.select("th").first()
+                let thText = try thNode?.text()
+                
+                guard let strongThText = thText else {continue}
+                var datas: [String] = []
+                
+                let subtableNode = try rowNode.select("td table").first()
+                if let subtableNode = subtableNode {
+                    let subDatas = try parseSubtable(tableElement: subtableNode)
+                    datas.append(contentsOf: subDatas)
+                }
+                else {
+                    let tdNodes = try rowNode.select("td")
+                    
+                    let textList = tdNodes.map({ (value: Element) -> String? in
+                        return try? value.text()
+                    }).filter({ (value: String?) -> Bool in
+                        return value != nil && value!.isEmptyOrWhitespace() == false
+                    }).map({ (value: String?) -> String in
+                        return value!
+                    })
+                    
+                    datas.append(contentsOf: textList)
+                }
+                
+                if datas.isEmpty == false {
+                    let tableRow = DataTableRow(header: strongThText, datas: datas)
+                    officeDataTable.addRow(row: tableRow)
+                }
+            } //for rowNode
+            
+            var mapUrl: URL?
+            let mapRefNode = try body?.select("#menu-map li a").last()
+            if let mapRefNode = mapRefNode {
+                let rawUrl = try mapRefNode.attr("href")
+                mapUrl = URL(string: rawUrl, relativeTo: url)
             }
+            
+            return BankDetailResult(dataTables: officeDataTables, mapUrl: mapUrl)
+        }
         
         return BankDetailResult()
     }
@@ -197,8 +197,8 @@ class SiteParser: ExchangeDataSource {
                 href = Constants.defaultCityId
             }
             
-            if let hrefValue = href, let textValue = text {
-                return City(name: textValue, url: hrefValue, isDefault: isDefault)
+            if let href = href, let text = text {
+                return City(name: text, url: href, isDefault: isDefault)
             }
             return nil
         }
