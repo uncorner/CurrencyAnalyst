@@ -8,7 +8,9 @@ target 'CurrencyAnalystCocoa' do
 
   # Pods for CurrencyAnalystCocoa
   pod 'SwiftSoup', '2.3.0'
-  pod 'Alamofire', '5.2'
+  pod 'Alamofire', '5.4.1'
+  pod 'RxSwift', '6.1.0'
+  pod 'RxAlamofire', '6.1.1'
   pod 'GoogleMaps', '3.9.0'
   pod 'GooglePlaces', '3.9.0'
   pod 'SwiftEntryKit', '1.2.3'
