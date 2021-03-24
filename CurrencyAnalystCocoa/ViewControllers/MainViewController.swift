@@ -9,6 +9,8 @@
 import UIKit
 import Alamofire
 import SwiftEntryKit
+import RxAlamofire
+import RxSwift
 
 class MainViewController: BaseViewController {
     
@@ -39,6 +41,7 @@ class MainViewController: BaseViewController {
     private var cities = [City]()
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
+    private let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -135,6 +138,21 @@ class MainViewController: BaseViewController {
         performSegue(withIdentifier: showPickCitySegue, sender: self)
     }
     
+//    // first we create a deleteDevice observable for each item.
+//    // Remember, they don't actually make a network call until subscribed to and concat only subscribes to each once the previous one is done.
+//    Observable.concat(
+//        devicesArray.map { deleteDevice(withDevice: $0) }
+//            .map { $0.asObservable() } // because concat doesn't exist for Singles.
+//            .map { $0.catchErrorJustReturn("\($0) not deleted.") } // make sure that all deletes will be attempted even if one errors out.
+//        )
+//        // the above will emit a string every time a delete finishes.
+//        // `.toArray()` will gather them together into an array.
+//        .toArray()
+//        .subscribe(onNext: { results in
+//
+//        })
+//        .disposed(by: disposeBag)
+    
     private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
         print(#function)
         
@@ -144,76 +162,213 @@ class MainViewController: BaseViewController {
         }
         
         if cities.isEmpty {
-            AF.request(Constants.Urls.citiesUrl)
-                .validate().responseString(completionHandler: { [weak self] response in
-                guard let strongSelf = self else {return}
-                
-                switch response.result {
-                case .success(let value):
-                    let dataSource = strongSelf.getExchangeDataSource()
-                    var result: [City]
-                    do {
-                        result = try dataSource.getCities(html: value)
-                    }
-                    catch {
-                        strongSelf.processError(error)
-                        return
-                    }
+        
+            // 1 шаг - сделать просто один запрос на alamofire
+            
+//            RxAlamofire.data(.get, stringURL)
+//             .subscribe(onNext: { print($0) })
+//             .disposed(by: disposeBag)
+        
+        
+//            RxAlamofire.requestData(.get, Constants.Urls.citiesUrl)
+//            //.validate(
+//                .subscribe { (response, data) in
+//                    let str = String(decoding: data, as: UTF8.self)
+//                    print(str)
+//
+//                }
+//                .disposed(by: disposeBag)
+            
+//            RxAlamofire.request(.get, Constants.Urls.citiesUrl)
+//                .validate()
+//                .responseData()
+//                .subscribe { (response, data) in
+//                    let str = String(decoding: data, as: UTF8.self)
+//                    print(str)
+//
+//                }
+
+
+//            let r1 = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
+//                .validate()
+//                .responseData()
+//
+//            let url = getFullBankUrl(bankUrl: selectedCityId)
+//            let r2 = RxAlamofire.request(.get, url)
+//                .validate()
+//                .responseData()
+//
+//            Observable.concat([r1, r2]).subscribe { (response, data) in
+//                print(data)
+//
+//            }
+//            .disposed(by: disposeBag)
+            
+            let dataSource = getExchangeDataSource()
+            
+            let r1 = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
+                .validate()
+                .responseData()
+                .map { (pair) -> CityResponseData in
+                    let str = String(decoding: pair.1, as: UTF8.self)
+                    let result = try! dataSource.getCities(html: str)
+                    return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
+                }
+            
+            let url = getFullBankUrl(bankUrl: selectedCityId)
+            let r2 = RxAlamofire.request(.get, url)
+                .validate()
+                .responseData()
+                .map { (pair) -> CityResponseData in
+                    let str = String(decoding: pair.1, as: UTF8.self)
+                    let result = try! dataSource.getExchanges(html: str)
+                    return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
+                }
+            
+//            Observable.concat([r1, r2])
+//                .toArray()
+//                .flatMap { (results) -> Single<[Data]> in
+//                    let res1 = results[0]
+//                    let res2 = results[1]
+//                    return Observable.just([res1.1, res2.1]).asSingle()
+//                }
+//                .asObservable()
+//                .subscribe { (datas) in
+//                    print("data count: \(datas.count)")
+//                    datas
+//
+//                } onError: { (error) in
+//                    print(error.localizedDescription)
+//                }
+//                .disposed(by: disposeBag)
+
+            Observable.merge([r1, r2])
+                .toArray()
+                .asObservable()
+                .subscribe { [weak self]  (results) in
+                    guard let self = self else {return}
                     
                     DispatchQueue.main.async {
-                        strongSelf.cities = result
-                        // load exchanges
-                        strongSelf.loadExchanges()
+                        defer {
+                            self.navigationController?.navigationBar.isUserInteractionEnabled = true
+                            self.stopAllActivityAnimation(self)
+                            print(#function, " called")
+                        }
+                        
+                        for result in results {
+                            if let cities = result.cities {
+                                self.cities = cities
+                            }
+                            else if let exchangeList = result.exchangeListResult {
+                                self.exchangeListResult = exchangeList
+                            }
+                        }
+                        
+                        self.isNeedUpdate = false
+                        // update table
+                        self.tableView.reloadData()
+                        
+                        if self.tableView.numberOfRows(inSection: 0) > 0 {
+                            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                        }
+                        
+                        self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
+                        self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
+                        self.cbBoxView.isHidden = false
                     }
-                case .failure(let error):
-                    print(error)
-                    strongSelf.stopAllActivityAnimation(strongSelf)
-                    strongSelf.processError(error)
+                } onError: { (error) in
+                    print(error.localizedDescription)
                 }
-            })
+                .disposed(by: disposeBag)
+           
         }
-        else {
-            loadExchanges()
-        }
+//        else {
+//            //loadExchanges()
+//        }
     }
     
-    private func loadExchanges() {
-        print(#function)
-        let url = getFullBankUrl(bankUrl: selectedCityId)
-        print("loadExchanges url: \(url.absoluteString); cityId: \(selectedCityId)")
-        
-        AF.request(url).validate().responseString(completionHandler: { [weak self] response in
-            guard let strongSelf = self else {return}
-            
-            defer {
-                strongSelf.navigationController?.navigationBar.isUserInteractionEnabled = true
-                strongSelf.stopAllActivityAnimation(strongSelf)
-            }
-            
-            switch response.result {
-            case .success(let value):
-                let result = strongSelf.getExchangesSafely(html: value)
-                
-                DispatchQueue.main.async {
-                    strongSelf.exchangeListResult = result
-                    
-                    strongSelf.isNeedUpdate = false
-                    // update table
-                    strongSelf.tableView.reloadData()
-                    
-                    if strongSelf.tableView.numberOfRows(inSection: 0) > 0 {
-                        strongSelf.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                    }
-                    
-                    strongSelf.cbDollarRateLabel.text = result.cbInfo.usdExchangeRate.rateStr
-                    strongSelf.cbEuroRateLabel.text = result.cbInfo.euroExchangeRate.rateStr
-                    strongSelf.cbBoxView.isHidden = false
-                }
-            case .failure(let error):
-                strongSelf.processError(error)
-            }
-        })
-    }
+    //>>>>>>>>>>>>>
+//    private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
+//        print(#function)
+//
+//        self.navigationController?.navigationBar.isUserInteractionEnabled = false
+//        if isShownMainActivity {
+//            activityStartAnimating()
+//        }
+//
+//        if cities.isEmpty {
+//            AF.request(Constants.Urls.citiesUrl)
+//                .validate().responseString(completionHandler: { [weak self] response in
+//                guard let strongSelf = self else {return}
+//
+//                switch response.result {
+//                case .success(let value):
+//                    let dataSource = strongSelf.getExchangeDataSource()
+//                    var result: [City]
+//                    do {
+//                        result = try dataSource.getCities(html: value)
+//                    }
+//                    catch {
+//                        strongSelf.processError(error)
+//                        return
+//                    }
+//
+//                    DispatchQueue.main.async {
+//                        strongSelf.cities = result
+//                        // load exchanges
+//                        strongSelf.loadExchanges()
+//                    }
+//                case .failure(let error):
+//                    print(error)
+//                    strongSelf.stopAllActivityAnimation(strongSelf)
+//                    strongSelf.processError(error)
+//                }
+//            })
+//        }
+//        else {
+//            loadExchanges()
+//        }
+//    }
+    
+    
+    
+//    private func loadExchanges() {
+//        print(#function)
+//        let url = getFullBankUrl(bankUrl: selectedCityId)
+//        print("loadExchanges url: \(url.absoluteString); cityId: \(selectedCityId)")
+//
+//        AF.request(url).validate().responseString(completionHandler: { [weak self] response in
+//            guard let strongSelf = self else {return}
+//
+//            defer {
+//                strongSelf.navigationController?.navigationBar.isUserInteractionEnabled = true
+//                strongSelf.stopAllActivityAnimation(strongSelf)
+//            }
+//
+//            switch response.result {
+//            case .success(let value):
+//                let result = strongSelf.getExchangesSafely(html: value)
+//
+//                DispatchQueue.main.async {
+//                    strongSelf.exchangeListResult = result
+//
+//                    strongSelf.isNeedUpdate = false
+//                    // update table
+//                    strongSelf.tableView.reloadData()
+//
+//                    if strongSelf.tableView.numberOfRows(inSection: 0) > 0 {
+//                        strongSelf.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+//                    }
+//
+//                    strongSelf.cbDollarRateLabel.text = result.cbInfo.usdExchangeRate.rateStr
+//                    strongSelf.cbEuroRateLabel.text = result.cbInfo.euroExchangeRate.rateStr
+//                    strongSelf.cbBoxView.isHidden = false
+//                }
+//            case .failure(let error):
+//                strongSelf.processError(error)
+//            }
+//        })
+//    }
     
     private func getExchangesSafely(html: String) -> ExchangeListResult {
         let dataSource = getExchangeDataSource()
