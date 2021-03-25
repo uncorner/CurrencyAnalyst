@@ -206,24 +206,67 @@ class MainViewController: BaseViewController {
             
             let dataSource = getExchangeDataSource()
             
-            let r1 = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
+            let cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
                 .validate()
                 .responseData()
-                .map { (pair) -> CityResponseData in
+                .map { (pair) -> [City]? in
                     let str = String(decoding: pair.1, as: UTF8.self)
-                    let result = try! dataSource.getCities(html: str)
-                    return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
+                    let cities = try! dataSource.getCities(html: str)
+                    //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
+                    return cities
                 }
             
+            
             let url = getFullBankUrl(bankUrl: selectedCityId)
-            let r2 = RxAlamofire.request(.get, url)
+            
+            let exchangeResponse = RxAlamofire.request(.get, url)
                 .validate()
                 .responseData()
-                .map { (pair) -> CityResponseData in
+                .map { (pair) -> ExchangeListResult? in
                     let str = String(decoding: pair.1, as: UTF8.self)
-                    let result = try! dataSource.getExchanges(html: str)
-                    return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
+                    let exchangeList = try! dataSource.getExchanges(html: str)
+                    //return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
+                    return exchangeList
                 }
+            
+            Observable.zip(cityResponse, exchangeResponse)
+                .subscribe { [weak self] (pairResult) in
+                    guard let self = self else {return}
+                    
+                    DispatchQueue.main.async {
+                        if let cities = pairResult.0 {
+                            self.cities = cities
+                            print("update cities")
+                        }
+                        
+                        if let exchangeListResult = pairResult.1 {
+                            defer {
+                                self.navigationController?.navigationBar.isUserInteractionEnabled = true
+                                self.stopAllActivityAnimation(self)
+                                print("update exchange list")
+                            }
+                            
+                            
+                            self.exchangeListResult = exchangeListResult
+                            
+                            self.isNeedUpdate = false
+                            // update table
+                            self.tableView.reloadData()
+                            
+                            if self.tableView.numberOfRows(inSection: 0) > 0 {
+                                self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                            }
+                            
+                            self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
+                            self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
+                            self.cbBoxView.isHidden = false
+                        }
+                    }
+                } onError: { (error) in
+                    print(error.localizedDescription)
+                }
+                .disposed(by: disposeBag)
+            
             
 //            Observable.concat([r1, r2])
 //                .toArray()
@@ -242,44 +285,44 @@ class MainViewController: BaseViewController {
 //                }
 //                .disposed(by: disposeBag)
 
-            Observable.merge([r1, r2])
-                .toArray()
-                .asObservable()
-                .subscribe { [weak self]  (results) in
-                    guard let self = self else {return}
-                    
-                    DispatchQueue.main.async {
-                        defer {
-                            self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                            self.stopAllActivityAnimation(self)
-                            print(#function, " called")
-                        }
-                        
-                        for result in results {
-                            if let cities = result.cities {
-                                self.cities = cities
-                            }
-                            else if let exchangeList = result.exchangeListResult {
-                                self.exchangeListResult = exchangeList
-                            }
-                        }
-                        
-                        self.isNeedUpdate = false
-                        // update table
-                        self.tableView.reloadData()
-                        
-                        if self.tableView.numberOfRows(inSection: 0) > 0 {
-                            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                        }
-                        
-                        self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
-                        self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
-                        self.cbBoxView.isHidden = false
-                    }
-                } onError: { (error) in
-                    print(error.localizedDescription)
-                }
-                .disposed(by: disposeBag)
+//            Observable.merge([cityResponse, exchangeResponse])
+//                .toArray()
+//                .asObservable()
+//                .subscribe { [weak self]  (results) in
+//                    guard let self = self else {return}
+//
+//                    DispatchQueue.main.async {
+//                        defer {
+//                            self.navigationController?.navigationBar.isUserInteractionEnabled = true
+//                            self.stopAllActivityAnimation(self)
+//                            print(#function, " called")
+//                        }
+//
+//                        for result in results {
+//                            if let cities = result.cities {
+//                                self.cities = cities
+//                            }
+//                            else if let exchangeList = result.exchangeListResult {
+//                                self.exchangeListResult = exchangeList
+//                            }
+//                        }
+//
+//                        self.isNeedUpdate = false
+//                        // update table
+//                        self.tableView.reloadData()
+//
+//                        if self.tableView.numberOfRows(inSection: 0) > 0 {
+//                            self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+//                        }
+//
+//                        self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
+//                        self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
+//                        self.cbBoxView.isHidden = false
+//                    }
+//                } onError: { (error) in
+//                    print(error.localizedDescription)
+//                }
+//                .disposed(by: disposeBag)
            
         }
 //        else {
