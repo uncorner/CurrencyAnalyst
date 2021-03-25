@@ -205,16 +205,19 @@ class MainViewController: BaseViewController {
 //            .disposed(by: disposeBag)
             
             let dataSource = getExchangeDataSource()
+            var cityResponse: Observable<[City]?> = Observable.just(nil)
             
-            let cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
-                .validate()
-                .responseData()
-                .map { (pair) -> [City]? in
-                    let str = String(decoding: pair.1, as: UTF8.self)
-                    let cities = try! dataSource.getCities(html: str)
-                    //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
-                    return cities
-                }
+            if self.cities.isEmpty {
+                cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
+                    .validate()
+                    .responseData()
+                    .map { (pair) -> [City]? in
+                        let str = String(decoding: pair.1, as: UTF8.self)
+                        let cities = try! dataSource.getCities(html: str)
+                        //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
+                        return cities
+                    }
+            }
             
             
             let url = getFullBankUrl(bankUrl: selectedCityId)
