@@ -161,7 +161,7 @@ class MainViewController: BaseViewController {
             activityStartAnimating()
         }
         
-        if cities.isEmpty {
+        //if cities.isEmpty {
         
             // 1 шаг - сделать просто один запрос на alamofire
             
@@ -256,9 +256,9 @@ class MainViewController: BaseViewController {
                             // update table
                             self.tableView.reloadData()
                             
-                            if self.tableView.numberOfRows(inSection: 0) > 0 {
-                                self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                            }
+//                            if self.tableView.numberOfRows(inSection: 0) > 0 {
+//                                self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+//                            }
                             
                             self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
                             self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
@@ -327,7 +327,7 @@ class MainViewController: BaseViewController {
 //                }
 //                .disposed(by: disposeBag)
            
-        }
+        //}
 //        else {
 //            //loadExchanges()
 //        }
