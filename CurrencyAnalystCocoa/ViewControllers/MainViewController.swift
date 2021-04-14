@@ -153,6 +153,9 @@ class MainViewController: BaseViewController {
 //        })
 //        .disposed(by: disposeBag)
     
+    
+    
+    //>>>>>>>>>>>>>>>>>>>
     private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
         print(#function)
         
@@ -161,6 +164,83 @@ class MainViewController: BaseViewController {
             activityStartAnimating()
         }
         
+        let dataSource = getExchangeDataSource()
+        var cityResponse: Observable<[City]?> = Observable.just(nil)
+        
+        if self.cities.isEmpty {
+            //>>>>>>>>>>>>>>.
+            cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl /* + "1213dffd"*/ )
+                .validate()
+                .responseData()
+                .map { (pair) -> [City]? in
+                    DispatchQueue.printCurrentQueue()
+                    let str = String(decoding: pair.1, as: UTF8.self)
+                    // todo
+                    let cities = try! dataSource.getCities(html: str)
+                    //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
+                    return cities
+                }
+        }
+        
+        
+        let url = getFullBankUrl(bankUrl: selectedCityId)
+        
+        let exchangeResponse = RxAlamofire.request(.get, url)
+            .validate()
+            .responseData()
+            .map { (pair) -> ExchangeListResult? in
+                DispatchQueue.printCurrentQueue()
+                let str = String(decoding: pair.1, as: UTF8.self)
+                // todo
+                let exchangeList = try! dataSource.getExchanges(html: str)
+                //return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
+                return exchangeList
+            }
+        
+        Observable.zip(cityResponse, exchangeResponse)
+            .subscribe { [weak self] (pairResult) in
+                guard let self = self else {return}
+                
+                DispatchQueue.main.async {
+                    DispatchQueue.printCurrentQueue()
+                    
+                    if let cities = pairResult.0 {
+                        self.cities = cities
+                        print("update cities")
+                    }
+                    
+                    if let exchangeListResult = pairResult.1 {
+                        defer {
+                            self.navigationController?.navigationBar.isUserInteractionEnabled = true
+                            self.stopAllActivityAnimation(self)
+                            print("update exchange list")
+                        }
+                        
+                        
+                        self.exchangeListResult = exchangeListResult
+                        
+                        self.isNeedUpdate = false
+                        // update table
+                        self.tableView.reloadData()
+                        
+                        //                            if self.tableView.numberOfRows(inSection: 0) > 0 {
+                        //                                self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                        //                            }
+                        
+                        self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
+                        self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
+                        self.cbBoxView.isHidden = false
+                    }
+                }
+            } onError: { [weak self] (error) in
+                guard let self = self else {return}
+                //print("ERROR>> ", error, error.localizedDescription)
+                print(error)
+                self.stopAllActivityAnimation(self)
+                self.processError(error)
+            }
+            .disposed(by: disposeBag)
+            
         //if cities.isEmpty {
         
             // 1 шаг - сделать просто один запрос на alamofire
@@ -203,73 +283,6 @@ class MainViewController: BaseViewController {
 //
 //            }
 //            .disposed(by: disposeBag)
-            
-            let dataSource = getExchangeDataSource()
-            var cityResponse: Observable<[City]?> = Observable.just(nil)
-            
-            if self.cities.isEmpty {
-                cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
-                    .validate()
-                    .responseData()
-                    .map { (pair) -> [City]? in
-                        let str = String(decoding: pair.1, as: UTF8.self)
-                        let cities = try! dataSource.getCities(html: str)
-                        //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
-                        return cities
-                    }
-            }
-            
-            
-            let url = getFullBankUrl(bankUrl: selectedCityId)
-            
-            let exchangeResponse = RxAlamofire.request(.get, url)
-                .validate()
-                .responseData()
-                .map { (pair) -> ExchangeListResult? in
-                    let str = String(decoding: pair.1, as: UTF8.self)
-                    let exchangeList = try! dataSource.getExchanges(html: str)
-                    //return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
-                    return exchangeList
-                }
-            
-            Observable.zip(cityResponse, exchangeResponse)
-                .subscribe { [weak self] (pairResult) in
-                    guard let self = self else {return}
-                    
-                    DispatchQueue.main.async {
-                        if let cities = pairResult.0 {
-                            self.cities = cities
-                            print("update cities")
-                        }
-                        
-                        if let exchangeListResult = pairResult.1 {
-                            defer {
-                                self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                                self.stopAllActivityAnimation(self)
-                                print("update exchange list")
-                            }
-                            
-                            
-                            self.exchangeListResult = exchangeListResult
-                            
-                            self.isNeedUpdate = false
-                            // update table
-                            self.tableView.reloadData()
-                            
-//                            if self.tableView.numberOfRows(inSection: 0) > 0 {
-//                                self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-//                            }
-                            
-                            self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
-                            self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
-                            self.cbBoxView.isHidden = false
-                        }
-                    }
-                } onError: { (error) in
-                    print(error.localizedDescription)
-                }
-                .disposed(by: disposeBag)
-            
             
 //            Observable.concat([r1, r2])
 //                .toArray()
