@@ -171,14 +171,16 @@ class MainViewController: BaseViewController {
         
         if self.cities.isEmpty {
             //>>>>>>>>>>>>>>.
-            cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl /* + "1213dffd"*/ )
+            cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl   /*+ "1213dffd"*/ )
                 .validate()
                 .responseData()
                 .map { (pair) -> [City]? in
                     DispatchQueue.printCurrentQueue()
                     let str = String(decoding: pair.1, as: UTF8.self)
                     // todo
-                    let cities = try! dataSource.getCities(html: str)
+                    //let cities = try! dataSource.getCities(html: str)
+                    let cities = try dataSource.getCities(html: str)
+                    
                     //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
                     return cities
                 }
@@ -194,7 +196,8 @@ class MainViewController: BaseViewController {
                 DispatchQueue.printCurrentQueue()
                 let str = String(decoding: pair.1, as: UTF8.self)
                 // todo
-                let exchangeList = try! dataSource.getExchanges(html: str)
+                //let exchangeList = try! dataSource.getExchanges(html: str)
+                let exchangeList = try dataSource.getExchanges(html: str)
                 //return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
                 return exchangeList
             }
@@ -239,9 +242,16 @@ class MainViewController: BaseViewController {
             } onError: { [weak self] (error) in
                 guard let self = self else {return}
                 //print("ERROR>> ", error, error.localizedDescription)
-                print(error)
+                print("ERROR>> ", error)
+                
                 self.stopAllActivityAnimation(self)
-                self.processError(error)
+                
+                if let afError = error as? AFError {
+                    self.processError(afError)
+                }
+                else {
+                    self.processError(error)
+                }
             }
             .disposed(by: disposeBag)
             
