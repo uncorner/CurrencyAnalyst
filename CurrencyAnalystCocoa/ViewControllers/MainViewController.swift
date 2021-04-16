@@ -167,39 +167,26 @@ class MainViewController: BaseViewController {
         let dataSource = getExchangeDataSource()
         var cityResponse: Observable<[City]?> = Observable.just(nil)
         
-        //let globalScheduler = ConcurrentDispatchQueueScheduler(queue: DispatchQueue.global())
-        
         if self.cities.isEmpty {
-            //>>>>>>>>>>>>>>.
-            cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl   /*+ "1213dffd"*/ )
+            //cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl   + "1213dffd" )
+            cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
                 .validate()
                 .responseData()
                 .map { (pair) -> [City]? in
                     DispatchQueue.printCurrentQueue()
                     let str = String(decoding: pair.1, as: UTF8.self)
-                    // todo
-                    //let cities = try! dataSource.getCities(html: str)
-                    let cities = try dataSource.getCities(html: str)
-                    
-                    //return CityResponseData(cities: result, exchangeListResult: nil, response: pair.0)
-                    return cities
+                    return try dataSource.getCities(html: str)
                 }
         }
         
-        
-        let url = getFullBankUrl(bankUrl: selectedCityId)
-        
-        let exchangeResponse = RxAlamofire.request(.get, url)
+        let bankUrl = getFullBankUrl(bankUrl: selectedCityId)
+        let exchangeResponse = RxAlamofire.request(.get, bankUrl)
             .validate()
             .responseData()
             .map { (pair) -> ExchangeListResult in
                 DispatchQueue.printCurrentQueue()
                 let str = String(decoding: pair.1, as: UTF8.self)
-                // todo
-                //let exchangeList = try! dataSource.getExchanges(html: str)
-                let exchangeList = try dataSource.getExchanges(html: str)
-                //return CityResponseData(cities: nil, exchangeListResult: result, response: pair.0)
-                return exchangeList
+                return try dataSource.getExchanges(html: str)
             }
         
         Observable.combineLatest(cityResponse, exchangeResponse)
@@ -229,7 +216,6 @@ class MainViewController: BaseViewController {
                     self.isNeedUpdate = false
                     // update table
                     self.tableView.reloadData()
-                    
                     //if self.tableView.numberOfRows(inSection: 0) > 0 {
                     // self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
                     //}

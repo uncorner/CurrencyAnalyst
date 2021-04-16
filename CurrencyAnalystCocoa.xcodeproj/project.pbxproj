@@ -10,7 +10,6 @@
 		104DA776E914265976BAA6BE /* Pods_CurrencyAnalystCocoaTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A011DFEC53EF49E6C9ADD62 /* Pods_CurrencyAnalystCocoaTests.framework */; };
 		2EEEC0AE207CFEC305150758 /* Pods_CurrencyAnalystCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11FC675EEE665FADC8E8C552 /* Pods_CurrencyAnalystCocoa.framework */; };
 		92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */; };
-		92EC5459260A863E00522803 /* CityResponseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92EC5458260A863E00522803 /* CityResponseData.swift */; };
 		AA03864A2503C01200D51C6B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0386492503C01200D51C6B /* BaseViewController.swift */; };
 		AA09BE8825192446002B9B82 /* WindowExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA09BE8725192446002B9B82 /* WindowExtension.swift */; };
 		AA2D136824CCA8F20047D379 /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2D136724CCA8F20047D379 /* FontExtension.swift */; };
@@ -80,7 +79,6 @@
 		2A011DFEC53EF49E6C9ADD62 /* Pods_CurrencyAnalystCocoaTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_CurrencyAnalystCocoaTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		68C116AC55F35E96A2FF493B /* Pods-CurrencyAnalystCocoa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CurrencyAnalystCocoa.debug.xcconfig"; path = "Target Support Files/Pods-CurrencyAnalystCocoa/Pods-CurrencyAnalystCocoa.debug.xcconfig"; sourceTree = "<group>"; };
 		92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueExtension.swift; sourceTree = "<group>"; };
-		92EC5458260A863E00522803 /* CityResponseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityResponseData.swift; sourceTree = "<group>"; };
 		AA0386492503C01200D51C6B /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		AA09BE8725192446002B9B82 /* WindowExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowExtension.swift; sourceTree = "<group>"; };
 		AA2D136724CCA8F20047D379 /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
@@ -305,7 +303,6 @@
 				AA7B003124F9991400D1D88D /* CurrencyExchangeUnit.swift */,
 				AA6D8E0324FEDB43005CAA99 /* CentralBankInfo.swift */,
 				AABC46CC24FFAC1B0001B1A1 /* CbCurrencyExchangeRate.swift */,
-				92EC5458260A863E00522803 /* CityResponseData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -594,7 +591,6 @@
 				AA450D3024E178AA005D48F7 /* PickCityViewController.swift in Sources */,
 				AA450D3324E182B9005D48F7 /* PickCityTableViewCell.swift in Sources */,
 				AA9280A324CB339E00B7A1F1 /* ParsedGeoData.swift in Sources */,
-				92EC5459260A863E00522803 /* CityResponseData.swift in Sources */,
 				AA69EDE32517951700BCCB99 /* UserDefaultsExtension.swift in Sources */,
 				AA92809424CB336100B7A1F1 /* Constants.swift in Sources */,
 			);
