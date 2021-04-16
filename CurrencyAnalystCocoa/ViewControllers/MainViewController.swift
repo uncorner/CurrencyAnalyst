@@ -167,6 +167,8 @@ class MainViewController: BaseViewController {
         let dataSource = getExchangeDataSource()
         var cityResponse: Observable<[City]?> = Observable.just(nil)
         
+        //let globalScheduler = ConcurrentDispatchQueueScheduler(queue: DispatchQueue.global())
+        
         if self.cities.isEmpty {
             //>>>>>>>>>>>>>>.
             cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl /* + "1213dffd"*/ )
@@ -197,9 +199,12 @@ class MainViewController: BaseViewController {
                 return exchangeList
             }
         
-        Observable.zip(cityResponse, exchangeResponse)
+        Observable.combineLatest(cityResponse, exchangeResponse)
+            .observe(on: MainScheduler.instance)
             .subscribe { [weak self] (pairResult) in
                 guard let self = self else {return}
+                
+                DispatchQueue.printCurrentQueue()
                 
                 DispatchQueue.main.async {
                     DispatchQueue.printCurrentQueue()
@@ -216,16 +221,15 @@ class MainViewController: BaseViewController {
                             print("update exchange list")
                         }
                         
-                        
                         self.exchangeListResult = exchangeListResult
                         
                         self.isNeedUpdate = false
                         // update table
                         self.tableView.reloadData()
                         
-                        //                            if self.tableView.numberOfRows(inSection: 0) > 0 {
-                        //                                self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                        //                            }
+                        //if self.tableView.numberOfRows(inSection: 0) > 0 {
+                        // self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                        //}
                         
                         self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
                         self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
