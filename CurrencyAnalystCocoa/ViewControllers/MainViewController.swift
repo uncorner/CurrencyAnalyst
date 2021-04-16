@@ -190,7 +190,7 @@ class MainViewController: BaseViewController {
         let exchangeResponse = RxAlamofire.request(.get, url)
             .validate()
             .responseData()
-            .map { (pair) -> ExchangeListResult? in
+            .map { (pair) -> ExchangeListResult in
                 DispatchQueue.printCurrentQueue()
                 let str = String(decoding: pair.1, as: UTF8.self)
                 // todo
@@ -214,27 +214,27 @@ class MainViewController: BaseViewController {
                         print("update cities")
                     }
                     
-                    if let exchangeListResult = pairResult.1 {
-                        defer {
-                            self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                            self.stopAllActivityAnimation(self)
-                            print("update exchange list")
-                        }
-                        
-                        self.exchangeListResult = exchangeListResult
-                        
-                        self.isNeedUpdate = false
-                        // update table
-                        self.tableView.reloadData()
-                        
-                        //if self.tableView.numberOfRows(inSection: 0) > 0 {
-                        // self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                        //}
-                        
-                        self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
-                        self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
-                        self.cbBoxView.isHidden = false
+                    let exchangeListResult = pairResult.1
+                    defer {
+                        self.navigationController?.navigationBar.isUserInteractionEnabled = true
+                        self.stopAllActivityAnimation(self)
+                        print("update exchange list")
                     }
+                    
+                    self.exchangeListResult = exchangeListResult
+                    
+                    self.isNeedUpdate = false
+                    // update table
+                    self.tableView.reloadData()
+                    
+                    //if self.tableView.numberOfRows(inSection: 0) > 0 {
+                    // self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                    //}
+                    
+                    self.cbDollarRateLabel.text = self.exchangeListResult.cbInfo.usdExchangeRate.rateStr
+                    self.cbEuroRateLabel.text = self.exchangeListResult.cbInfo.euroExchangeRate.rateStr
+                    self.cbBoxView.isHidden = false
+                    
                 }
             } onError: { [weak self] (error) in
                 guard let self = self else {return}
