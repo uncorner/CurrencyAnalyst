@@ -9,8 +9,8 @@ target 'CurrencyAnalystCocoa' do
   # Pods for CurrencyAnalystCocoa
   pod 'SwiftSoup', '2.3.0'
   pod 'Alamofire', '5.2'
-  pod 'GoogleMaps', '3.9.0'
-  pod 'GooglePlaces', '3.9.0'
+  pod 'GoogleMaps', '5.1.0'
+  pod 'GooglePlaces', '5.0.0'
   pod 'SwiftEntryKit', '1.2.3'
 
   target 'CurrencyAnalystCocoaTests' do
