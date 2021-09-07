@@ -12,6 +12,7 @@ struct CurrencyExchange {
     var bankName = ""
     // урл у банка может быть и пустой
     var bankUrl = ""
+    var bankLogoUrl: String?
     var updatedTime = ""
     var usdExchange = CurrencyExchangeUnit()
     var euroExchange = CurrencyExchangeUnit()

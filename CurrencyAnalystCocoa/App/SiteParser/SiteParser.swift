@@ -262,6 +262,13 @@ class SiteParser: ExchangeDataSource {
                 }
                 
                 var exchange = CurrencyExchange()
+                // logo url
+                if let imgTag = try? row.select("td.icon a img").first() {
+                    if let logoUrl = try? imgTag.attr("src"), logoUrl.isEmptyOrWhitespace() == false {
+                        exchange.bankLogoUrl = logoUrl
+                    }
+                }
+                
                 let tdBank = try row.select("td.tbn").first()
                 if let theTdBank = tdBank {
                     let bankRef = try theTdBank.select("a").first()

@@ -156,8 +156,12 @@ class SiteParserTests: XCTestCase {
             
             XCTAssert(exchange.updatedTime.isEmpty == false)
             
-            if exchange.bankUrl.isEmpty {
+            if exchange.bankUrl.isEmptyOrWhitespace() {
                 print("\(exchange.bankName): empty url is found")
+            }
+            
+            if exchange.bankLogoUrl == nil {
+                print("\(exchange.bankName): empty Logo url is found")
             }
         }
         
