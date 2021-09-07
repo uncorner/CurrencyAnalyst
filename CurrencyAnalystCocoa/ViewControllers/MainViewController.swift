@@ -179,7 +179,7 @@ class MainViewController: BaseViewController {
     
     private func loadExchanges() {
         print(#function)
-        let url = getFullBankUrl(bankUrl: selectedCityId)
+        guard let url = selectedCityId.toSiteURL() else {return}
         print("loadExchanges url: \(url.absoluteString); cityId: \(selectedCityId)")
         
         AF.request(url).validate().responseString(completionHandler: { [weak self] response in
@@ -235,11 +235,6 @@ class MainViewController: BaseViewController {
             controller.activityStopAnimating()
             controller.tableView.refreshControl?.endRefreshing()
         }
-    }
-    
-    private func getFullBankUrl(bankUrl: String) -> URL {
-        let url = URL(string: bankUrl, relativeTo: URL(string: Constants.Urls.sourceSiteUrl) )!
-        return url
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
