@@ -40,6 +40,8 @@ class MainViewController: BaseViewController {
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
     
+    private let imageLoader = ImageLoader()
+    
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
 
@@ -326,6 +328,14 @@ extension MainViewController : UITableViewDataSource {
                 cell.exchangeBoxView.setData(exchange)
                 cell.bankTitleLabel.text = exchange.bankName
                 cell.exchangeBoxView.hideRubleSign()
+                
+                //>>>>>>>>>>>
+                //cell.logoImageView =
+                if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
+                    imageLoader.obtainImageWithPath(imagePath: logoUrl.absoluteString, completionHandler: { image in
+                        cell.logoImageView.image = image
+                    })
+                }
                 
                 return cell
             }
