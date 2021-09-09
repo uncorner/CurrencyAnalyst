@@ -331,10 +331,17 @@ extension MainViewController : UITableViewDataSource {
                 
                 //>>>>>>>>>>>
                 //cell.logoImageView =
+                // main queue
                 if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
                     imageLoader.obtainImageWithPath(imagePath: logoUrl.absoluteString, completionHandler: { image in
+                        // main qs
+                        cell.logoImageView.isHidden = false
                         cell.logoImageView.image = image
                     })
+                }
+                else {
+                    //
+                    cell.logoImageView.isHidden = true
                 }
                 
                 return cell

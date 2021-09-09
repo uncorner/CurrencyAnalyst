@@ -23,27 +23,34 @@ class ImageLoader {
     }
     
     func obtainImageWithPath(imagePath: String, completionHandler: @escaping (UIImage) -> ()) {
-        if let image = self.cache.object(forKey: imagePath as NSString) {
+        if let image = cache.object(forKey: imagePath as NSString) {
             DispatchQueue.main.async {
                 completionHandler(image)
             }
         } else {
+//            if imagePath == "https://kovalut.ru/banklogo/balakovo-bank.png?1630431881" {
+//                let a = 1
+//            }
+            
             // >>>>>>>>>>> temp
             let placeholder = #imageLiteral(resourceName: "dollar_image-1")
                 //#imageLiteral(resourceName: "settings_image-1")
             DispatchQueue.main.async {
                 completionHandler(placeholder)
             }
+            
             let url: URL! = URL(string: imagePath)
             task = session.downloadTask(with: url, completionHandler: { (location, response, error) in
                 if let data = try? Data(contentsOf: url) {
                     let img: UIImage! = UIImage(data: data)
                     self.cache.setObject(img, forKey: imagePath as NSString)
+                    
                     DispatchQueue.main.async {
                         completionHandler(img)
                     }
                 }
             })
+            
             task.resume()
         }
     }
