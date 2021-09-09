@@ -333,15 +333,28 @@ extension MainViewController : UITableViewDataSource {
                 //cell.logoImageView =
                 // main queue
                 if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
-                    imageLoader.obtainImageWithPath(imagePath: logoUrl.absoluteString, completionHandler: { image in
+                    
+                    cell.logoImageUrl = logoUrl.absoluteString
+                    
+                    imageLoader.obtainImageWithPath(imagePath: logoUrl.absoluteString, completionHandler: { image, imageUrl in
+                        
+                        guard let cellLogoUrl = cell.logoImageUrl else {return}
+                        
+                        if cellLogoUrl != imageUrl {return}
+                        
                         // main qs
-                        cell.logoImageView.isHidden = false
+                        cell.logoImageView.image = nil
+                        //cell.logoImageView.isHidden = false
                         cell.logoImageView.image = image
                     })
                 }
                 else {
                     //
-                    cell.logoImageView.isHidden = true
+                    //cell.logoImageView.image = nil
+                    //cell.logoImageView.isHidden = true
+                    //let img = UIImage()
+                    //img.cgImage.
+                    //cell.logoImageView.image = img
                 }
                 
                 return cell

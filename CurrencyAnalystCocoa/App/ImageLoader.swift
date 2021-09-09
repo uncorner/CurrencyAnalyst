@@ -22,10 +22,10 @@ class ImageLoader {
         self.cache = NSCache()
     }
     
-    func obtainImageWithPath(imagePath: String, completionHandler: @escaping (UIImage) -> ()) {
+    func obtainImageWithPath(imagePath: String, completionHandler: @escaping (UIImage,String) -> ()) {
         if let image = cache.object(forKey: imagePath as NSString) {
             DispatchQueue.main.async {
-                completionHandler(image)
+                completionHandler(image, imagePath)
             }
         } else {
 //            if imagePath == "https://kovalut.ru/banklogo/balakovo-bank.png?1630431881" {
@@ -36,7 +36,7 @@ class ImageLoader {
             let placeholder = #imageLiteral(resourceName: "dollar_image-1")
                 //#imageLiteral(resourceName: "settings_image-1")
             DispatchQueue.main.async {
-                completionHandler(placeholder)
+                completionHandler(placeholder, imagePath)
             }
             
             let url: URL! = URL(string: imagePath)
@@ -46,7 +46,7 @@ class ImageLoader {
                     self.cache.setObject(img, forKey: imagePath as NSString)
                     
                     DispatchQueue.main.async {
-                        completionHandler(img)
+                        completionHandler(img, imagePath)
                     }
                 }
             })
