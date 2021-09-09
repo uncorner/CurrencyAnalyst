@@ -40,7 +40,7 @@ class MainViewController: BaseViewController {
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
     
-    private let imageLoader = ImageLoader()
+    private let imageLoader = CachedImageLoader()
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -328,38 +328,7 @@ extension MainViewController : UITableViewDataSource {
                 cell.exchangeBoxView.setData(exchange)
                 cell.bankTitleLabel.text = exchange.bankName
                 cell.exchangeBoxView.hideRubleSign()
-                
-                //>>>>>>>>>>>
-                //cell.logoImageView =
-                // main queue
-                if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
-                    //cell.logoImagePath = logoUrl.absoluteString
-                    cell.logoImageUrl = logoUrl
-                    
-                    imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
-                        DispatchQueue.main.async {
-                            guard let cellLogoUrl = cell.logoImageUrl else {return}
-                            if cellLogoUrl != imageUrl {return}
-                            
-                            guard let image = image else {
-                                // error loading image
-                                cell.logoImageView.isHidden = true
-                                cell.logoImageView.image = nil
-                                
-                                return
-                            }
-                            
-                            //cell.logoImageView.image = nil
-                            cell.logoImageView.isHidden = false
-                            cell.logoImageView.image = image
-                        }
-                    })
-                }
-                else {
-                    cell.logoImageView.isHidden = true
-                    cell.logoImageView.image = nil
-                }
-                
+                setBankLogoImage(exchange: exchange, cell: cell)
                 return cell
             }
             
@@ -382,6 +351,35 @@ extension MainViewController : UITableViewDataSource {
         }
         
         return UITableViewCell()
+    }
+    
+    private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
+        if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
+            cell.logoImageUrl = logoUrl
+            
+            imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
+                DispatchQueue.main.async {
+                    guard let cellLogoUrl = cell.logoImageUrl else {return}
+                    if cellLogoUrl != imageUrl {return}
+                    
+                    guard let image = image else {
+                        // error loading image
+                        cell.logoImageView.isHidden = true
+                        cell.logoImageView.image = nil
+                        
+                        return
+                    }
+                    
+                    //cell.logoImageView.image = nil
+                    cell.logoImageView.isHidden = false
+                    cell.logoImageView.image = image
+                }
+            })
+        }
+        else {
+            cell.logoImageView.isHidden = true
+            cell.logoImageView.image = nil
+        }
     }
     
 }
