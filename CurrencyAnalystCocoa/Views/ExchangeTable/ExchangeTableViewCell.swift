@@ -17,7 +17,7 @@ class ExchangeTableViewCell: UITableViewCell {
     @IBOutlet weak var bankTitleLabel: UILabel!
     @IBOutlet weak var logoImageView: UIImageView!
     
-    var logoImageUrl: String?
+    var logoImageUrl: URL?
     
     static func nib() -> UINib {
         return UINib(nibName: cellId, bundle: nil)

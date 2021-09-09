@@ -333,28 +333,31 @@ extension MainViewController : UITableViewDataSource {
                 //cell.logoImageView =
                 // main queue
                 if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
+                    //cell.logoImagePath = logoUrl.absoluteString
+                    cell.logoImageUrl = logoUrl
                     
-                    cell.logoImageUrl = logoUrl.absoluteString
-                    
-                    imageLoader.obtainImageWithPath(imagePath: logoUrl.absoluteString, completionHandler: { image, imageUrl in
-                        
-                        guard let cellLogoUrl = cell.logoImageUrl else {return}
-                        
-                        if cellLogoUrl != imageUrl {return}
-                        
-                        // main qs
-                        cell.logoImageView.image = nil
-                        //cell.logoImageView.isHidden = false
-                        cell.logoImageView.image = image
+                    imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
+                        DispatchQueue.main.async {
+                            guard let cellLogoUrl = cell.logoImageUrl else {return}
+                            if cellLogoUrl != imageUrl {return}
+                            
+                            guard let image = image else {
+                                // error loading image
+                                cell.logoImageView.isHidden = true
+                                cell.logoImageView.image = nil
+                                
+                                return
+                            }
+                            
+                            //cell.logoImageView.image = nil
+                            cell.logoImageView.isHidden = false
+                            cell.logoImageView.image = image
+                        }
                     })
                 }
                 else {
-                    //
-                    //cell.logoImageView.image = nil
-                    //cell.logoImageView.isHidden = true
-                    //let img = UIImage()
-                    //img.cgImage.
-                    //cell.logoImageView.image = img
+                    cell.logoImageView.isHidden = true
+                    cell.logoImageView.image = nil
                 }
                 
                 return cell
