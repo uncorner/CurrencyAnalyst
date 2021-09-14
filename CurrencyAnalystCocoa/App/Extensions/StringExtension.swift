@@ -24,5 +24,17 @@ extension String {
         return self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
+    func toSiteURL() -> URL? {
+        if self.isEmptyOrWhitespace() {
+            return nil;
+        }
+        
+        if self.lowercased().starts(with: "https:") {
+            return URL(string: self)
+        }
+        
+        return URL(string: self, relativeTo: URL(string: Constants.Urls.sourceSiteUrl) )!
+    }
+    
 }
 

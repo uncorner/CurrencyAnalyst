@@ -8,12 +8,19 @@ target 'CurrencyAnalystCocoa' do
 
   # Pods for CurrencyAnalystCocoa
   pod 'SwiftSoup', '2.3.0'
-  pod 'Alamofire', '5.4.1'
-  pod 'RxSwift', '6.1.0'
+  #pod 'Alamofire', '5.4.1'
+  pod 'Alamofire', '5.4.3'
+  #pod 'RxSwift', '6.1.0'
+  pod 'RxSwift', '6.2.0'
   pod 'RxAlamofire', '6.1.1'
-  pod 'GoogleMaps', '3.9.0'
-  pod 'GooglePlaces', '3.9.0'
+  pod 'GoogleMaps', '5.1.0'
+  pod 'GooglePlaces', '5.0.0'
   pod 'SwiftEntryKit', '1.2.3'
+  
+#Downloading dependencies
+#Installing Alamofire 5.4.3 (was 5.4.1)
+#Installing RxSwift 6.2.0 (was 6.1.0)
+
 
   target 'CurrencyAnalystCocoaTests' do
     inherit! :search_paths

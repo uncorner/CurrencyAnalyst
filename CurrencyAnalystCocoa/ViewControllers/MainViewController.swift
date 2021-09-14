@@ -43,6 +43,8 @@ class MainViewController: BaseViewController {
     private var isNeedUpdate = true
     private let disposeBag = DisposeBag()
     
+    private let imageLoader = CachedImageLoader()
+    
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
 
@@ -172,26 +174,41 @@ class MainViewController: BaseViewController {
             cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
                 .validate()
                 .responseData()
-                .map { (pair) -> [City]? in
+                .map { response, data -> [City]? in
                     DispatchQueue.printCurrentQueue()
-                    let str = String(decoding: pair.1, as: UTF8.self)
-                    return try dataSource.getCities(html: str)
+                    let html = String(decoding: data, as: UTF8.self)
+                    return try dataSource.getCities(html: html)
                 }
         }
+//<<<<<<< HEAD
+//=======
+//        else {
+//            loadExchanges()
+//        }
+//    }
+//
+//    private func loadExchanges() {
+//        print(#function)
+//        guard let url = selectedCityId.toSiteURL() else {return}
+//        print("loadExchanges url: \(url.absoluteString); cityId: \(selectedCityId)")
+//>>>>>>> master
         
-        let bankUrl = getFullBankUrl(bankUrl: selectedCityId)
-        let exchangeResponse = RxAlamofire.request(.get, bankUrl)
+        //let bankUrl = getFullBankUrl(bankUrl: selectedCityId)
+        guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
+        
+        let exchangeResponse = RxAlamofire.request(.get, exchangeUrl)
             .validate()
             .responseData()
-            .map { (pair) -> ExchangeListResult in
+            .map { response, data -> ExchangeListResult in
                 DispatchQueue.printCurrentQueue()
-                let str = String(decoding: pair.1, as: UTF8.self)
-                return try dataSource.getExchanges(html: str)
+                let html = String(decoding: data, as: UTF8.self)
+                return try dataSource.getExchanges(html: html)
             }
         
+        // мерджим 2 последовательности: города и курсы валют, то есть они выполняются параллельно
         Observable.combineLatest(cityResponse, exchangeResponse)
             .observe(on: MainScheduler.instance)
-            .subscribe { [weak self] (pairResult) in
+            .subscribe { [weak self] cities, exchangeListResult in
                 guard let self = self else {return}
                 
                 DispatchQueue.printCurrentQueue()
@@ -199,12 +216,12 @@ class MainViewController: BaseViewController {
                 DispatchQueue.main.async {
                     DispatchQueue.printCurrentQueue()
                     
-                    if let cities = pairResult.0 {
+                    if let cities = cities {
                         self.cities = cities
                         print("update cities")
                     }
                     
-                    let exchangeListResult = pairResult.1
+                    //let exchangeListResult = pairResult.1
                     defer {
                         self.navigationController?.navigationBar.isUserInteractionEnabled = true
                         self.stopAllActivityAnimation(self)
@@ -451,11 +468,6 @@ class MainViewController: BaseViewController {
         }
     }
     
-    private func getFullBankUrl(bankUrl: String) -> URL {
-        let url = URL(string: bankUrl, relativeTo: URL(string: Constants.Urls.sourceSiteUrl) )!
-        return url
-    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showBankDetailSegue {
             if let indexPath = tableView.indexPathForSelectedRow {
@@ -545,7 +557,7 @@ extension MainViewController : UITableViewDataSource {
                 cell.exchangeBoxView.setData(exchange)
                 cell.bankTitleLabel.text = exchange.bankName
                 cell.exchangeBoxView.hideRubleSign()
-                
+                setBankLogoImage(exchange: exchange, cell: cell)
                 return cell
             }
             
@@ -568,6 +580,35 @@ extension MainViewController : UITableViewDataSource {
         }
         
         return UITableViewCell()
+    }
+    
+    private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
+        if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
+            cell.logoImageUrl = logoUrl
+            
+            imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
+                DispatchQueue.main.async {
+                    guard let cellLogoUrl = cell.logoImageUrl else {return}
+                    if cellLogoUrl != imageUrl {return}
+                    
+                    guard let image = image else {
+                        // error loading image
+                        cell.logoImageView.isHidden = true
+                        cell.logoImageView.image = nil
+                        
+                        return
+                    }
+                    
+                    //cell.logoImageView.image = nil
+                    cell.logoImageView.isHidden = false
+                    cell.logoImageView.image = image
+                }
+            })
+        }
+        else {
+            cell.logoImageView.isHidden = true
+            cell.logoImageView.image = nil
+        }
     }
     
 }

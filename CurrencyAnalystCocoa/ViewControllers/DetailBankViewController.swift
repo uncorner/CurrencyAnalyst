@@ -179,7 +179,7 @@ class DetailBankViewController: BaseViewController {
     }
 
     private func loadBankDetailedData() {
-        guard let url = URL(string: self.exchange.fullBankUrl) else {return}
+        guard let url = exchange.bankUrl?.toSiteURL() else {return}
         
         self.navigationController?.navigationBar.isUserInteractionEnabled = false
         activityStartAnimating()

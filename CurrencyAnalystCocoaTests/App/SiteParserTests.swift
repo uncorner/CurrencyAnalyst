@@ -134,7 +134,6 @@ class SiteParserTests: XCTestCase {
         
         XCTAssertNotNil(result.exchanges)
         XCTAssertTrue(result.exchanges.count > 0)
-        print(result.exchanges[0].fullBankUrl)
         
         for exchange in result.exchanges {
             XCTAssertNotNil(exchange)
@@ -156,8 +155,11 @@ class SiteParserTests: XCTestCase {
             
             XCTAssert(exchange.updatedTime.isEmpty == false)
             
-            if exchange.bankUrl.isEmpty {
-                print("\(exchange.bankName): empty url is found")
+            if exchange.bankUrl == nil {
+                print("\(exchange.bankName): empty bank url is found")
+            }
+            if exchange.bankLogoUrl == nil {
+                print("\(exchange.bankName): empty bank Logo url is found")
             }
         }
         

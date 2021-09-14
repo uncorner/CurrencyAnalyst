@@ -219,6 +219,7 @@ class SiteParser: ExchangeDataSource {
         let body = doc.body()
         guard let strongBody = body else {throw SiteParserError.parsingError("body wrong")}
         
+        // Получение курсов ЦБ
         // .cb-title table tr
         let trElements = try strongBody.select(".cb-title table tr")
         guard let tr2 = trElements[safe:2] else { throw SiteParserError.parsingError() }
@@ -244,6 +245,7 @@ class SiteParser: ExchangeDataSource {
             cbInfo.euroExchangeRate.rateStr = euroRateStr
         }
         
+        // Получение курсов обмена для списка банков
         // .plain-content table.tb-k
         let table = try strongBody.select(".plain-content table.tb-k").first()
         
@@ -251,7 +253,7 @@ class SiteParser: ExchangeDataSource {
         let tableRows = try strongTable.select("tr.wigr1,tr.wi")
         
         for row in tableRows {
-            if row.hasClass("bot") == false {
+            if !row.hasClass("bot") {
                 if row.hasClass("wi") {
                     let text = try row.select("td.old").text()
                     if text.starts(with: "Лучшие курсы") {
@@ -260,6 +262,13 @@ class SiteParser: ExchangeDataSource {
                 }
                 
                 var exchange = CurrencyExchange()
+                // logo url
+                if let imgTag = try row.select("td.icon img").first() {
+                    if let logoUrl = try? imgTag.attr("src"), !logoUrl.isEmptyOrWhitespace() {
+                        exchange.bankLogoUrl = logoUrl
+                    }
+                }
+                
                 let tdBank = try row.select("td.tbn").first()
                 if let theTdBank = tdBank {
                     let bankRef = try theTdBank.select("a").first()
@@ -287,10 +296,10 @@ class SiteParser: ExchangeDataSource {
                 let tdatas = try row.select("td")
                 let formatter = getDecimalFormatter()
                 
-                guard let tdata1 = tdatas[safe:1] else {throw SiteParserError.parsingError()}
-                guard let tdata2 = tdatas[safe:2] else {throw SiteParserError.parsingError()}
-                guard let tdata3 = tdatas[safe:3] else {throw SiteParserError.parsingError()}
-                guard let tdata4 = tdatas[safe:4] else {throw SiteParserError.parsingError()}
+                guard let tdata1 = tdatas[safe:2] else {throw SiteParserError.parsingError()}
+                guard let tdata2 = tdatas[safe:3] else {throw SiteParserError.parsingError()}
+                guard let tdata3 = tdatas[safe:4] else {throw SiteParserError.parsingError()}
+                guard let tdata4 = tdatas[safe:5] else {throw SiteParserError.parsingError()}
                 
                 exchange.usdExchange = try getCurrencyExchangeUnit(currBuyElement: tdata1, currSellElement: tdata2, formatter: formatter)
                 
