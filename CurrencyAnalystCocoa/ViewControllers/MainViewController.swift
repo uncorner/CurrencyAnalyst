@@ -152,11 +152,11 @@ class MainViewController: BaseViewController {
         }
         
         let dataSource = getExchangeDataSource()
-        var cityObs: Observable<[City]?> = Observable.just(nil)
+        var cityObs: Single<[City]?> = Single.just(nil)
         
         if cities.isEmpty {
             // temp
-            //cityResponse = RxAlamofire.request(.get, Constants.Urls.citiesUrl   + "1213dffd" )
+            //cityObs = RxAlamofire.request(.get, Constants.Urls.citiesUrl   + "1213dffd" )
             cityObs = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
                 .validate()
                 .responseData()
@@ -165,6 +165,7 @@ class MainViewController: BaseViewController {
                     let html = String(decoding: data, as: UTF8.self)
                     return try dataSource.getCities(html: html)
                 }
+                .asSingle()
         }
         
         let exchangeObs = RxAlamofire.request(.get, exchangeUrl)
@@ -182,12 +183,15 @@ class MainViewController: BaseViewController {
                     return ExchangeListResult()
                 }
             }
+            .asSingle()
             
             //>>>>>>> temp
             //.catchAndReturn(ExchangeListResult())
         
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
-        Observable.combineLatest(cityObs, exchangeObs)
+
+        //Observable.combineLatest(cityObs, exchangeObs)
+        Single.zip(cityObs, exchangeObs)
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] cities, exchangeListResult in
                 guard let self = self else {return}
@@ -218,7 +222,7 @@ class MainViewController: BaseViewController {
                 self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
                 self.cbBoxView.isHidden = false
                 //}
-            } onError: { [weak self] (error) in
+            } onFailure: { [weak self] (error) in
                 guard let self = self else {return}
                 //print("ERROR>> ", error, error.localizedDescription)
                 print(error)
