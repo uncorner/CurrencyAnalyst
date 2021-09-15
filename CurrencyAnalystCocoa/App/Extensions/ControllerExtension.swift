@@ -36,6 +36,7 @@ extension UIViewController {
             errorMessage = Constants.commonErrorMessage
         }
         
+        // TODO
         DispatchQueue.main.async {
             self.showErrorMessage(text: errorMessage)
         }
@@ -43,6 +44,7 @@ extension UIViewController {
     
     func processError(_ error: Error) {
         print(error)
+        // TODO
         DispatchQueue.main.async {
             self.showErrorMessage(text: Constants.commonErrorMessage)
         }
