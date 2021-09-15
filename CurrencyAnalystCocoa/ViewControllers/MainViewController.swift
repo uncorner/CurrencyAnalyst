@@ -140,7 +140,6 @@ class MainViewController: BaseViewController {
         performSegue(withIdentifier: showPickCitySegue, sender: self)
     }
     
-    //>>>>>>>>>>>>>>>>>>>
     private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
         print(#function)
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
@@ -155,13 +154,10 @@ class MainViewController: BaseViewController {
         var cityObs: Single<[City]?> = Single.just(nil)
         
         if cities.isEmpty {
-            // temp
-            //cityObs = RxAlamofire.request(.get, Constants.Urls.citiesUrl   + "1213dffd" )
             cityObs = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
                 .validate()
                 .responseData()
                 .map { response, data -> [City]? in
-                    //DispatchQueue.printCurrentQueue()
                     let html = String(decoding: data, as: UTF8.self)
                     return try dataSource.getCities(html: html)
                 }
@@ -172,10 +168,7 @@ class MainViewController: BaseViewController {
             .validate()
             .responseData()
             .map { response, data -> ExchangeListResult in
-                //DispatchQueue.printCurrentQueue()
                 let html = String(decoding: data, as: UTF8.self)
-                
-                //>>>>>  подавить тут ошибки
                 do {
                     return try dataSource.getExchanges(html: html)
                 } catch {
@@ -185,12 +178,7 @@ class MainViewController: BaseViewController {
             }
             .asSingle()
             
-            //>>>>>>> temp
-            //.catchAndReturn(ExchangeListResult())
-        
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
-
-        //Observable.combineLatest(cityObs, exchangeObs)
         Single.zip(cityObs, exchangeObs)
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] cities, exchangeListResult in
@@ -224,7 +212,6 @@ class MainViewController: BaseViewController {
                 //}
             } onFailure: { [weak self] (error) in
                 guard let self = self else {return}
-                //print("ERROR>> ", error, error.localizedDescription)
                 print(error)
                 self.navigationController?.navigationBar.isUserInteractionEnabled = true
                 self.stopAllActivityAnimation(self)
@@ -245,105 +232,6 @@ class MainViewController: BaseViewController {
         }
         return exchangeRate.rateStr
     }
-    
-    //>>>>>>>>>>>>>
-//    private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
-//        print(#function)
-//
-//        self.navigationController?.navigationBar.isUserInteractionEnabled = false
-//        if isShownMainActivity {
-//            activityStartAnimating()
-//        }
-//
-//        if cities.isEmpty {
-//            AF.request(Constants.Urls.citiesUrl)
-//                .validate().responseString(completionHandler: { [weak self] response in
-//                guard let strongSelf = self else {return}
-//
-//                switch response.result {
-//                case .success(let value):
-//                    let dataSource = strongSelf.getExchangeDataSource()
-//                    var result: [City]
-//                    do {
-//                        result = try dataSource.getCities(html: value)
-//                    }
-//                    catch {
-//                        strongSelf.processError(error)
-//                        return
-//                    }
-//
-//                    DispatchQueue.main.async {
-//                        strongSelf.cities = result
-//                        // load exchanges
-//                        strongSelf.loadExchanges()
-//                    }
-//                case .failure(let error):
-//                    print(error)
-//                    strongSelf.stopAllActivityAnimation(strongSelf)
-//                    strongSelf.processError(error)
-//                }
-//            })
-//        }
-//        else {
-//            loadExchanges()
-//        }
-//    }
-    
-    
-    
-//    private func loadExchanges() {
-//        print(#function)
-//        let url = getFullBankUrl(bankUrl: selectedCityId)
-//        print("loadExchanges url: \(url.absoluteString); cityId: \(selectedCityId)")
-//
-//        AF.request(url).validate().responseString(completionHandler: { [weak self] response in
-//            guard let strongSelf = self else {return}
-//
-//            defer {
-//                strongSelf.navigationController?.navigationBar.isUserInteractionEnabled = true
-//                strongSelf.stopAllActivityAnimation(strongSelf)
-//            }
-//
-//            switch response.result {
-//            case .success(let value):
-//                let result = strongSelf.getExchangesSafely(html: value)
-//
-//                DispatchQueue.main.async {
-//                    strongSelf.exchangeListResult = result
-//
-//                    strongSelf.isNeedUpdate = false
-//                    // update table
-//                    strongSelf.tableView.reloadData()
-//
-//                    if strongSelf.tableView.numberOfRows(inSection: 0) > 0 {
-//                        strongSelf.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-//                    }
-//
-//                    strongSelf.cbDollarRateLabel.text = result.cbInfo.usdExchangeRate.rateStr
-//                    strongSelf.cbEuroRateLabel.text = result.cbInfo.euroExchangeRate.rateStr
-//                    strongSelf.cbBoxView.isHidden = false
-//                }
-//            case .failure(let error):
-//                strongSelf.processError(error)
-//            }
-//        })
-//    }
-    
-    // >>>>>>>>>>>>>>> TODO
-//    private func getExchangeDataSafely(html: String) -> ExchangeListResult {
-//        let dataSource = getExchangeDataSource()
-//        var result = ExchangeListResult()
-//
-//        do {
-//            result = try dataSource.getExchanges(html: html)
-//        } catch {
-//            print("\(#function): \(error)")
-//            result.cbInfo.usdExchangeRate.rateStr = Constants.cbRateStub
-//            result.cbInfo.euroExchangeRate.rateStr = Constants.cbRateStub
-//        }
-//
-//        return result
-//    }
     
     private func stopAllActivityAnimation(_ controller: MainViewController) {
         DispatchQueue.main.async {
