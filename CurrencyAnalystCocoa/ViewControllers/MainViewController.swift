@@ -144,12 +144,7 @@ class MainViewController: BaseViewController {
         print(#function)
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
         print("loadExchanges url: \(exchangeUrl.absoluteString); cityId: \(selectedCityId)")
-        
-        self.navigationController?.navigationBar.isUserInteractionEnabled = false
-        if isShownMainActivity {
-            activityStartAnimating()
-        }
-        
+        startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
         let dataSource = getExchangeDataSource()
         var cityObs: Single<[City]?> = Single.just(nil)
         
@@ -183,38 +178,32 @@ class MainViewController: BaseViewController {
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] cities, exchangeListResult in
                 guard let self = self else {return}
-                
                 DispatchQueue.printCurrentQueue()
                 defer {
-                    self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                    self.stopAllActivityAnimation(self)
+                    self.stopAllActivityAnimatingAndUnlock()
                     print("update exchange list")
                 }
                 
-                //DispatchQueue.main.async {
-                //DispatchQueue.printCurrentQueue()
                 if let cities = cities {
                     print("update cities")
                     self.cities = cities
                 }
                 
                 self.exchangeListResult = exchangeListResult
-                self.isNeedUpdate = false
-                // update table
-                self.tableView.reloadData()
-                //if self.tableView.numberOfRows(inSection: 0) > 0 {
-                // self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                //}
-                
                 self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
                 self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
                 self.cbBoxView.isHidden = false
-                //}
+                // update table
+                self.isNeedUpdate = false
+                self.tableView.reloadData()
+                // scroll table on top
+                if self.tableView.numberOfRows(inSection: 0) > 0 {
+                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                }
             } onFailure: { [weak self] (error) in
                 guard let self = self else {return}
                 print(error)
-                self.navigationController?.navigationBar.isUserInteractionEnabled = true
-                self.stopAllActivityAnimation(self)
+                self.stopAllActivityAnimatingAndUnlock()
                 
                 if let afError = error as? AFError {
                     self.processError(afError)
@@ -233,11 +222,9 @@ class MainViewController: BaseViewController {
         return exchangeRate.rateStr
     }
     
-    private func stopAllActivityAnimation(_ controller: MainViewController) {
-        DispatchQueue.main.async {
-            controller.activityStopAnimating()
-            controller.tableView.refreshControl?.endRefreshing()
-        }
+    private func stopAllActivityAnimatingAndUnlock() {
+        tableView.refreshControl?.endRefreshing()
+        stopActivityAnimatingAndUnlock()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

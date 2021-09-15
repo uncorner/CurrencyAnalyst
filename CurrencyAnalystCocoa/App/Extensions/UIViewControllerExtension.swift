@@ -12,12 +12,24 @@ import Alamofire
 
 extension UIViewController {
     
+    func startActivityAnimatingAndLock(isActivityAnimating: Bool = true) {
+        navigationController?.navigationBar.isUserInteractionEnabled = false
+        if isActivityAnimating {
+            activityStartAnimating()
+        }
+    }
+    
+    func stopActivityAnimatingAndUnlock() {
+        navigationController?.navigationBar.isUserInteractionEnabled = true
+        activityStopAnimating()
+    }
+    
     func activityStopAnimating() {
-        self.view.activityStopAnimating()
+        view.activityStopAnimating()
     }
     
     func activityStartAnimating() {
-        self.view.activityStartAnimating(activityColor: Styles.CommonActivityAnimating.activityColor, backgroundColor: Styles.CommonActivityAnimating.backgroundColor)
+        view.activityStartAnimating(activityColor: Styles.CommonActivityAnimating.activityColor, backgroundColor: Styles.CommonActivityAnimating.backgroundColor)
     }
     
     func processError(_ error: AFError) {
@@ -101,3 +113,4 @@ extension UIViewController {
     }
     
 }
+ 
