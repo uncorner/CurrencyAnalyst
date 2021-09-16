@@ -143,38 +143,19 @@ class MainViewController: BaseViewController {
     private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
         print(#function)
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
-        print("loadExchanges url: \(exchangeUrl.absoluteString); cityId: \(selectedCityId)")
+        print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
         startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
+        
         let dataSource = getExchangeDataSource()
-        var cityObs: Single<[City]?> = Single.just(nil)
-        
+        let networkService = NetworkServiceFactory.create(dataSource: dataSource)
+        var citiesSeq: Single<[City]?> = Single.just(nil)
         if cities.isEmpty {
-            cityObs = RxAlamofire.request(.get, Constants.Urls.citiesUrl)
-                .validate()
-                .responseData()
-                .map { response, data -> [City]? in
-                    let html = String(decoding: data, as: UTF8.self)
-                    return try dataSource.getCities(html: html)
-                }
-                .asSingle()
+            citiesSeq = networkService.getCitiesSeq()
         }
+        let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
         
-        let exchangeObs = RxAlamofire.request(.get, exchangeUrl)
-            .validate()
-            .responseData()
-            .map { response, data -> ExchangeListResult in
-                let html = String(decoding: data, as: UTF8.self)
-                do {
-                    return try dataSource.getExchanges(html: html)
-                } catch {
-                    print("Error getExchanges(): \(error.localizedDescription)")
-                    return ExchangeListResult()
-                }
-            }
-            .asSingle()
-            
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
-        Single.zip(cityObs, exchangeObs)
+        Single.zip(citiesSeq, exchangesSeq)
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] cities, exchangeListResult in
                 guard let self = self else {return}
@@ -204,13 +185,7 @@ class MainViewController: BaseViewController {
                 guard let self = self else {return}
                 print(error)
                 self.stopAllActivityAnimatingAndUnlock()
-                
-                if let afError = error as? AFError {
-                    self.processError(afError)
-                }
-                else {
-                    self.processError(error)
-                }
+                self.processResponseError(error)
             }
             .disposed(by: disposeBag)
     }
