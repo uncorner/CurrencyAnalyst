@@ -17,4 +17,6 @@ protocol NetworkService {
     
     func getExchangesSeq(exchangeUrl: URL) -> Single<ExchangeListResult>
     
+    func getBankDetailSeq(url: URL) -> Single<BankDetailResult>
+    
 }

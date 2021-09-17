@@ -41,7 +41,6 @@ class MainViewController: BaseViewController {
     private var cities = [City]()
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
-    private let disposeBag = DisposeBag()
     
     private let imageLoader = CachedImageLoader()
     
@@ -156,20 +155,14 @@ class MainViewController: BaseViewController {
         
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
         Single.zip(citiesSeq, exchangesSeq)
-            .observe(on: MainScheduler.instance)
             .subscribe { [weak self] cities, exchangeListResult in
                 guard let self = self else {return}
                 DispatchQueue.printCurrentQueue()
-                defer {
-                    self.stopAllActivityAnimatingAndUnlock()
-                    print("update exchange list")
-                }
                 
                 if let cities = cities {
                     print("update cities")
                     self.cities = cities
                 }
-                
                 self.exchangeListResult = exchangeListResult
                 self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
                 self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
@@ -181,11 +174,12 @@ class MainViewController: BaseViewController {
                 if self.tableView.numberOfRows(inSection: 0) > 0 {
                     self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
                 }
+                print("update exchange list")
             } onFailure: { [weak self] (error) in
-                guard let self = self else {return}
                 print(error)
-                self.stopAllActivityAnimatingAndUnlock()
-                self.processResponseError(error)
+                self?.processResponseError(error)
+            } onDisposed: { [weak self] in
+                self?.stopAllActivityAnimatingAndUnlock()
             }
             .disposed(by: disposeBag)
     }

@@ -45,4 +45,15 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
+    func getBankDetailSeq(url: URL) -> Single<BankDetailResult> {
+        return RxAlamofire.request(.get, url)
+            .validate()
+            .responseData()
+            .map { response, data -> BankDetailResult in
+                let html = String(decoding: data, as: UTF8.self)
+                return try self.dataSource.getBankDetail(html: html, url: url)
+            }
+            .asSingle()
+    }
+    
 }

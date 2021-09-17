@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import RxSwift
 
 class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
     private var backgroundImageView: UIImageView!
+    let disposeBag = DisposeBag()
         
     func viewDidLoad(isRoot: Bool) {
         super.viewDidLoad()
