@@ -19,9 +19,7 @@ class ExchangeNetworkService: NetworkService {
     }
     
     func getCitiesSeq() -> Single<[City]?> {
-        return RxAlamofire.request(.get, Constants.Urls.citiesUrl)
-            .validate()
-            .responseData()
+        return doRequestData(url: Constants.Urls.citiesUrl.toSiteURL()!)
             .map { response, data -> [City]? in
                 let html = String(decoding: data, as: UTF8.self)
                 return try self.dataSource.getCities(html: html)
@@ -29,10 +27,8 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
-    func getExchangesSeq(exchangeUrl: URL) -> Single<ExchangeListResult> {
-        return RxAlamofire.request(.get, exchangeUrl)
-            .validate()
-            .responseData()
+    func getExchangesSeq(exchangeUrl url: URL) -> Single<ExchangeListResult> {
+        return doRequestData(url: url)
             .map { response, data -> ExchangeListResult in
                 let html = String(decoding: data, as: UTF8.self)
                 do {
@@ -46,14 +42,28 @@ class ExchangeNetworkService: NetworkService {
     }
     
     func getBankDetailSeq(url: URL) -> Single<BankDetailResult> {
-        return RxAlamofire.request(.get, url)
-            .validate()
-            .responseData()
+        return doRequestData(url: url)
             .map { response, data -> BankDetailResult in
                 let html = String(decoding: data, as: UTF8.self)
                 return try self.dataSource.getBankDetail(html: html, url: url)
             }
             .asSingle()
+    }
+    
+    func getOfficeGeoDatasSeq(url: URL) -> Single<[OfficeGeoData]> {
+        return doRequestData(url: url)
+            .map { response, data -> [OfficeGeoData] in
+                let html = String(decoding: data, as: UTF8.self)
+                return try self.dataSource.getOfficeGeoDatas(html: html)
+            }
+            .asSingle()
+    }
+    
+    // MARK: private methods
+    private func doRequestData(url: URL) -> Observable<(HTTPURLResponse, Data)> {
+        return RxAlamofire.request(.get, url)
+            .validate()
+            .responseData()
     }
     
 }

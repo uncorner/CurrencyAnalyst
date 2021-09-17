@@ -19,4 +19,6 @@ protocol NetworkService {
     
     func getBankDetailSeq(url: URL) -> Single<BankDetailResult>
     
+    func getOfficeGeoDatasSeq(url: URL) -> Single<[OfficeGeoData]>
+    
 }

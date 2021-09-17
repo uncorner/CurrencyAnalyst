@@ -179,6 +179,7 @@ class DetailBankViewController: BaseViewController {
     }
 
     private func loadBankDetailedData() {
+        print(#function)
         guard let url = exchange.bankUrl?.toSiteURL() else {return}
         startActivityAnimatingAndLock()
         let dataSource = ExchangeDataSourceFactory.create()
