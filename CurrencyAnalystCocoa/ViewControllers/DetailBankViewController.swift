@@ -182,11 +182,8 @@ class DetailBankViewController: BaseViewController {
         print(#function)
         guard let url = exchange.bankUrl?.toSiteURL() else {return}
         startActivityAnimatingAndLock()
-        let dataSource = ExchangeDataSourceFactory.create()
-        let networkService = NetworkServiceFactory.create(dataSource: dataSource)
-        let bankDetailSeq = networkService.getBankDetailSeq(url: url)
         
-        bankDetailSeq.subscribe { [weak self] result in
+        networkService.getBankDetailSeq(url: url).subscribe { [weak self] result in
             guard let self = self else {return}
             DispatchQueue.printCurrentQueue()
             

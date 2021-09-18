@@ -59,6 +59,14 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
+    func getImageSeq(url: URL) -> Single<UIImage?> {
+        return doRequestData(url: url)
+            .map { response, data in
+                UIImage(data: data)
+            }
+            .asSingle()
+    }
+    
     // MARK: private methods
     private func doRequestData(url: URL) -> Observable<(HTTPURLResponse, Data)> {
         return RxAlamofire.request(.get, url)

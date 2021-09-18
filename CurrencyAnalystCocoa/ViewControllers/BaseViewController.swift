@@ -10,14 +10,18 @@ import UIKit
 import RxSwift
 
 class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
+    static let imageCache: NSCache<NSString, UIImage> = NSCache()
     private var backgroundImageView: UIImageView!
     let disposeBag = DisposeBag()
-        
+    
+    lazy var dataSource = ExchangeDataSourceFactory.create()
+    lazy var networkService = NetworkServiceFactory.create(dataSource: dataSource)
+    lazy var imageLoader = CachedImageLoader(cache: Self.imageCache, networkService: networkService)
+    
     func viewDidLoad(isRoot: Bool) {
         super.viewDidLoad()
-
-        setupBackgroundImage()
         
+        setupBackgroundImage()
         if !isRoot {
             setupBackButton()
         }

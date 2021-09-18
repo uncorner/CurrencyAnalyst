@@ -42,8 +42,6 @@ class MainViewController: BaseViewController {
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
     
-    private let imageLoader = CachedImageLoader()
-    
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
 
@@ -145,8 +143,6 @@ class MainViewController: BaseViewController {
         print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
         startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
         
-        let dataSource = ExchangeDataSourceFactory.create()
-        let networkService = NetworkServiceFactory.create(dataSource: dataSource)
         var citiesSeq: Single<[City]?> = Single.just(nil)
         if cities.isEmpty {
             citiesSeq = networkService.getCitiesSeq()

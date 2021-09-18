@@ -61,11 +61,8 @@ class MapViewController: BaseViewController {
     private func loadOfficeGeoDatas() {
         print(#function)
         guard let url = mapUrl else {return}
-        let dataSource = ExchangeDataSourceFactory.create()
-        let networkService = NetworkServiceFactory.create(dataSource: dataSource)
         
-        let officeGeoDatasSeq = networkService.getOfficeGeoDatasSeq(url: url)
-        officeGeoDatasSeq.subscribe { [weak self] result in
+        networkService.getOfficeGeoDatasSeq(url: url).subscribe { [weak self] result in
             guard let self = self else {return}
             DispatchQueue.printCurrentQueue()
             self.officeGeoDatas = result
@@ -74,7 +71,6 @@ class MapViewController: BaseViewController {
         } onFailure: { [weak self] error in
             print(error)
             self?.processResponseError(error)
-            
         }
         .disposed(by: disposeBag)
     }

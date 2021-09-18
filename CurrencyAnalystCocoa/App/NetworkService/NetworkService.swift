@@ -21,4 +21,6 @@ protocol NetworkService {
     
     func getOfficeGeoDatasSeq(url: URL) -> Single<[OfficeGeoData]>
     
+    func getImageSeq(url: URL) -> Single<UIImage?>
+    
 }
