@@ -199,7 +199,6 @@ class DetailBankViewController: BaseViewController {
             }
             print("bank details updated")
         } onFailure: { [weak self] error in
-            print(error)
             self?.processResponseError(error)
         } onDisposed: { [weak self] in
             self?.stopActivityAnimatingAndUnlock()

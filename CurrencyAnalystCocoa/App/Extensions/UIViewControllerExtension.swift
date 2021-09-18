@@ -32,9 +32,7 @@ extension UIViewController {
         view.activityStartAnimating(activityColor: Styles.CommonActivityAnimating.activityColor, backgroundColor: Styles.CommonActivityAnimating.backgroundColor)
     }
     
-    //private
-    func processError(_ error: AFError) {
-        print(error)
+    private func processError(_ error: AFError) {
         var errorMessage: String = Constants.commonErrorMessage
         
         switch error.underlyingError {
@@ -49,22 +47,15 @@ extension UIViewController {
             errorMessage = Constants.commonErrorMessage
         }
         
-        // TODO
-        DispatchQueue.main.async {
-            self.showErrorMessage(text: errorMessage)
-        }
+        showErrorMessage(text: errorMessage)
     }
     
-    //private
-    func processError(_ error: Error) {
-        print(error)
-        // TODO
-        DispatchQueue.main.async {
-            self.showErrorMessage(text: Constants.commonErrorMessage)
-        }
+    private func processError(_ error: Error) {
+        showErrorMessage(text: Constants.commonErrorMessage)
     }
     
     func processResponseError(_ error: Error) {
+        print(error)
         if let afError = error as? AFError {
             processError(afError)
         }

@@ -172,7 +172,6 @@ class MainViewController: BaseViewController {
                 }
                 print("update exchange list")
             } onFailure: { [weak self] (error) in
-                print(error)
                 self?.processResponseError(error)
             } onDisposed: { [weak self] in
                 self?.stopAllActivityAnimatingAndUnlock()

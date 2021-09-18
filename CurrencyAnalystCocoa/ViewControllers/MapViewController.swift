@@ -69,7 +69,6 @@ class MapViewController: BaseViewController {
             self.setMarkers()
             print("office geo datas updated")
         } onFailure: { [weak self] error in
-            print(error)
             self?.processResponseError(error)
         }
         .disposed(by: disposeBag)
