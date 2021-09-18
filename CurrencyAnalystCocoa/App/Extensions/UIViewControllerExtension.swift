@@ -119,9 +119,5 @@ extension UIViewController {
         SwiftEntryKit.display(entry: customView, using: attributes)
     }
     
-    func getExchangeDataSource() -> ExchangeDataSource {
-        ExchangeDataSourceFactory.create()
-    }
-    
 }
  

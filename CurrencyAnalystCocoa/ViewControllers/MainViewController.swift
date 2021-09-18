@@ -145,7 +145,7 @@ class MainViewController: BaseViewController {
         print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
         startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
         
-        let dataSource = getExchangeDataSource()
+        let dataSource = ExchangeDataSourceFactory.create()
         let networkService = NetworkServiceFactory.create(dataSource: dataSource)
         var citiesSeq: Single<[City]?> = Single.just(nil)
         if cities.isEmpty {
@@ -310,6 +310,7 @@ extension MainViewController : UITableViewDataSource {
         return UITableViewCell()
     }
     
+    //>>>>>>>>>>>>>>>>
     private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
         if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
             cell.logoImageUrl = logoUrl
