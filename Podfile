@@ -7,7 +7,7 @@ target 'CurrencyAnalystCocoa' do
   use_frameworks!
 
   # Pods for CurrencyAnalystCocoa
-  pod 'SwiftSoup', '2.3.0'
+  pod 'SwiftSoup', '2.3.3'
   pod 'Alamofire', '5.4.3'
   pod 'RxSwift', '6.2.0'
   pod 'RxAlamofire', '6.1.1'
