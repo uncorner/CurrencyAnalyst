@@ -22,39 +22,56 @@
                         <rect key="frame" x="20" y="10" width="380" height="182"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I99-Vf-tEi" userLabel="HeaderView">
-                                <rect key="frame" x="0.0" y="0.0" width="380" height="40.5"/>
+                                <rect key="frame" x="0.0" y="0.0" width="380" height="56"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BankTitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EXG-zr-c90">
-                                        <rect key="frame" x="155" y="10" width="70" height="20.5"/>
+                                        <rect key="frame" x="155" y="18" width="70" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="T0n-vu-aKt" userLabel="LogoImageView">
-                                        <rect key="frame" x="15" y="6" width="28.5" height="28.5"/>
+                                        <rect key="frame" x="15" y="12" width="32" height="32"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="T0n-vu-aKt" secondAttribute="height" multiplier="1:1" id="TvK-Oo-xoD"/>
+                                            <constraint firstAttribute="height" constant="32" id="Zbk-yk-NDA"/>
+                                            <constraint firstAttribute="width" constant="32" id="ZkU-H5-85Q"/>
                                         </constraints>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="TvK-Oo-xoD"/>
+                                            </mask>
+                                        </variation>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                 <constraints>
+                                    <constraint firstItem="T0n-vu-aKt" firstAttribute="height" secondItem="EXG-zr-c90" secondAttribute="height" id="0NN-SY-8zx"/>
                                     <constraint firstAttribute="height" secondItem="EXG-zr-c90" secondAttribute="height" constant="20" id="2cV-ia-rvk"/>
                                     <constraint firstItem="EXG-zr-c90" firstAttribute="centerY" secondItem="I99-Vf-tEi" secondAttribute="centerY" id="4H4-xt-6V5"/>
                                     <constraint firstItem="EXG-zr-c90" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="I99-Vf-tEi" secondAttribute="leading" constant="8" id="6lZ-gH-zB6"/>
                                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="EXG-zr-c90" secondAttribute="trailing" constant="8" id="KzQ-pF-9CR"/>
                                     <constraint firstItem="EXG-zr-c90" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="T0n-vu-aKt" secondAttribute="trailing" constant="10" id="Ym3-1Z-cOz"/>
                                     <constraint firstItem="T0n-vu-aKt" firstAttribute="leading" secondItem="I99-Vf-tEi" secondAttribute="leading" constant="15" id="bGp-3h-3PZ"/>
+                                    <constraint firstAttribute="height" secondItem="T0n-vu-aKt" secondAttribute="height" priority="990" constant="20" id="jhk-I0-Lub"/>
                                     <constraint firstItem="EXG-zr-c90" firstAttribute="centerX" secondItem="I99-Vf-tEi" secondAttribute="centerX" id="trT-L7-1O3"/>
-                                    <constraint firstItem="T0n-vu-aKt" firstAttribute="height" secondItem="I99-Vf-tEi" secondAttribute="height" multiplier="0.7" id="vLz-Rl-339"/>
+                                    <constraint firstItem="T0n-vu-aKt" firstAttribute="height" secondItem="I99-Vf-tEi" secondAttribute="height" constant="-24" id="vLz-Rl-339"/>
                                     <constraint firstItem="T0n-vu-aKt" firstAttribute="centerY" secondItem="I99-Vf-tEi" secondAttribute="centerY" id="zdw-rI-qJl"/>
                                 </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="0NN-SY-8zx"/>
+                                        <exclude reference="jhk-I0-Lub"/>
+                                        <exclude reference="2cV-ia-rvk"/>
+                                        <exclude reference="6lZ-gH-zB6"/>
+                                    </mask>
+                                </variation>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6ht-kG-eyG" userLabel="MainView">
-                                <rect key="frame" x="0.0" y="40.5" width="380" height="141.5"/>
+                                <rect key="frame" x="0.0" y="56" width="380" height="126"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" placeholderIntrinsicWidth="260" placeholderIntrinsicHeight="85" translatesAutoresizingMaskIntoConstraints="NO" id="pIJ-qo-1he" customClass="ExchangeBoxView" customModule="CurrencyAnalystCocoa" customModuleProvider="target">
-                                        <rect key="frame" x="60" y="10" width="260" height="121.5"/>
+                                        <rect key="frame" x="60" y="10" width="260" height="106"/>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemYellowColor"/>
