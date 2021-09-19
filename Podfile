@@ -13,7 +13,7 @@ target 'CurrencyAnalystCocoa' do
   pod 'RxAlamofire', '6.1.1'
   pod 'GoogleMaps', '5.1.0'
   pod 'GooglePlaces', '5.0.0'
-  pod 'SwiftEntryKit', '1.2.3'
+  pod 'SwiftEntryKit', '1.2.7'
 
   target 'CurrencyAnalystCocoaTests' do
     inherit! :search_paths
