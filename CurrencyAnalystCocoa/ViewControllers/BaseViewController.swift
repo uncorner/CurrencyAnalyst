@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 
 class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
-    static let imageCache: NSCache<NSString, UIImage> = NSCache()
+    private static let imageCache: NSCache<NSString, UIImage> = NSCache()
     private var backgroundImageView: UIImageView!
     let disposeBag = DisposeBag()
     
@@ -37,6 +37,7 @@ class BaseViewController: UIViewController, UIGestureRecognizerDelegate {
         backgroundImageView.center = view.center
     }
     
+    // MARK: private methods
     private func setupBackgroundImage() {
         backgroundImageView = UIImageView(image: UIImage(named: "wallpaper_image"))
         view.addSubview(backgroundImageView)

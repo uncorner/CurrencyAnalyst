@@ -67,7 +67,7 @@ class MapViewController: BaseViewController {
             DispatchQueue.printCurrentQueue()
             self.officeGeoDatas = result
             self.setMarkers()
-            print("office geo datas updated")
+            print("office geo datas loaded")
         } onFailure: { [weak self] error in
             self?.processResponseError(error)
         }

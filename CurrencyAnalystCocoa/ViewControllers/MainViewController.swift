@@ -156,7 +156,7 @@ class MainViewController: BaseViewController {
                 DispatchQueue.printCurrentQueue()
                 
                 if let cities = cities {
-                    print("update cities")
+                    print("cities loaded")
                     self.cities = cities
                 }
                 self.exchangeListResult = exchangeListResult
@@ -170,7 +170,7 @@ class MainViewController: BaseViewController {
                 if self.tableView.numberOfRows(inSection: 0) > 0 {
                     self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
                 }
-                print("update exchange list")
+                print("exchange list loaded")
             } onFailure: { [weak self] (error) in
                 self?.processResponseError(error)
             } onDisposed: { [weak self] in
@@ -305,7 +305,6 @@ extension MainViewController : UITableViewDataSource {
         return UITableViewCell()
     }
     
-    //>>>>>>>>>>>>>>>>
     private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
         if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
             cell.logoImageUrl = logoUrl
@@ -319,7 +318,6 @@ extension MainViewController : UITableViewDataSource {
                         // error loading image
                         cell.logoImageView.isHidden = true
                         cell.logoImageView.image = nil
-                        
                         return
                     }
                     

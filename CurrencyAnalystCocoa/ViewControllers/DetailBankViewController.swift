@@ -197,7 +197,7 @@ class DetailBankViewController: BaseViewController {
                 // portrait mode
                 self.showOfficeTableBoxView()
             }
-            print("bank details updated")
+            print("bank details loaded")
         } onFailure: { [weak self] error in
             self?.processResponseError(error)
         } onDisposed: { [weak self] in
