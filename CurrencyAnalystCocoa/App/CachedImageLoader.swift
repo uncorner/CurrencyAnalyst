@@ -8,10 +8,17 @@
 
 import Foundation
 import UIKit
-import Alamofire
+import RxSwift
 
 class CachedImageLoader {
-    var cache: NSCache<NSString, UIImage> = NSCache()
+    let cache: NSCache<NSString, UIImage>
+    let networkService: NetworkService
+    let disposeBag = DisposeBag()
+    
+    init(cache: NSCache<NSString, UIImage>, networkService: NetworkService) {
+        self.cache = cache
+        self.networkService = networkService
+    }
     
     func getImage(imageUrl: URL, completion: @escaping (UIImage?, URL) -> ()) {
         let imagePath = imageUrl.absoluteString
@@ -20,23 +27,25 @@ class CachedImageLoader {
             // get from cache
             completion(image, imageUrl)
         } else {
-            AF.request(imageUrl).responseData { response in
-                if response.error == nil, let data = response.value {
-                    if let image = UIImage(data: data) {
-                        // set cache
-                        self.cache.setObject(image, forKey: imagePath as NSString)
-                        completion(image, imageUrl)
-                    }
-                    else {
-                        completion(nil, imageUrl)
-                    }
+            let errorCompletion = {
+                print("Error image loading \(imageUrl.absoluteURL)")
+                completion(nil, imageUrl)
+            }
+            
+            networkService.getImageSeq(url: imageUrl).subscribe { image in
+                if let image = image {
+                    // set cache
+                    self.cache.setObject(image, forKey: imagePath as NSString)
+                    completion(image, imageUrl)
                 }
                 else {
-                    completion(nil, imageUrl)
+                    errorCompletion()
                 }
+            } onFailure: { error in
+                errorCompletion()
             }
+            .disposed(by: disposeBag)
         }
-        
     }
     
 }

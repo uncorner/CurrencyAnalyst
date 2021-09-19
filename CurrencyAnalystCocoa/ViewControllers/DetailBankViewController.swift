@@ -179,48 +179,31 @@ class DetailBankViewController: BaseViewController {
     }
 
     private func loadBankDetailedData() {
+        print(#function)
         guard let url = exchange.bankUrl?.toSiteURL() else {return}
+        startActivityAnimatingAndLock()
         
-        self.navigationController?.navigationBar.isUserInteractionEnabled = false
-        activityStartAnimating()
-        
-        AF.request(url).validate().responseString(completionHandler: { [weak self] response in
-            guard let strongSelf = self else {return}
+        networkService.getBankDetailSeq(url: url).subscribe { [weak self] result in
+            guard let self = self else {return}
+            DispatchQueue.printCurrentQueue()
             
-            defer {
-                strongSelf.navigationController?.navigationBar.isUserInteractionEnabled = true
-                strongSelf.activityStopAnimating()
-            }
+            self.officeCellDatas = result.dataTables.map({
+                ExpandedCellData(isExpanded: false, officeDataTable: $0)
+            })
+            self.mapUrl = result.mapUrl
             
-            switch response.result {
-            case .success(let value):
-                let dataSource = strongSelf.getExchangeDataSource()
-                var result: BankDetailResult
-                do {
-                    result = try dataSource.getBankDetail(html: value, url: url)
-                }
-                catch {
-                    strongSelf.processError(error)
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    strongSelf.officeCellDatas = result.dataTables.map({
-                        ExpandedCellData(isExpanded: false, officeDataTable: $0)
-                    })
-                    strongSelf.mapUrl = result.mapUrl
-                    
-                    strongSelf.shouldBeDisplayedOfficeTableBoxView = true
-                    if UIWindow.isLandscape == false {
-                        // portrait mode
-                        strongSelf.showOfficeTableBoxView()
-                    }
-                }
-            case .failure(let error):
-                print(error)
-                strongSelf.processError(error)
+            self.shouldBeDisplayedOfficeTableBoxView = true
+            if UIWindow.isLandscape == false {
+                // portrait mode
+                self.showOfficeTableBoxView()
             }
-        })
+            print("bank details loaded")
+        } onFailure: { [weak self] error in
+            self?.processResponseError(error)
+        } onDisposed: { [weak self] in
+            self?.stopActivityAnimatingAndUnlock()
+        }
+        .disposed(by: disposeBag)
     }
     
     private func showOfficeTableBoxView() {

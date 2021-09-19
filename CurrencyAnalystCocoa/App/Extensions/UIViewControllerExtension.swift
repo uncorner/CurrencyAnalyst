@@ -12,16 +12,27 @@ import Alamofire
 
 extension UIViewController {
     
+    func startActivityAnimatingAndLock(isActivityAnimating: Bool = true) {
+        navigationController?.navigationBar.isUserInteractionEnabled = false
+        if isActivityAnimating {
+            activityStartAnimating()
+        }
+    }
+    
+    func stopActivityAnimatingAndUnlock() {
+        navigationController?.navigationBar.isUserInteractionEnabled = true
+        activityStopAnimating()
+    }
+    
     func activityStopAnimating() {
-        self.view.activityStopAnimating()
+        view.activityStopAnimating()
     }
     
     func activityStartAnimating() {
-        self.view.activityStartAnimating(activityColor: Styles.CommonActivityAnimating.activityColor, backgroundColor: Styles.CommonActivityAnimating.backgroundColor)
+        view.activityStartAnimating(activityColor: Styles.CommonActivityAnimating.activityColor, backgroundColor: Styles.CommonActivityAnimating.backgroundColor)
     }
     
-    func processError(_ error: AFError) {
-        print(error)
+    private func processError(_ error: AFError) {
         var errorMessage: String = Constants.commonErrorMessage
         
         switch error.underlyingError {
@@ -36,15 +47,20 @@ extension UIViewController {
             errorMessage = Constants.commonErrorMessage
         }
         
-        DispatchQueue.main.async {
-            self.showErrorMessage(text: errorMessage)
-        }
+        showErrorMessage(text: errorMessage)
     }
     
-    func processError(_ error: Error) {
+    private func processError(_ error: Error) {
+        showErrorMessage(text: Constants.commonErrorMessage)
+    }
+    
+    func processResponseError(_ error: Error) {
         print(error)
-        DispatchQueue.main.async {
-            self.showErrorMessage(text: Constants.commonErrorMessage)
+        if let afError = error as? AFError {
+            processError(afError)
+        }
+        else {
+            processError(error)
         }
     }
     
@@ -94,8 +110,5 @@ extension UIViewController {
         SwiftEntryKit.display(entry: customView, using: attributes)
     }
     
-    func getExchangeDataSource() -> ExchangeDataSource {
-        ExchangeDataSourceFactory.create()
-    }
-    
 }
+ 

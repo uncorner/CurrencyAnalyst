@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ExchangeDataSourceFactory {
+final class ExchangeDataSourceFactory {
     
     static func create() -> ExchangeDataSource {
         return SiteParser()

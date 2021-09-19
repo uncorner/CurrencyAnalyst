@@ -62,31 +62,16 @@ class MapViewController: BaseViewController {
         print(#function)
         guard let url = mapUrl else {return}
         
-        AF.request(url).validate()
-            .responseString(completionHandler: { [weak self] response in
-                guard let strongSelf = self else {return}
-                
-                switch response.result {
-                case .success(let value):
-                    let dataSource = strongSelf.getExchangeDataSource()
-                    var result: [OfficeGeoData]
-                    do {
-                        result = try dataSource.getOfficeGeoDatas(html: value)
-                    }
-                    catch {
-                        strongSelf.processError(error)
-                        return
-                    }
-                    
-                    DispatchQueue.main.async {
-                        strongSelf.officeGeoDatas = result
-                        strongSelf.setMarkers()
-                    }
-                case .failure(let error):
-                    print(error)
-                    strongSelf.processError(error)
-                }
-            })
+        networkService.getOfficeGeoDatasSeq(url: url).subscribe { [weak self] result in
+            guard let self = self else {return}
+            DispatchQueue.printCurrentQueue()
+            self.officeGeoDatas = result
+            self.setMarkers()
+            print("office geo datas loaded")
+        } onFailure: { [weak self] error in
+            self?.processResponseError(error)
+        }
+        .disposed(by: disposeBag)
     }
     
 }

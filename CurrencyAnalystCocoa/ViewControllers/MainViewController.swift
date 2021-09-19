@@ -9,6 +9,8 @@
 import UIKit
 import Alamofire
 import SwiftEntryKit
+import RxAlamofire
+import RxSwift
 
 class MainViewController: BaseViewController {
     
@@ -39,8 +41,6 @@ class MainViewController: BaseViewController {
     private var cities = [City]()
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
-    
-    private let imageLoader = CachedImageLoader()
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -139,104 +139,56 @@ class MainViewController: BaseViewController {
     
     private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
         print(#function)
+        guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
+        print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
+        startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
         
-        self.navigationController?.navigationBar.isUserInteractionEnabled = false
-        if isShownMainActivity {
-            activityStartAnimating()
-        }
-        
+        var citiesSeq: Single<[City]?> = Single.just(nil)
         if cities.isEmpty {
-            AF.request(Constants.Urls.citiesUrl)
-                .validate().responseString(completionHandler: { [weak self] response in
-                guard let strongSelf = self else {return}
+            citiesSeq = networkService.getCitiesSeq()
+        }
+        let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
+        
+        // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
+        Single.zip(citiesSeq, exchangesSeq)
+            .subscribe { [weak self] cities, exchangeListResult in
+                guard let self = self else {return}
+                DispatchQueue.printCurrentQueue()
                 
-                switch response.result {
-                case .success(let value):
-                    let dataSource = strongSelf.getExchangeDataSource()
-                    var result: [City]
-                    do {
-                        result = try dataSource.getCities(html: value)
-                    }
-                    catch {
-                        strongSelf.processError(error)
-                        return
-                    }
-                    
-                    DispatchQueue.main.async {
-                        strongSelf.cities = result
-                        // load exchanges
-                        strongSelf.loadExchanges()
-                    }
-                case .failure(let error):
-                    print(error)
-                    strongSelf.stopAllActivityAnimation(strongSelf)
-                    strongSelf.processError(error)
+                if let cities = cities {
+                    print("cities loaded")
+                    self.cities = cities
                 }
-            })
-        }
-        else {
-            loadExchanges()
-        }
-    }
-    
-    private func loadExchanges() {
-        print(#function)
-        guard let url = selectedCityId.toSiteURL() else {return}
-        print("loadExchanges url: \(url.absoluteString); cityId: \(selectedCityId)")
-        
-        AF.request(url).validate().responseString(completionHandler: { [weak self] response in
-            guard let strongSelf = self else {return}
-            
-            defer {
-                strongSelf.navigationController?.navigationBar.isUserInteractionEnabled = true
-                strongSelf.stopAllActivityAnimation(strongSelf)
-            }
-            
-            switch response.result {
-            case .success(let value):
-                let result = strongSelf.getExchangesSafely(html: value)
-                
-                DispatchQueue.main.async {
-                    strongSelf.exchangeListResult = result
-                    
-                    strongSelf.isNeedUpdate = false
-                    // update table
-                    strongSelf.tableView.reloadData()
-                    
-                    if strongSelf.tableView.numberOfRows(inSection: 0) > 0 {
-                        strongSelf.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                    }
-                    
-                    strongSelf.cbDollarRateLabel.text = result.cbInfo.usdExchangeRate.rateStr
-                    strongSelf.cbEuroRateLabel.text = result.cbInfo.euroExchangeRate.rateStr
-                    strongSelf.cbBoxView.isHidden = false
+                self.exchangeListResult = exchangeListResult
+                self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
+                self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
+                self.cbBoxView.isHidden = false
+                // update table
+                self.isNeedUpdate = false
+                self.tableView.reloadData()
+                // scroll table on top
+                if self.tableView.numberOfRows(inSection: 0) > 0 {
+                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
                 }
-            case .failure(let error):
-                strongSelf.processError(error)
+                print("exchange list loaded")
+            } onFailure: { [weak self] (error) in
+                self?.processResponseError(error)
+            } onDisposed: { [weak self] in
+                self?.stopAllActivityAnimatingAndUnlock()
             }
-        })
+            .disposed(by: disposeBag)
     }
     
-    private func getExchangesSafely(html: String) -> ExchangeListResult {
-        let dataSource = getExchangeDataSource()
-        var result = ExchangeListResult()
-        
-        do {
-            result = try dataSource.getExchanges(html: html)
-        } catch {
-            print("\(#function): \(error)")
-            result.cbInfo.usdExchangeRate.rateStr = Constants.cbRateStub
-            result.cbInfo.euroExchangeRate.rateStr = Constants.cbRateStub
+    private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
+        if exchangeRate.rate == 0 {
+            return Constants.cbRateStub
         }
-        
-        return result
+        return exchangeRate.rateStr
     }
     
-    private func stopAllActivityAnimation(_ controller: MainViewController) {
-        DispatchQueue.main.async {
-            controller.activityStopAnimating()
-            controller.tableView.refreshControl?.endRefreshing()
-        }
+    private func stopAllActivityAnimatingAndUnlock() {
+        tableView.refreshControl?.endRefreshing()
+        stopActivityAnimatingAndUnlock()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -366,7 +318,6 @@ extension MainViewController : UITableViewDataSource {
                         // error loading image
                         cell.logoImageView.isHidden = true
                         cell.logoImageView.image = nil
-                        
                         return
                     }
                     

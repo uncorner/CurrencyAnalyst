@@ -248,64 +248,66 @@ class SiteParser: ExchangeDataSource {
         // Получение курсов обмена для списка банков
         // .plain-content table.tb-k
         let table = try strongBody.select(".plain-content table.tb-k").first()
+        //guard let strongTable = table else {throw SiteParserError.parsingError("table")}
         
-        guard let strongTable = table else {throw SiteParserError.parsingError("table")}
-        let tableRows = try strongTable.select("tr.wigr1,tr.wi")
-        
-        for row in tableRows {
-            if !row.hasClass("bot") {
-                if row.hasClass("wi") {
-                    let text = try row.select("td.old").text()
-                    if text.starts(with: "Лучшие курсы") {
-                        continue
+        if let table = table {
+            let tableRows = try table.select("tr.wigr1,tr.wi")
+            
+            for row in tableRows {
+                if !row.hasClass("bot") {
+                    if row.hasClass("wi") {
+                        let text = try row.select("td.old").text()
+                        if text.starts(with: "Лучшие курсы") {
+                            continue
+                        }
                     }
-                }
-                
-                var exchange = CurrencyExchange()
-                // logo url
-                if let imgTag = try row.select("td.icon img").first() {
-                    if let logoUrl = try? imgTag.attr("src"), !logoUrl.isEmptyOrWhitespace() {
-                        exchange.bankLogoUrl = logoUrl
-                    }
-                }
-                
-                let tdBank = try row.select("td.tbn").first()
-                if let theTdBank = tdBank {
-                    let bankRef = try theTdBank.select("a").first()
                     
+                    var exchange = CurrencyExchange()
+                    // logo url
+                    if let imgTag = try row.select("td.icon img").first() {
+                        if let logoUrl = try? imgTag.attr("src"), !logoUrl.isEmptyOrWhitespace() {
+                            exchange.bankLogoUrl = logoUrl
+                        }
+                    }
+                    
+                    let tdBank = try row.select("td.tbn").first()
+                    if let theTdBank = tdBank {
+                        let bankRef = try theTdBank.select("a").first()
+                        
+                        if let theBankRef = bankRef {
+                            exchange.bankName = try theBankRef.text()
+                            exchange.bankUrl = try theBankRef.attr("href")
+                        }
+                        else {
+                            exchange.bankName = try theTdBank.text()
+                        }
+                    }
+                    
+                    let bankRef = try row.select("td.tbn a").first()
                     if let theBankRef = bankRef {
                         exchange.bankName = try theBankRef.text()
                         exchange.bankUrl = try theBankRef.attr("href")
                     }
-                    else {
-                        exchange.bankName = try theTdBank.text()
+                    
+                    let timeData = try row.select("td.upd-t").first()
+                    if let theTimeData = timeData {
+                        exchange.updatedTime = theTimeData.ownText()
                     }
+                    
+                    let tdatas = try row.select("td")
+                    let formatter = getDecimalFormatter()
+                    
+                    guard let tdata1 = tdatas[safe:2] else {throw SiteParserError.parsingError()}
+                    guard let tdata2 = tdatas[safe:3] else {throw SiteParserError.parsingError()}
+                    guard let tdata3 = tdatas[safe:4] else {throw SiteParserError.parsingError()}
+                    guard let tdata4 = tdatas[safe:5] else {throw SiteParserError.parsingError()}
+                    
+                    exchange.usdExchange = try getCurrencyExchangeUnit(currBuyElement: tdata1, currSellElement: tdata2, formatter: formatter)
+                    
+                    exchange.euroExchange = try getCurrencyExchangeUnit(currBuyElement: tdata3, currSellElement: tdata4, formatter: formatter)
+                    
+                    exchanges.append(exchange)
                 }
-                
-                let bankRef = try row.select("td.tbn a").first()
-                if let theBankRef = bankRef {
-                    exchange.bankName = try theBankRef.text()
-                    exchange.bankUrl = try theBankRef.attr("href")
-                }
-                
-                let timeData = try row.select("td.upd-t").first()
-                if let theTimeData = timeData {
-                    exchange.updatedTime = theTimeData.ownText()
-                }
-                
-                let tdatas = try row.select("td")
-                let formatter = getDecimalFormatter()
-                
-                guard let tdata1 = tdatas[safe:2] else {throw SiteParserError.parsingError()}
-                guard let tdata2 = tdatas[safe:3] else {throw SiteParserError.parsingError()}
-                guard let tdata3 = tdatas[safe:4] else {throw SiteParserError.parsingError()}
-                guard let tdata4 = tdatas[safe:5] else {throw SiteParserError.parsingError()}
-                
-                exchange.usdExchange = try getCurrencyExchangeUnit(currBuyElement: tdata1, currSellElement: tdata2, formatter: formatter)
-                
-                exchange.euroExchange = try getCurrencyExchangeUnit(currBuyElement: tdata3, currSellElement: tdata4, formatter: formatter)
-                
-                exchanges.append(exchange)
             }
         }
         

@@ -7,11 +7,13 @@ target 'CurrencyAnalystCocoa' do
   use_frameworks!
 
   # Pods for CurrencyAnalystCocoa
-  pod 'SwiftSoup', '2.3.0'
-  pod 'Alamofire', '5.2'
+  pod 'SwiftSoup', '2.3.3'
+  pod 'Alamofire', '5.4.3'
+  pod 'RxSwift', '6.2.0'
+  pod 'RxAlamofire', '6.1.1'
   pod 'GoogleMaps', '5.1.0'
   pod 'GooglePlaces', '5.0.0'
-  pod 'SwiftEntryKit', '1.2.3'
+  pod 'SwiftEntryKit', '1.2.7'
 
   target 'CurrencyAnalystCocoaTests' do
     inherit! :search_paths
