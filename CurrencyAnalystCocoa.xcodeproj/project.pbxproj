@@ -169,6 +169,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		921DFA1326F9EDF500769C7D /* ViewLayer */ = {
+			isa = PBXGroup;
+			children = (
+				AAFDC80A24D48B4E00606A09 /* ExpandedCellData.swift */,
+			);
+			path = ViewLayer;
+			sourceTree = "<group>";
+		};
 		928DEED426F5FD5300CA9D45 /* ExchangeDataSource */ = {
 			isa = PBXGroup;
 			children = (
@@ -269,7 +277,6 @@
 		AA474DCF24B0BEB600F0B120 /* CurrencyAnalystCocoa */ = {
 			isa = PBXGroup;
 			children = (
-				AAFDC80924D48B3000606A09 /* ViewModels */,
 				AA92808F24CB2A0E00B7A1F1 /* App */,
 				AA92808E24CB29FC00B7A1F1 /* Models */,
 				AA92808D24CB28CC00B7A1F1 /* ViewControllers */,
@@ -321,6 +328,7 @@
 		AA92808E24CB29FC00B7A1F1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				921DFA1326F9EDF500769C7D /* ViewLayer */,
 				AA92809C24CB339E00B7A1F1 /* BankDetailResult.swift */,
 				AA92809924CB339E00B7A1F1 /* City.swift */,
 				AA92809824CB339E00B7A1F1 /* CurrencyExchange.swift */,
@@ -355,14 +363,6 @@
 				928DEED526F5FDBF00CA9D45 /* ExchangeDataSource */,
 			);
 			path = App;
-			sourceTree = "<group>";
-		};
-		AAFDC80924D48B3000606A09 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				AAFDC80A24D48B4E00606A09 /* ExpandedCellData.swift */,
-			);
-			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		B04B363B8286F77F4AB259F3 /* Frameworks */ = {
