@@ -11,6 +11,8 @@ import Alamofire
 import SwiftEntryKit
 import RxAlamofire
 import RxSwift
+import RxCocoa
+
 
 class MainViewController: BaseViewController {
     
@@ -42,6 +44,11 @@ class MainViewController: BaseViewController {
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
     
+    
+    
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
 
@@ -50,7 +57,77 @@ class MainViewController: BaseViewController {
         setupSettingsButton()
         setupNavigationBar()
         loadAppSettings()
+        
+        setupBinding()
     }
+    
+    //>>>>>>>
+    private let viewModel = MyViewModel()
+    
+//    private func setupTableViewBinding() {
+//
+//            viewModel.dataSource
+//                .bind(to: tableView.rx.items(cellIdentifier: cellIdentifier,
+//                                              cellType: UITableViewCell.self)) {  row, element, cell in
+//                    cell.textLabel?.text = "\(element) \(row)"
+//                }
+//                .addDisposableTo(disposeBag)
+//        }
+    
+    private func setupBinding() {
+//        let cities = Observable.of(["Lisbon", "Copenhagen", "London",
+//        "Madrid", "Vienna"])
+//          cities
+//            .bind(to: tableView.rx.items) {
+//              (tableView: UITableView, index: Int, element: String) in
+//              let cell = UITableViewCell(style: .default,
+//        reuseIdentifier: "cell")
+//              cell.textLabel?.text = element
+//        return cell }
+//            .disposed(by: disposeBag)
+//        }
+        
+//        viewModel.dataSource.bind(to: self.tableView.rx.items(cellIdentifier: ExchangeTableViewCell.cellId, cellType: ExchangeTableViewCell.Type)) {row, element, cell in
+//
+//            //let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
+//
+//
+//            return cell
+//
+//        }
+        
+        //Observable.of(["Lisbon", "Copenhagen", "London", "Madrid", "Vienna"])
+        
+        viewModel.dataSource.bind(to: self.tableView.rx.items) {(tableView: UITableView, index: Int, element: String) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: IndexPath(index: index)) as! ExchangeTableViewCell
+            cell.bankTitleLabel.text = element
+            return cell
+        }
+        .disposed(by: disposeBag)
+        
+        //let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
+        
+//        tableView.rx.items(viewModel.exchangeList).(T##source: (UITableView, Int, _) -> UITableViewCell##(UITableView, Int, _) -> UITableViewCell)
+        
+//        viewModel.exchangeList.bind(to: tableView.rx.items) {
+//            (tableView: UITableView, index: Int, element: String) in
+//
+//
+//        }
+        
+//        var s: Observable<[String]> = Observable.just(["sddd"])
+//        s.bind(to: tableView.rx.items(cellIdentifier: String, cellType: Cell.Type)){
+//
+//        }
+        
+        //tableView.rx.bind
+        
+        
+        
+        
+    }
+    
+    
     
     private func loadAppSettings() {
         let userDefaults = UserDefaults.standard
@@ -74,9 +151,9 @@ class MainViewController: BaseViewController {
         tableView.register(InfoExchangeTableViewCell.nib(), forCellReuseIdentifier: InfoExchangeTableViewCell.cellId)
         tableView.register(HeadExchangeTableViewCell.nib(), forCellReuseIdentifier: HeadExchangeTableViewCell.cellId)
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        
+//        tableView.delegate = self
+//        tableView.dataSource = self
+//
         let refreshControl = UIRefreshControl()
         refreshControl.tintColor = Styles.CommonActivityAnimating.activityColor
         refreshControl.addTarget(self, action: #selector(refreshTableView(sender:)), for: .valueChanged)
@@ -171,6 +248,16 @@ class MainViewController: BaseViewController {
                     self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
                 }
                 print("exchange list loaded")
+                
+                
+                //>>>>>>>>>>>>>>
+                let arr = exchangeListResult.exchanges.map { exchange in
+                    exchange.bankName
+                }
+                
+                self.viewModel.dataSource.onNext(arr)
+                
+                
             } onFailure: { [weak self] (error) in
                 self?.processResponseError(error)
             } onDisposed: { [weak self] in
@@ -224,17 +311,18 @@ class MainViewController: BaseViewController {
 }
 
 // MARK: UITableViewDelegate
-extension MainViewController : UITableViewDelegate {
-    
-    // selected row
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 && exchangeListResult.exchanges.count > 0 {
-            performSegue(withIdentifier: showBankDetailSegue, sender: self)
-        }
-    }
-    
-}
+//extension MainViewController : UITableViewDelegate {
+//
+//    // selected row
+//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+//        if indexPath.section == 1 && exchangeListResult.exchanges.count > 0 {
+//            performSegue(withIdentifier: showBankDetailSegue, sender: self)
+//        }
+//    }
+//
+//}
 
+/*
 // MARK: UITableViewDataSource
 extension MainViewController : UITableViewDataSource {
     
@@ -334,3 +422,4 @@ extension MainViewController : UITableViewDataSource {
     }
     
 }
+ */
