@@ -59,9 +59,9 @@ class MainViewController: BaseViewController {
     
     //>>>>>>>
     private let viewModel = MyViewModel()
-    private lazy var tableViewSectionsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sections)
+    private lazy var tableViewSectionsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
     
-    private let sections = [
+    private let sectionsEmptyData = [
         ExchangeTableViewSection(items: []),
         ExchangeTableViewSection(items: [])
     ]
@@ -91,6 +91,21 @@ class MainViewController: BaseViewController {
             })
         
         tableViewSectionsSeq.bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        tableView.rx.modelSelected(ExchangeTableViewItem.self)
+            .asDriver()
+            .drive { [weak self] item in
+                guard let self = self else {return}
+                switch item{
+                case .HeadItem(_):
+                    // do nothing
+                    break
+                case .ExchangeItem(_):
+                    self.performSegue(withIdentifier: self.showBankDetailSegue, sender: self)
+                    break
+                }
+            }
             .disposed(by: disposeBag)
         
     }
@@ -254,11 +269,11 @@ class MainViewController: BaseViewController {
                 let cityName = city?.name ?? ""
                 let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
                 
-                let sections = [
+                let sectionsWithData = [
                     ExchangeTableViewSection(items: [headItem]),
                     ExchangeTableViewSection(items: items)]
                 
-                self.tableViewSectionsSeq.onNext(sections)
+                self.tableViewSectionsSeq.onNext(sectionsWithData)
                 
                 print("exchange list loaded")
                 
