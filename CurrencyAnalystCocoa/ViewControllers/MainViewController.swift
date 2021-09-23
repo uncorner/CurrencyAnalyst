@@ -59,7 +59,7 @@ class MainViewController: BaseViewController {
     
     //>>>>>>>
     private let viewModel = MyViewModel()
-    private lazy var seq: BehaviorSubject<[SectionOfCustomData]> = BehaviorSubject(value: sections)
+    private lazy var tableViewSectionsSeq: BehaviorSubject<[SectionOfCustomData]> = BehaviorSubject(value: sections)
     
     private let sections = [
         SectionOfCustomData(header: "First section", items: []),
@@ -69,25 +69,60 @@ class MainViewController: BaseViewController {
     private func setupBinding() {
         
         let dataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>(
-            configureCell: { dataSource, tableView, indexPath, item in
-                //let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-                //cell.textLabel?.text = "Item \(item.Name) - \(item.aCGPoint.x):\(item.aCGPoint.y)"
-                
-                let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
-                cell.bankTitleLabel.text = "Item \(item.name)"
-                
-                return cell
+            configureCell: { [weak self] dataSource, tableView, indexPath, item in
+                switch item {
+                case .ExchangeItem(let exchange):
+                    let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
+                    cell.backgroundColor = UIColor.clear
+                    let backgroundView = UIView()
+                    backgroundView.backgroundColor = Styles.MainViewController.TableView.exchangeTableViewCellSelectionColor
+                    cell.selectedBackgroundView = backgroundView
+                    
+                    //let exchange = exchangeListResult.exchanges[indexPath.row]
+                    cell.exchangeBoxView.setData(exchange)
+                    cell.bankTitleLabel.text = exchange.bankName
+                    cell.exchangeBoxView.hideRubleSign()
+                    self?.setBankLogoImage(exchange: exchange, cell: cell)
+                    return cell
+                    
+                case .HeadItem(let cityName):
+                    let cell = tableView.dequeueReusableCell(withIdentifier: HeadExchangeTableViewCell.cellId, for: indexPath) as! HeadExchangeTableViewCell
+                    cell.locationLabel.text = cityName
+                    return cell
+                }
             })
         
-        
-        
-        
-        
-        //Observable.just(sections)
-        seq
-            .bind(to: tableView.rx.items(dataSource: dataSource))
+        tableViewSectionsSeq.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
+    }
+    
+    private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
+        if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
+            cell.logoImageUrl = logoUrl
+            
+            imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
+                DispatchQueue.main.async {
+                    guard let cellLogoUrl = cell.logoImageUrl else {return}
+                    if cellLogoUrl != imageUrl {return}
+                    
+                    guard let image = image else {
+                        // error loading image
+                        cell.logoImageView.isHidden = true
+                        cell.logoImageView.image = nil
+                        return
+                    }
+                    
+                    //cell.logoImageView.image = nil
+                    cell.logoImageView.isHidden = false
+                    cell.logoImageView.image = image
+                }
+            })
+        }
+        else {
+            cell.logoImageView.isHidden = true
+            cell.logoImageView.image = nil
+        }
     }
     
     
@@ -220,14 +255,21 @@ class MainViewController: BaseViewController {
 //                self.viewModel.dataSource.onNext(arr)
                 
                 let items = exchangeListResult.exchanges.map { exchange in
-                    CustomData(name: exchange.bankName)
+                    //CustomData(name: exchange.bankName)
+                    CustomData.ExchangeItem(exchange: exchange)
                 }
                 
+                let city = self.cities.first(where: {
+                    $0.id == self.selectedCityId
+                })
+                let cityName = city?.name ?? ""
+                let headItem = CustomData.HeadItem(cityName: cityName)
+                
                 let sections = [
-                    SectionOfCustomData(header: "First section", items: [CustomData(name: "s1 zero"), CustomData(name: "s1 one")]),
+                    SectionOfCustomData(header: "First section", items: [headItem]),
                     SectionOfCustomData(header: "Second section", items: items)]
                 
-                self.seq.onNext(sections)
+                self.tableViewSectionsSeq.onNext(sections)
                 
                 
             } onFailure: { [weak self] (error) in
