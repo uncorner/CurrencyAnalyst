@@ -12,6 +12,7 @@ target 'CurrencyAnalystCocoa' do
   pod 'RxSwift', '6.2.0'
   pod 'RxRelay', '6.2.0'
   pod 'RxCocoa', '6.2.0'
+  pod 'RxDataSources', '5.0.0'
   pod 'RxAlamofire', '6.1.1'
   pod 'GoogleMaps', '5.1.0'
   pod 'GooglePlaces', '5.0.0'

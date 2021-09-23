@@ -12,6 +12,7 @@ import SwiftEntryKit
 import RxAlamofire
 import RxSwift
 import RxCocoa
+import RxDataSources
 
 
 class MainViewController: BaseViewController {
@@ -44,11 +45,6 @@ class MainViewController: BaseViewController {
     private var selectedCityId = Constants.defaultCityId
     private var isNeedUpdate = true
     
-    
-    
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
 
@@ -63,70 +59,36 @@ class MainViewController: BaseViewController {
     
     //>>>>>>>
     private let viewModel = MyViewModel()
+    private lazy var seq: BehaviorSubject<[SectionOfCustomData]> = BehaviorSubject(value: sections)
     
-//    private func setupTableViewBinding() {
-//
-//            viewModel.dataSource
-//                .bind(to: tableView.rx.items(cellIdentifier: cellIdentifier,
-//                                              cellType: UITableViewCell.self)) {  row, element, cell in
-//                    cell.textLabel?.text = "\(element) \(row)"
-//                }
-//                .addDisposableTo(disposeBag)
-//        }
+    private let sections = [
+        SectionOfCustomData(header: "First section", items: []),
+        SectionOfCustomData(header: "Second section", items: [])
+    ]
     
     private func setupBinding() {
-//        let cities = Observable.of(["Lisbon", "Copenhagen", "London",
-//        "Madrid", "Vienna"])
-//          cities
-//            .bind(to: tableView.rx.items) {
-//              (tableView: UITableView, index: Int, element: String) in
-//              let cell = UITableViewCell(style: .default,
-//        reuseIdentifier: "cell")
-//              cell.textLabel?.text = element
-//        return cell }
-//            .disposed(by: disposeBag)
-//        }
         
-//        viewModel.dataSource.bind(to: self.tableView.rx.items(cellIdentifier: ExchangeTableViewCell.cellId, cellType: ExchangeTableViewCell.Type)) {row, element, cell in
-//
-//            //let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
-//
-//
-//            return cell
-//
-//        }
-        
-        //Observable.of(["Lisbon", "Copenhagen", "London", "Madrid", "Vienna"])
-        
-        viewModel.dataSource.bind(to: self.tableView.rx.items) {(tableView: UITableView, index: Int, element: String) in
-            let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: IndexPath(index: index)) as! ExchangeTableViewCell
-            cell.bankTitleLabel.text = element
-            return cell
-        }
-        .disposed(by: disposeBag)
-        
-        //let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
-        
-//        tableView.rx.items(viewModel.exchangeList).(T##source: (UITableView, Int, _) -> UITableViewCell##(UITableView, Int, _) -> UITableViewCell)
-        
-//        viewModel.exchangeList.bind(to: tableView.rx.items) {
-//            (tableView: UITableView, index: Int, element: String) in
-//
-//
-//        }
-        
-//        var s: Observable<[String]> = Observable.just(["sddd"])
-//        s.bind(to: tableView.rx.items(cellIdentifier: String, cellType: Cell.Type)){
-//
-//        }
-        
-        //tableView.rx.bind
+        let dataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>(
+            configureCell: { dataSource, tableView, indexPath, item in
+                //let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+                //cell.textLabel?.text = "Item \(item.Name) - \(item.aCGPoint.x):\(item.aCGPoint.y)"
+                
+                let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
+                cell.bankTitleLabel.text = "Item \(item.name)"
+                
+                return cell
+            })
         
         
         
+        
+        
+        //Observable.just(sections)
+        seq
+            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
         
     }
-    
     
     
     private func loadAppSettings() {
@@ -251,11 +213,21 @@ class MainViewController: BaseViewController {
                 
                 
                 //>>>>>>>>>>>>>>
-                let arr = exchangeListResult.exchanges.map { exchange in
-                    exchange.bankName
+//                let arr = exchangeListResult.exchanges.map { exchange in
+//                    exchange.bankName
+//                }
+//
+//                self.viewModel.dataSource.onNext(arr)
+                
+                let items = exchangeListResult.exchanges.map { exchange in
+                    CustomData(name: exchange.bankName)
                 }
                 
-                self.viewModel.dataSource.onNext(arr)
+                let sections = [
+                    SectionOfCustomData(header: "First section", items: [CustomData(name: "s1 zero"), CustomData(name: "s1 one")]),
+                    SectionOfCustomData(header: "Second section", items: items)]
+                
+                self.seq.onNext(sections)
                 
                 
             } onFailure: { [weak self] (error) in
@@ -265,6 +237,7 @@ class MainViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
     }
+    
     
     private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
         if exchangeRate.rate == 0 {
@@ -322,104 +295,104 @@ class MainViewController: BaseViewController {
 //
 //}
 
-/*
+
 // MARK: UITableViewDataSource
-extension MainViewController : UITableViewDataSource {
+//extension MainViewController : UITableViewDataSource {
+//
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        2
+//    }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        2
-    }
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if section == 1 {
+//            let exchangeCount = exchangeListResult.exchanges.count
+//            if exchangeCount > 0 {
+//                return exchangeCount
+//            }
+//
+//            if isNeedUpdate {
+//                return 0
+//            }
+//            else {
+//                // exchanges is empty
+//                return 1
+//            }
+//        }
+//        else if section == 0 {
+//            return 1
+//        }
+//
+//        return 0
+//    }
+//
+//    // show cell
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//
+//        if indexPath.section == 1 {
+//
+//            if exchangeListResult.exchanges.count > 0 {
+//                let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
+//                cell.backgroundColor = UIColor.clear
+//                let backgroundView = UIView()
+//                backgroundView.backgroundColor = Styles.MainViewController.TableView.exchangeTableViewCellSelectionColor
+//                cell.selectedBackgroundView = backgroundView
+//
+//                let exchange = exchangeListResult.exchanges[indexPath.row]
+//                cell.exchangeBoxView.setData(exchange)
+//                cell.bankTitleLabel.text = exchange.bankName
+//                cell.exchangeBoxView.hideRubleSign()
+//                setBankLogoImage(exchange: exchange, cell: cell)
+//                return cell
+//            }
+//
+//            // exchanges is empty
+//            let cell = tableView.dequeueReusableCell(withIdentifier: InfoExchangeTableViewCell.cellId, for: indexPath) as! InfoExchangeTableViewCell
+//            cell.infoLabel.text = "Не найдено предложений по обмену валюты"
+//
+//            return cell
+//        }
+//        else if indexPath.section == 0 {
+//            let cell = tableView.dequeueReusableCell(withIdentifier: HeadExchangeTableViewCell.cellId, for: indexPath) as! HeadExchangeTableViewCell
+//
+//            let city = cities.first(where: {
+//                $0.id == selectedCityId
+//            })
+//
+//            let cityName = city?.name ?? ""
+//            cell.locationLabel.text = cityName
+//            return cell
+//        }
+//
+//        return UITableViewCell()
+//    }
+//
+//    private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
+//        if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
+//            cell.logoImageUrl = logoUrl
+//
+//            imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
+//                DispatchQueue.main.async {
+//                    guard let cellLogoUrl = cell.logoImageUrl else {return}
+//                    if cellLogoUrl != imageUrl {return}
+//
+//                    guard let image = image else {
+//                        // error loading image
+//                        cell.logoImageView.isHidden = true
+//                        cell.logoImageView.image = nil
+//                        return
+//                    }
+//
+//                    //cell.logoImageView.image = nil
+//                    cell.logoImageView.isHidden = false
+//                    cell.logoImageView.image = image
+//                }
+//            })
+//        }
+//        else {
+//            cell.logoImageView.isHidden = true
+//            cell.logoImageView.image = nil
+//        }
+//    }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 1 {
-            let exchangeCount = exchangeListResult.exchanges.count
-            if exchangeCount > 0 {
-                return exchangeCount
-            }
-            
-            if isNeedUpdate {
-                return 0
-            }
-            else {
-                // exchanges is empty
-                return 1
-            }
-        }
-        else if section == 0 {
-            return 1
-        }
-        
-        return 0
-    }
-    
-    // show cell
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        if indexPath.section == 1 {
-            
-            if exchangeListResult.exchanges.count > 0 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
-                cell.backgroundColor = UIColor.clear
-                let backgroundView = UIView()
-                backgroundView.backgroundColor = Styles.MainViewController.TableView.exchangeTableViewCellSelectionColor
-                cell.selectedBackgroundView = backgroundView
-                
-                let exchange = exchangeListResult.exchanges[indexPath.row]
-                cell.exchangeBoxView.setData(exchange)
-                cell.bankTitleLabel.text = exchange.bankName
-                cell.exchangeBoxView.hideRubleSign()
-                setBankLogoImage(exchange: exchange, cell: cell)
-                return cell
-            }
-            
-            // exchanges is empty
-            let cell = tableView.dequeueReusableCell(withIdentifier: InfoExchangeTableViewCell.cellId, for: indexPath) as! InfoExchangeTableViewCell
-            cell.infoLabel.text = "Не найдено предложений по обмену валюты"
-            
-            return cell
-        }
-        else if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: HeadExchangeTableViewCell.cellId, for: indexPath) as! HeadExchangeTableViewCell
-            
-            let city = cities.first(where: {
-                $0.id == selectedCityId
-            })
-            
-            let cityName = city?.name ?? ""
-            cell.locationLabel.text = cityName
-            return cell
-        }
-        
-        return UITableViewCell()
-    }
-    
-    private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
-        if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
-            cell.logoImageUrl = logoUrl
-            
-            imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
-                DispatchQueue.main.async {
-                    guard let cellLogoUrl = cell.logoImageUrl else {return}
-                    if cellLogoUrl != imageUrl {return}
-                    
-                    guard let image = image else {
-                        // error loading image
-                        cell.logoImageView.isHidden = true
-                        cell.logoImageView.image = nil
-                        return
-                    }
-                    
-                    //cell.logoImageView.image = nil
-                    cell.logoImageView.isHidden = false
-                    cell.logoImageView.image = image
-                }
-            })
-        }
-        else {
-            cell.logoImageView.isHidden = true
-            cell.logoImageView.image = nil
-        }
-    }
-    
-}
- */
+//}
+

@@ -8,6 +8,26 @@
 
 import Foundation
 import RxSwift
+import RxDataSources
+
+
+struct CustomData {
+  var name: String
+}
+
+struct SectionOfCustomData {
+  var header: String
+  var items: [Item]
+}
+
+extension SectionOfCustomData: SectionModelType {
+  typealias Item = CustomData
+
+   init(original: SectionOfCustomData, items: [Item]) {
+    self = original
+    self.items = items
+  }
+}
 
 
 final class MyViewModel {
