@@ -8,52 +8,6 @@
 
 import Foundation
 import RxSwift
-import RxDataSources
-
-
-//struct CustomData {
-//  var name: String
-//}
-
-//struct SectionOfCustomData {
-//  var header: String
-//  var items: [Item]
-//}
-//
-//extension SectionOfCustomData: SectionModelType {
-//  typealias Item = CustomData
-//
-//   init(original: SectionOfCustomData, items: [Item]) {
-//    self = original
-//    self.items = items
-//  }
-//}
-
-//enum SectionOfCustomData {
-//    case ExchangeSection(items: [CurrencyExchange])
-//    case CbInfoSection(info: CentralBankInfo)
-//}
-
-enum CustomData {
-    case ExchangeItem(exchange: CurrencyExchange)
-    case HeadItem(cityName: String)
-}
-
-struct SectionOfCustomData {
-  var header: String
-  var items: [Item]
-}
-
-extension SectionOfCustomData: SectionModelType {
-    typealias Item = CustomData
-    
-    init(original: Self, items: [CustomData]) {
-        self = original
-        self.items = items
-    }
-    
-}
-
 
 final class MyViewModel {
     

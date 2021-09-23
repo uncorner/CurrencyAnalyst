@@ -11,6 +11,7 @@
 		2EEEC0AE207CFEC305150758 /* Pods_CurrencyAnalystCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11FC675EEE665FADC8E8C552 /* Pods_CurrencyAnalystCocoa.framework */; };
 		921DFA1626FA0E4200769C7D /* MyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 921DFA1526FA0E4200769C7D /* MyViewModel.swift */; };
 		922DDE8A26E9340D008122DE /* CachedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922DDE8926E9340D008122DE /* CachedImageLoader.swift */; };
+		923B258D26FCBED70034E04C /* ExchangeTableViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */; };
 		9291429726F350BD00634BF1 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429626F350BD00634BF1 /* NetworkService.swift */; };
 		9291429A26F3520600634BF1 /* NetworkServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429926F3520600634BF1 /* NetworkServiceFactory.swift */; };
 		9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */; };
@@ -85,6 +86,7 @@
 		68C116AC55F35E96A2FF493B /* Pods-CurrencyAnalystCocoa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CurrencyAnalystCocoa.debug.xcconfig"; path = "Target Support Files/Pods-CurrencyAnalystCocoa/Pods-CurrencyAnalystCocoa.debug.xcconfig"; sourceTree = "<group>"; };
 		921DFA1526FA0E4200769C7D /* MyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyViewModel.swift; sourceTree = "<group>"; };
 		922DDE8926E9340D008122DE /* CachedImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedImageLoader.swift; sourceTree = "<group>"; };
+		923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeTableViewSection.swift; sourceTree = "<group>"; };
 		9291429626F350BD00634BF1 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9291429926F3520600634BF1 /* NetworkServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceFactory.swift; sourceTree = "<group>"; };
 		9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeNetworkService.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				AAFDC80A24D48B4E00606A09 /* ExpandedCellData.swift */,
+				923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */,
 			);
 			path = ViewLayer;
 			sourceTree = "<group>";
@@ -604,6 +607,7 @@
 				9291429A26F3520600634BF1 /* NetworkServiceFactory.swift in Sources */,
 				AA9280A624CB339E00B7A1F1 /* OfficeGeoData.swift in Sources */,
 				AAB4BE9724F6ED8600A34F49 /* ExchangeDataSourceFactory.swift in Sources */,
+				923B258D26FCBED70034E04C /* ExchangeTableViewSection.swift in Sources */,
 				AA9934EA24D5B28E00787ACD /* OfficeTableViewCellHeader.swift in Sources */,
 				AA6CCA8E24D86694009D30D8 /* MapViewController.swift in Sources */,
 				AA9116F5250580C800022C8E /* Styles.swift in Sources */,

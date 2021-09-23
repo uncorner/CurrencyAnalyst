@@ -59,16 +59,16 @@ class MainViewController: BaseViewController {
     
     //>>>>>>>
     private let viewModel = MyViewModel()
-    private lazy var tableViewSectionsSeq: BehaviorSubject<[SectionOfCustomData]> = BehaviorSubject(value: sections)
+    private lazy var tableViewSectionsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sections)
     
     private let sections = [
-        SectionOfCustomData(header: "First section", items: []),
-        SectionOfCustomData(header: "Second section", items: [])
+        ExchangeTableViewSection(items: []),
+        ExchangeTableViewSection(items: [])
     ]
     
     private func setupBinding() {
         
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionOfCustomData>(
+        let dataSource = RxTableViewSectionedReloadDataSource<ExchangeTableViewSection>(
             configureCell: { [weak self] dataSource, tableView, indexPath, item in
                 switch item {
                 case .ExchangeItem(let exchange):
@@ -77,8 +77,6 @@ class MainViewController: BaseViewController {
                     let backgroundView = UIView()
                     backgroundView.backgroundColor = Styles.MainViewController.TableView.exchangeTableViewCellSelectionColor
                     cell.selectedBackgroundView = backgroundView
-                    
-                    //let exchange = exchangeListResult.exchanges[indexPath.row]
                     cell.exchangeBoxView.setData(exchange)
                     cell.bankTitleLabel.text = exchange.bankName
                     cell.exchangeBoxView.hideRubleSign()
@@ -244,33 +242,25 @@ class MainViewController: BaseViewController {
                 if self.tableView.numberOfRows(inSection: 0) > 0 {
                     self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
                 }
-                print("exchange list loaded")
                 
-                
-                //>>>>>>>>>>>>>>
-//                let arr = exchangeListResult.exchanges.map { exchange in
-//                    exchange.bankName
-//                }
-//
-//                self.viewModel.dataSource.onNext(arr)
-                
+                //>>>>>>>>>>>
                 let items = exchangeListResult.exchanges.map { exchange in
-                    //CustomData(name: exchange.bankName)
-                    CustomData.ExchangeItem(exchange: exchange)
+                    ExchangeTableViewItem.ExchangeItem(exchange: exchange)
                 }
                 
                 let city = self.cities.first(where: {
                     $0.id == self.selectedCityId
                 })
                 let cityName = city?.name ?? ""
-                let headItem = CustomData.HeadItem(cityName: cityName)
+                let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
                 
                 let sections = [
-                    SectionOfCustomData(header: "First section", items: [headItem]),
-                    SectionOfCustomData(header: "Second section", items: items)]
+                    ExchangeTableViewSection(items: [headItem]),
+                    ExchangeTableViewSection(items: items)]
                 
                 self.tableViewSectionsSeq.onNext(sections)
                 
+                print("exchange list loaded")
                 
             } onFailure: { [weak self] (error) in
                 self?.processResponseError(error)
