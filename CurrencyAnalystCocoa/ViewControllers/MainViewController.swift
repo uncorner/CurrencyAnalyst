@@ -111,10 +111,10 @@ class MainViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         
-        viewModel.isMainActivityAnimatingAndLock.asObservable()
+        viewModel.isMainActivityAnimatingAndLock
+            .asDriver(onErrorJustReturn: false)
             .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] value in
+            .drive(onNext: { [weak self] value in
                 print("isMainActivityAnimatingAndLock onNext: \(value)")
                 if value {
                     self?.startActivityAnimatingAndLock()
@@ -125,9 +125,8 @@ class MainViewController: BaseViewController {
             })
             .disposed(by: disposedBag)
         
-        viewModel.tableViewActivityAnimating.asObservable()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] item in
+        viewModel.tableViewActivityAnimating.asDriver(onErrorJustReturn: nil)
+            .drive(onNext: { [weak self] item in
                 print("isTableViewActivityAnimating onNext")
                 self?.tableView.refreshControl?.endRefreshing()
             })
