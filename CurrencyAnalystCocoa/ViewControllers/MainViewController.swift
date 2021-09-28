@@ -40,10 +40,21 @@ class MainViewController: BaseViewController {
     
     private let showBankDetailSegue = "showBankDetail"
     private let showPickCitySegue = "showPickCitySegue"
-    private var exchangeListResult = ExchangeListResult()
-    private var cities = [City]()
-    private var selectedCityId = Constants.defaultCityId
-    private var isNeedUpdate = true
+//    private var exchangeListResult = ExchangeListResult()
+//    private var cities = [City]()
+//    private var selectedCityId = Constants.defaultCityId
+//    private var isNeedUpdate = true
+    
+    private lazy var viewModel = MyViewModel(networkService: networkService)
+    private let disposedBag = DisposeBag()
+    
+    //    // OUT
+    //    private lazy var sectionedItemsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
+        
+    //    private let sectionsEmptyData = [
+    //        ExchangeTableViewSection(items: []),
+    //        ExchangeTableViewSection(items: [])
+    //    ]
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -56,16 +67,7 @@ class MainViewController: BaseViewController {
         
         setupBinding()
     }
-    
-    //>>>>>>>
-    private let viewModel = MyViewModel()
-    private lazy var tableViewSectionsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
-    
-    private let sectionsEmptyData = [
-        ExchangeTableViewSection(items: []),
-        ExchangeTableViewSection(items: [])
-    ]
-    
+   
     private func setupBinding() {
         
         let dataSource = RxTableViewSectionedReloadDataSource<ExchangeTableViewSection>(
@@ -90,7 +92,7 @@ class MainViewController: BaseViewController {
                 }
             })
         
-        tableViewSectionsSeq.bind(to: tableView.rx.items(dataSource: dataSource))
+        viewModel.sectionedItemsSeq.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(ExchangeTableViewItem.self)
@@ -107,6 +109,29 @@ class MainViewController: BaseViewController {
                 }
             }
             .disposed(by: disposeBag)
+        
+        
+        viewModel.isMainActivityAnimatingAndLock.asObservable()
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] value in
+                print("isMainActivityAnimatingAndLock onNext: \(value)")
+                if value {
+                    self?.startActivityAnimatingAndLock()
+                }
+                else {
+                    self?.stopActivityAnimatingAndUnlock()
+                }
+            })
+            .disposed(by: disposedBag)
+        
+        viewModel.tableViewActivityAnimating.asObservable()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] item in
+                print("isTableViewActivityAnimating onNext")
+                self?.tableView.refreshControl?.endRefreshing()
+            })
+            .disposed(by: disposedBag)
         
     }
     
@@ -141,7 +166,7 @@ class MainViewController: BaseViewController {
     
     private func loadAppSettings() {
         let userDefaults = UserDefaults.standard
-               selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
+        viewModel.selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
     }
     
     private func setupNavigationBar() {
@@ -202,8 +227,8 @@ class MainViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if isNeedUpdate {
-            loadCitiesAndExchanges(isShownMainActivity: true)
+        if viewModel.isNeedUpdate {
+            viewModel.loadCitiesAndExchanges(isShownMainActivity: true)
         }
         
         deselectTableRow()
@@ -217,73 +242,73 @@ class MainViewController: BaseViewController {
     }
     
     @objc private func refreshTableView(sender: UIRefreshControl) {
-        loadCitiesAndExchanges(isShownMainActivity: false)
+        viewModel.loadCitiesAndExchanges(isShownMainActivity: false)
     }
     
     @objc func settingsButtonPressed() {
         performSegue(withIdentifier: showPickCitySegue, sender: self)
     }
     
-    private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
-        print(#function)
-        guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
-        print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
-        startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
-        
-        var citiesSeq: Single<[City]?> = Single.just(nil)
-        if cities.isEmpty {
-            citiesSeq = networkService.getCitiesSeq()
-        }
-        let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
-        
-        // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
-        Single.zip(citiesSeq, exchangesSeq)
-            .subscribe { [weak self] cities, exchangeListResult in
-                guard let self = self else {return}
-                DispatchQueue.printCurrentQueue()
-                
-                if let cities = cities {
-                    print("cities loaded")
-                    self.cities = cities
-                }
-                self.exchangeListResult = exchangeListResult
-                self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
-                self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
-                self.cbBoxView.isHidden = false
-                // update table
-                self.isNeedUpdate = false
-                self.tableView.reloadData()
-                // scroll table on top
-                if self.tableView.numberOfRows(inSection: 0) > 0 {
-                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                }
-                
-                //>>>>>>>>>>>
-                let items = exchangeListResult.exchanges.map { exchange in
-                    ExchangeTableViewItem.ExchangeItem(exchange: exchange)
-                }
-                
-                let city = self.cities.first(where: {
-                    $0.id == self.selectedCityId
-                })
-                let cityName = city?.name ?? ""
-                let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
-                
-                let sectionsWithData = [
-                    ExchangeTableViewSection(items: [headItem]),
-                    ExchangeTableViewSection(items: items)]
-                
-                self.tableViewSectionsSeq.onNext(sectionsWithData)
-                
-                print("exchange list loaded")
-                
-            } onFailure: { [weak self] (error) in
-                self?.processResponseError(error)
-            } onDisposed: { [weak self] in
-                self?.stopAllActivityAnimatingAndUnlock()
-            }
-            .disposed(by: disposeBag)
-    }
+//    private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
+//        print(#function)
+//        guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
+//        print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
+//        startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
+//
+//        var citiesSeq: Single<[City]?> = Single.just(nil)
+//        if cities.isEmpty {
+//            citiesSeq = networkService.getCitiesSeq()
+//        }
+//        let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
+//
+//        // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
+//        Single.zip(citiesSeq, exchangesSeq)
+//            .subscribe { [weak self] cities, exchangeListResult in
+//                guard let self = self else {return}
+//                DispatchQueue.printCurrentQueue()
+//
+//                if let cities = cities {
+//                    print("cities loaded")
+//                    self.cities = cities
+//                }
+//                self.exchangeListResult = exchangeListResult
+//                self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
+//                self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
+//                self.cbBoxView.isHidden = false
+//                // update table
+//                self.isNeedUpdate = false
+//                self.tableView.reloadData()
+//                // scroll table on top
+//                if self.tableView.numberOfRows(inSection: 0) > 0 {
+//                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+//                }
+//
+//                //>>>>>>>>>>>
+//                let items = exchangeListResult.exchanges.map { exchange in
+//                    ExchangeTableViewItem.ExchangeItem(exchange: exchange)
+//                }
+//
+//                let city = self.cities.first(where: {
+//                    $0.id == self.selectedCityId
+//                })
+//                let cityName = city?.name ?? ""
+//                let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
+//
+//                let sectionsWithData = [
+//                    ExchangeTableViewSection(items: [headItem]),
+//                    ExchangeTableViewSection(items: items)]
+//
+//                self.viewModel.sectionedItemsSeq.onNext(sectionsWithData)
+//
+//                print("exchange list loaded")
+//                
+//            } onFailure: { [weak self] (error) in
+//                self?.processResponseError(error)
+//            } onDisposed: { [weak self] in
+//                self?.stopAllActivityAnimatingAndUnlock()
+//            }
+//            .disposed(by: disposeBag)
+//    }
     
     
     private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
@@ -293,33 +318,33 @@ class MainViewController: BaseViewController {
         return exchangeRate.rateStr
     }
     
-    private func stopAllActivityAnimatingAndUnlock() {
-        tableView.refreshControl?.endRefreshing()
-        stopActivityAnimatingAndUnlock()
-    }
+//    private func stopAllActivityAnimatingAndUnlock() {
+//        tableView.refreshControl?.endRefreshing()
+//        stopActivityAnimatingAndUnlock()
+//    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showBankDetailSegue {
             if let indexPath = tableView.indexPathForSelectedRow {
                 guard let controller = segue.destination as? DetailBankViewController else { return }
-                controller.exchange = exchangeListResult.exchanges[indexPath.row]
+                controller.exchange = viewModel.exchangeListResult.exchanges[indexPath.row]
             }
         }
         else if segue.identifier == showPickCitySegue {
-            guard cities.count > 0 else {
+            guard viewModel.cities.count > 0 else {
                 return
             }
             guard let controller = segue.destination as? PickCityViewController else { return }
-            controller.cities = cities
-            controller.selectedCityId = selectedCityId
+            controller.cities = viewModel.cities
+            controller.selectedCityId = viewModel.selectedCityId
             
             // set callback
             controller.setSelectedCityIdCallback = { [weak self] cityId in
                 guard let strongSelf = self else {return}
                 
-                strongSelf.isNeedUpdate = strongSelf.selectedCityId != cityId
-                if strongSelf.isNeedUpdate {
-                    strongSelf.selectedCityId = cityId
+                strongSelf.viewModel.isNeedUpdate = strongSelf.viewModel.selectedCityId != cityId
+                if strongSelf.viewModel.isNeedUpdate {
+                    strongSelf.viewModel.selectedCityId = cityId
                     
                     let userDefaults = UserDefaults.standard
                     userDefaults.setCityId(cityId: cityId)

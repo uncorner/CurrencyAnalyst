@@ -13,6 +13,7 @@ import Alamofire
 extension UIViewController {
     
     func startActivityAnimatingAndLock(isActivityAnimating: Bool = true) {
+        print(#function)
         navigationController?.navigationBar.isUserInteractionEnabled = false
         if isActivityAnimating {
             activityStartAnimating()
@@ -20,6 +21,7 @@ extension UIViewController {
     }
     
     func stopActivityAnimatingAndUnlock() {
+        print(#function)
         navigationController?.navigationBar.isUserInteractionEnabled = true
         activityStopAnimating()
     }
