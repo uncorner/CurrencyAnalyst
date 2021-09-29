@@ -10,6 +10,13 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+enum DataLoadingStatus {
+    case none
+    case loading
+    case success
+    case fail(error: Error)
+}
+
 final class MyViewModel {
     
     private static let sectionsEmptyData = [
@@ -21,10 +28,10 @@ final class MyViewModel {
     
 
     // OUT
-    let sectionedItemsSeq = BehaviorSubject(value: sectionsEmptyData)
-    let isMainActivityAnimatingAndLock = BehaviorSubject(value: true)
-    //let isTableViewActivityAnimating = BehaviorSubject(value: false)
-    let tableViewActivityAnimating = PublishSubject<Void?>()
+    let exchangeItems = BehaviorRelay(value: sectionsEmptyData)
+    //let isMainActivityAnimatingAndLock = BehaviorSubject(value: true)
+    //let tableViewActivityAnimating = PublishSubject<Void?>()
+    let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     
     
     var exchangeListResult = ExchangeListResult()
@@ -45,6 +52,7 @@ final class MyViewModel {
         
         //startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
         //isMainActivityAnimatingAndLock.onNext(isShownMainActivity)
+        loadingStatus.accept(.loading)
         
         var citiesSeq: Single<[City]?> = Single.just(nil)
         if cities.isEmpty {
@@ -90,22 +98,24 @@ final class MyViewModel {
                     ExchangeTableViewSection(items: [headItem]),
                     ExchangeTableViewSection(items: items)]
                 
-                self.sectionedItemsSeq.onNext(sectionsWithData)
+                self.exchangeItems.accept(sectionsWithData)
                 
                 print("exchange list loaded")
                 
             } onFailure: { [weak self] (error) in
                 //self?.processResponseError(error)
-                self?.isMainActivityAnimatingAndLock.onNext(false)
+                //self?.isMainActivityAnimatingAndLock.onNext(false)
                 //self?.isTableViewActivityAnimating.onNext(false)
-                self?.tableViewActivityAnimating.onNext(nil)
+                //self?.tableViewActivityAnimating.onNext(nil)
+                self?.loadingStatus.accept(.fail(error: error))
                 
             } onDisposed: { [weak self] in
                 print("onDisposed")
                 //self?.stopAllActivityAnimatingAndUnlock()
-                self?.isMainActivityAnimatingAndLock.onNext(false)
+                //self?.isMainActivityAnimatingAndLock.onNext(false)
                 //self?.isTableViewActivityAnimating.onNext(false)
-                self?.tableViewActivityAnimating.onNext(nil)
+                //self?.tableViewActivityAnimating.onNext(nil)
+                self?.loadingStatus.accept(.success)
                 
             }
             .disposed(by: disposeBag)

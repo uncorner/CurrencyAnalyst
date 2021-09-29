@@ -47,6 +47,7 @@ class MainViewController: BaseViewController {
     
     private lazy var viewModel = MyViewModel(networkService: networkService)
     private let disposedBag = DisposeBag()
+    private var isMainActivityAnimation = true
     
     //    // OUT
     //    private lazy var sectionedItemsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
@@ -92,7 +93,7 @@ class MainViewController: BaseViewController {
                 }
             })
         
-        viewModel.sectionedItemsSeq.bind(to: tableView.rx.items(dataSource: dataSource))
+        viewModel.exchangeItems.bind(to: tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(ExchangeTableViewItem.self)
@@ -111,24 +112,53 @@ class MainViewController: BaseViewController {
             .disposed(by: disposeBag)
         
         
-        viewModel.isMainActivityAnimatingAndLock
-            .asDriver(onErrorJustReturn: false)
-            .distinctUntilChanged()
-            .drive(onNext: { [weak self] value in
-                print("isMainActivityAnimatingAndLock onNext: \(value)")
-                if value {
-                    self?.startActivityAnimatingAndLock()
-                }
-                else {
-                    self?.stopActivityAnimatingAndUnlock()
-                }
-            })
-            .disposed(by: disposedBag)
+//        viewModel.isMainActivityAnimatingAndLock
+//            .asDriver(onErrorJustReturn: false)
+//            .distinctUntilChanged()
+//            .drive(onNext: { [weak self] value in
+//                print("isMainActivityAnimatingAndLock onNext: \(value)")
+//                if value {
+//                    self?.startActivityAnimatingAndLock()
+//                }
+//                else {
+//                    self?.stopActivityAnimatingAndUnlock()
+//                }
+//            })
+//            .disposed(by: disposedBag)
+//
+//        viewModel.tableViewActivityAnimating.asDriver(onErrorJustReturn: nil)
+//            .drive(onNext: { [weak self] item in
+//                print("isTableViewActivityAnimating onNext")
+//                self?.tableView.refreshControl?.endRefreshing()
+//            })
+//            .disposed(by: disposedBag)
         
-        viewModel.tableViewActivityAnimating.asDriver(onErrorJustReturn: nil)
-            .drive(onNext: { [weak self] item in
-                print("isTableViewActivityAnimating onNext")
-                self?.tableView.refreshControl?.endRefreshing()
+        viewModel.loadingStatus
+            .asDriver()
+            .drive(onNext: { [weak self] status in
+                guard let self = self else {return}
+                
+                switch status {
+                case .loading:
+                    if self.isMainActivityAnimation {
+                        self.startActivityAnimatingAndLock()
+                    }
+                    break
+                case .success:
+                    if self.isMainActivityAnimation {
+                        self.stopActivityAnimatingAndUnlock()
+                    }
+                    else {
+                        self.tableView.refreshControl?.endRefreshing()
+                    }
+                    self.isMainActivityAnimation = false
+                    break
+                case .fail(let error):
+                    // todo
+                    break
+                default:
+                    break
+                }
             })
             .disposed(by: disposedBag)
         
@@ -339,11 +369,13 @@ class MainViewController: BaseViewController {
             
             // set callback
             controller.setSelectedCityIdCallback = { [weak self] cityId in
-                guard let strongSelf = self else {return}
+                guard let self = self else {return}
                 
-                strongSelf.viewModel.isNeedUpdate = strongSelf.viewModel.selectedCityId != cityId
-                if strongSelf.viewModel.isNeedUpdate {
-                    strongSelf.viewModel.selectedCityId = cityId
+                self.viewModel.isNeedUpdate = self.viewModel.selectedCityId != cityId
+                
+                if self.viewModel.isNeedUpdate {
+                    self.viewModel.selectedCityId = cityId
+                    self.isMainActivityAnimation = true
                     
                     let userDefaults = UserDefaults.standard
                     userDefaults.setCityId(cityId: cityId)
