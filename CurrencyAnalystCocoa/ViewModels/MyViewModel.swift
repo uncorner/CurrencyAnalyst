@@ -37,7 +37,7 @@ final class MyViewModel {
     var exchangeListResult = ExchangeListResult()
     var cities = [City]()
     var selectedCityId = Constants.defaultCityId
-    var isNeedUpdate = true
+    //var isNeedUpdate = true
     
     private let networkService: NetworkService
     

@@ -47,7 +47,8 @@ class MainViewController: BaseViewController {
     
     private lazy var viewModel = MyViewModel(networkService: networkService)
     private let disposedBag = DisposeBag()
-    private var isMainActivityAnimation = true
+    //private var isMainActivityAnimation = true
+    private var isNeedUpdate = true
     
     //    // OUT
     //    private lazy var sectionedItemsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
@@ -140,18 +141,18 @@ class MainViewController: BaseViewController {
                 
                 switch status {
                 case .loading:
-                    if self.isMainActivityAnimation {
+                    if self.isNeedUpdate {
                         self.startActivityAnimatingAndLock()
                     }
                     break
                 case .success:
-                    if self.isMainActivityAnimation {
+                    if self.isNeedUpdate {
                         self.stopActivityAnimatingAndUnlock()
                     }
                     else {
                         self.tableView.refreshControl?.endRefreshing()
                     }
-                    self.isMainActivityAnimation = false
+                    self.isNeedUpdate = false
                     break
                 case .fail(let error):
                     // todo
@@ -256,7 +257,7 @@ class MainViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if viewModel.isNeedUpdate {
+        if isNeedUpdate {
             viewModel.loadCitiesAndExchanges(isShownMainActivity: true)
         }
         
@@ -371,11 +372,11 @@ class MainViewController: BaseViewController {
             controller.setSelectedCityIdCallback = { [weak self] cityId in
                 guard let self = self else {return}
                 
-                self.viewModel.isNeedUpdate = self.viewModel.selectedCityId != cityId
+                self.isNeedUpdate = self.viewModel.selectedCityId != cityId
                 
-                if self.viewModel.isNeedUpdate {
+                if self.isNeedUpdate {
                     self.viewModel.selectedCityId = cityId
-                    self.isMainActivityAnimation = true
+                    //self.isMainActivityAnimation = true
                     
                     let userDefaults = UserDefaults.standard
                     userDefaults.setCityId(cityId: cityId)
