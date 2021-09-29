@@ -162,6 +162,17 @@ class MainViewController: BaseViewController {
                 }
             })
             .disposed(by: disposedBag)
+     
+        viewModel.cbDollarRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+            .do(onNext: { [weak self] _ in
+                self?.cbBoxView.isHidden = false
+            })
+            .drive(cbDollarRateLabel.rx.text)
+            .disposed(by: disposedBag)
+        
+        viewModel.cbEuroRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+            .drive(cbEuroRateLabel.rx.text)
+            .disposed(by: disposedBag)
         
     }
     
@@ -341,12 +352,12 @@ class MainViewController: BaseViewController {
 //    }
     
     
-    private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
-        if exchangeRate.rate == 0 {
-            return Constants.cbRateStub
-        }
-        return exchangeRate.rateStr
-    }
+//    private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
+//        if exchangeRate.rate == 0 {
+//            return Constants.cbRateStub
+//        }
+//        return exchangeRate.rateStr
+//    }
     
 //    private func stopAllActivityAnimatingAndUnlock() {
 //        tableView.refreshControl?.endRefreshing()

@@ -25,21 +25,22 @@ final class MyViewModel {
     ]
     
     private let disposeBag = DisposeBag()
-    
+    private let networkService: NetworkService
 
     // OUT
     let exchangeItems = BehaviorRelay(value: sectionsEmptyData)
     //let isMainActivityAnimatingAndLock = BehaviorSubject(value: true)
     //let tableViewActivityAnimating = PublishSubject<Void?>()
     let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
-    
-    
+    let cbDollarRate = PublishRelay<String>()
+    let cbEuroRate = PublishRelay<String>()
+        
     var exchangeListResult = ExchangeListResult()
     var cities = [City]()
-    var selectedCityId = Constants.defaultCityId
     //var isNeedUpdate = true
     
-    private let networkService: NetworkService
+    // IN
+    var selectedCityId = Constants.defaultCityId
     
     init(networkService: NetworkService) {
         self.networkService = networkService
@@ -83,7 +84,9 @@ final class MyViewModel {
 //                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
 //                }
                 
-                //>>>>>>>>>>>
+                self.cbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
+                self.cbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
+                                
                 let items = exchangeListResult.exchanges.map { exchange in
                     ExchangeTableViewItem.ExchangeItem(exchange: exchange)
                 }
@@ -119,6 +122,13 @@ final class MyViewModel {
                 
             }
             .disposed(by: disposeBag)
+    }
+    
+    private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
+        if exchangeRate.rate == 0 {
+            return Constants.cbRateStub
+        }
+        return exchangeRate.rateStr
     }
     
 }
