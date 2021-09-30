@@ -96,11 +96,8 @@ class MainViewController: BaseViewController {
             })
         
         viewModel.exchangeItems
-            .do(afterNext: { _ in
-                // scroll table on top
-                if self.tableView.numberOfRows(inSection: 0) > 0 {
-                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-                }
+            .do(afterNext: { [weak self] _ in
+                self?.tableView.scrollOnTop()
             })
             .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)

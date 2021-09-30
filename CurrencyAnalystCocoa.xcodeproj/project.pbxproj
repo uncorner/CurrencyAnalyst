@@ -17,6 +17,7 @@
 		9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */; };
 		92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */; };
 		92B97EE6270616EF00DFEDE1 /* DataLoadingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */; };
+		92B97EE82706435600DFEDE1 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */; };
 		AA03864A2503C01200D51C6B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0386492503C01200D51C6B /* BaseViewController.swift */; };
 		AA09BE8825192446002B9B82 /* UIWindowExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA09BE8725192446002B9B82 /* UIWindowExtension.swift */; };
 		AA2D136824CCA8F20047D379 /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2D136724CCA8F20047D379 /* FontExtension.swift */; };
@@ -93,6 +94,7 @@
 		9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeNetworkService.swift; sourceTree = "<group>"; };
 		92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueExtension.swift; sourceTree = "<group>"; };
 		92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoadingStatus.swift; sourceTree = "<group>"; };
+		92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
 		AA0386492503C01200D51C6B /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		AA09BE8725192446002B9B82 /* UIWindowExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIWindowExtension.swift; sourceTree = "<group>"; };
 		AA2D136724CCA8F20047D379 /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
@@ -266,6 +268,7 @@
 				AA69EDE22517951700BCCB99 /* UserDefaultsExtension.swift */,
 				AA09BE8725192446002B9B82 /* UIWindowExtension.swift */,
 				92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */,
+				92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -610,6 +613,7 @@
 				9291429A26F3520600634BF1 /* NetworkServiceFactory.swift in Sources */,
 				AA9280A624CB339E00B7A1F1 /* OfficeGeoData.swift in Sources */,
 				AAB4BE9724F6ED8600A34F49 /* ExchangeDataSourceFactory.swift in Sources */,
+				92B97EE82706435600DFEDE1 /* UITableViewExtension.swift in Sources */,
 				923B258D26FCBED70034E04C /* ExchangeTableViewSection.swift in Sources */,
 				AA9934EA24D5B28E00787ACD /* OfficeTableViewCellHeader.swift in Sources */,
 				AA6CCA8E24D86694009D30D8 /* MapViewController.swift in Sources */,
