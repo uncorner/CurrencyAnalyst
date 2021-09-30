@@ -16,6 +16,7 @@
 		9291429A26F3520600634BF1 /* NetworkServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429926F3520600634BF1 /* NetworkServiceFactory.swift */; };
 		9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */; };
 		92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */; };
+		92B97EE6270616EF00DFEDE1 /* DataLoadingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */; };
 		AA03864A2503C01200D51C6B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0386492503C01200D51C6B /* BaseViewController.swift */; };
 		AA09BE8825192446002B9B82 /* UIWindowExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA09BE8725192446002B9B82 /* UIWindowExtension.swift */; };
 		AA2D136824CCA8F20047D379 /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2D136724CCA8F20047D379 /* FontExtension.swift */; };
@@ -91,6 +92,7 @@
 		9291429926F3520600634BF1 /* NetworkServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceFactory.swift; sourceTree = "<group>"; };
 		9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeNetworkService.swift; sourceTree = "<group>"; };
 		92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueExtension.swift; sourceTree = "<group>"; };
+		92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoadingStatus.swift; sourceTree = "<group>"; };
 		AA0386492503C01200D51C6B /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		AA09BE8725192446002B9B82 /* UIWindowExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIWindowExtension.swift; sourceTree = "<group>"; };
 		AA2D136724CCA8F20047D379 /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 			children = (
 				AAFDC80A24D48B4E00606A09 /* ExpandedCellData.swift */,
 				923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */,
+				92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */,
 			);
 			path = ViewLayer;
 			sourceTree = "<group>";
@@ -640,6 +643,7 @@
 				AA450D3324E182B9005D48F7 /* PickCityTableViewCell.swift in Sources */,
 				AA9280A324CB339E00B7A1F1 /* ParsedGeoData.swift in Sources */,
 				AA69EDE32517951700BCCB99 /* UserDefaultsExtension.swift in Sources */,
+				92B97EE6270616EF00DFEDE1 /* DataLoadingStatus.swift in Sources */,
 				AA92809424CB336100B7A1F1 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

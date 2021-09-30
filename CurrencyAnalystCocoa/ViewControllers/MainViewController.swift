@@ -95,7 +95,14 @@ class MainViewController: BaseViewController {
                 }
             })
         
-        viewModel.exchangeItems.bind(to: tableView.rx.items(dataSource: dataSource))
+        viewModel.exchangeItems
+            .do(afterNext: { _ in
+                // scroll table on top
+                if self.tableView.numberOfRows(inSection: 0) > 0 {
+                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
+                }
+            })
+            .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(ExchangeTableViewItem.self)
@@ -113,30 +120,7 @@ class MainViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
-        
-//        viewModel.isMainActivityAnimatingAndLock
-//            .asDriver(onErrorJustReturn: false)
-//            .distinctUntilChanged()
-//            .drive(onNext: { [weak self] value in
-//                print("isMainActivityAnimatingAndLock onNext: \(value)")
-//                if value {
-//                    self?.startActivityAnimatingAndLock()
-//                }
-//                else {
-//                    self?.stopActivityAnimatingAndUnlock()
-//                }
-//            })
-//            .disposed(by: disposedBag)
-//
-//        viewModel.tableViewActivityAnimating.asDriver(onErrorJustReturn: nil)
-//            .drive(onNext: { [weak self] item in
-//                print("isTableViewActivityAnimating onNext")
-//                self?.tableView.refreshControl?.endRefreshing()
-//            })
-//            .disposed(by: disposedBag)
-        
         viewModel.loadingStatus
-            .asDriver()
             .drive(onNext: { [weak self] status in
                 guard let self = self else {return}
                 
@@ -164,14 +148,14 @@ class MainViewController: BaseViewController {
             })
             .disposed(by: disposedBag)
      
-        viewModel.cbDollarRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+        viewModel.cbDollarRate
             .do(onNext: { [weak self] _ in
                 self?.cbBoxView.isHidden = false
             })
             .drive(cbDollarRateLabel.rx.text)
             .disposed(by: disposedBag)
         
-        viewModel.cbEuroRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+        viewModel.cbEuroRate
             .drive(cbEuroRateLabel.rx.text)
             .disposed(by: disposedBag)
         

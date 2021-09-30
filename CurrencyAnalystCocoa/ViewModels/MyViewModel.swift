@@ -10,37 +10,41 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-enum DataLoadingStatus {
-    case none
-    case loading
-    case success
-    case fail(error: Error)
-}
-
 final class MyViewModel {
     
-    private static let sectionsEmptyData = [
+    private static let sectionedItemsEmptyData = [
         ExchangeTableViewSection(items: []),
         ExchangeTableViewSection(items: [])
     ]
     
     private let disposeBag = DisposeBag()
     private let networkService: NetworkService
-
-    // OUT
-    let exchangeItems = BehaviorRelay(value: sectionsEmptyData)
-    //let isMainActivityAnimatingAndLock = BehaviorSubject(value: true)
-    //let tableViewActivityAnimating = PublishSubject<Void?>()
-    let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
-    let cbDollarRate = PublishRelay<String>()
-    let cbEuroRate = PublishRelay<String>()
-        
-    var exchangeListResult = ExchangeListResult()
-    var cities = [City]()
-    //var isNeedUpdate = true
     
-    // IN
+    private let prvExchangeItems = BehaviorRelay(value: sectionedItemsEmptyData)
+    private let prvLoadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
+    private let prvCbDollarRate = PublishRelay<String>()
+    private let prvCbEuroRate = PublishRelay<String>()
+    private var prvCities = [City]()
+    
+    // MARK: IN
     var selectedCityId = Constants.defaultCityId
+    
+    // MARK: OUT
+    var exchangeItems: Driver<[ExchangeTableViewSection]> {
+        prvExchangeItems.asDriver()
+    }
+    var loadingStatus: Driver<DataLoadingStatus> {
+        prvLoadingStatus.asDriver()
+    }
+    var cbDollarRate: Driver<String> {
+        prvCbDollarRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+    }
+    var cbEuroRate: Driver<String> {
+        prvCbEuroRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+    }
+    var cities: [City] {
+        prvCities
+    }
     
     init(networkService: NetworkService) {
         self.networkService = networkService
@@ -50,18 +54,15 @@ final class MyViewModel {
         let userDefaults = UserDefaults.standard
         selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
     }
-   
+    
     func loadCitiesAndExchanges() {
         print(#function)
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
         print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
         
-        //startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
-        //isMainActivityAnimatingAndLock.onNext(isShownMainActivity)
-        loadingStatus.accept(.loading)
-        
+        prvLoadingStatus.accept(.loading)
         var citiesSeq: Single<[City]?> = Single.just(nil)
-        if cities.isEmpty {
+        if prvCities.isEmpty {
             citiesSeq = networkService.getCitiesSeq()
         }
         let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
@@ -74,29 +75,17 @@ final class MyViewModel {
                 
                 if let cities = cities {
                     print("cities loaded")
-                    self.cities = cities
+                    self.prvCities = cities
                 }
-                self.exchangeListResult = exchangeListResult
                 
-//                self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
-//                self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
-//                self.cbBoxView.isHidden = false
-//                // update table
-//                self.isNeedUpdate = false
-//                self.tableView.reloadData()
-//                // scroll table on top
-//                if self.tableView.numberOfRows(inSection: 0) > 0 {
-//                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-//                }
+                self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
+                self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
                 
-                self.cbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
-                self.cbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
-                                
                 let items = exchangeListResult.exchanges.map { exchange in
                     ExchangeTableViewItem.ExchangeItem(exchange: exchange)
                 }
                 
-                let city = self.cities.first(where: {
+                let city = self.prvCities.first(where: {
                     $0.id == self.selectedCityId
                 })
                 let cityName = city?.name ?? ""
@@ -106,25 +95,13 @@ final class MyViewModel {
                     ExchangeTableViewSection(items: [headItem]),
                     ExchangeTableViewSection(items: items)]
                 
-                self.exchangeItems.accept(sectionsWithData)
-                
+                self.prvExchangeItems.accept(sectionsWithData)
                 print("exchange list loaded")
-                
             } onFailure: { [weak self] (error) in
-                //self?.processResponseError(error)
-                //self?.isMainActivityAnimatingAndLock.onNext(false)
-                //self?.isTableViewActivityAnimating.onNext(false)
-                //self?.tableViewActivityAnimating.onNext(nil)
-                self?.loadingStatus.accept(.fail(error: error))
-                
+                self?.prvLoadingStatus.accept(.fail(error: error))
             } onDisposed: { [weak self] in
                 print("onDisposed")
-                //self?.stopAllActivityAnimatingAndUnlock()
-                //self?.isMainActivityAnimatingAndLock.onNext(false)
-                //self?.isTableViewActivityAnimating.onNext(false)
-                //self?.tableViewActivityAnimating.onNext(nil)
-                self?.loadingStatus.accept(.success)
-                
+                self?.prvLoadingStatus.accept(.success)
             }
             .disposed(by: disposeBag)
     }
