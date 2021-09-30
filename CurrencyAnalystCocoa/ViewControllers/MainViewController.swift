@@ -65,9 +65,10 @@ class MainViewController: BaseViewController {
         setupOtherViews()
         setupSettingsButton()
         setupNavigationBar()
-        loadAppSettings()
+        //loadAppSettings()
         
         setupBinding()
+        viewModel.loadAppSettings()
     }
    
     private func setupBinding() {
@@ -205,10 +206,10 @@ class MainViewController: BaseViewController {
     }
     
     
-    private func loadAppSettings() {
-        let userDefaults = UserDefaults.standard
-        viewModel.selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
-    }
+//    private func loadAppSettings() {
+//        let userDefaults = UserDefaults.standard
+//        viewModel.selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
+//    }
     
     private func setupNavigationBar() {
         // navigationItem

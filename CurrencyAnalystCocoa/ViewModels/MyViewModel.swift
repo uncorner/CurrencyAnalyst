@@ -45,6 +45,11 @@ final class MyViewModel {
     init(networkService: NetworkService) {
         self.networkService = networkService
     }
+    
+    func loadAppSettings() {
+        let userDefaults = UserDefaults.standard
+        selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
+    }
    
     func loadCitiesAndExchanges() {
         print(#function)
