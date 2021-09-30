@@ -46,7 +46,7 @@ final class MyViewModel {
         self.networkService = networkService
     }
    
-    func loadCitiesAndExchanges(isShownMainActivity: Bool) {
+    func loadCitiesAndExchanges() {
         print(#function)
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
         print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")

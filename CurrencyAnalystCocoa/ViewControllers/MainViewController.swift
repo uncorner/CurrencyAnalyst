@@ -105,8 +105,8 @@ class MainViewController: BaseViewController {
                 case .HeadItem(_):
                     // do nothing
                     break
-                case .ExchangeItem(_):
-                    self.performSegue(withIdentifier: self.showBankDetailSegue, sender: self)
+                case .ExchangeItem(let exchange):
+                    self.performSegue(withIdentifier: self.showBankDetailSegue, sender: exchange)
                     break
                 }
             }
@@ -269,7 +269,7 @@ class MainViewController: BaseViewController {
         super.viewWillAppear(animated)
         
         if isNeedUpdate {
-            viewModel.loadCitiesAndExchanges(isShownMainActivity: true)
+            viewModel.loadCitiesAndExchanges()
         }
         
         deselectTableRow()
@@ -283,7 +283,7 @@ class MainViewController: BaseViewController {
     }
     
     @objc private func refreshTableView(sender: UIRefreshControl) {
-        viewModel.loadCitiesAndExchanges(isShownMainActivity: false)
+        viewModel.loadCitiesAndExchanges()
     }
     
     @objc func settingsButtonPressed() {
@@ -366,10 +366,12 @@ class MainViewController: BaseViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showBankDetailSegue {
-            if let indexPath = tableView.indexPathForSelectedRow {
-                guard let controller = segue.destination as? DetailBankViewController else { return }
-                controller.exchange = viewModel.exchangeListResult.exchanges[indexPath.row]
-            }
+            guard let exchange = sender as? CurrencyExchange else {return}
+            //if let indexPath = tableView.indexPathForSelectedRow {
+            guard let controller = segue.destination as? DetailBankViewController else { return }
+            //controller.exchange = viewModel.exchangeListResult.exchanges[indexPath.row]
+            controller.exchange = exchange
+            //}
         }
         else if segue.identifier == showPickCitySegue {
             guard viewModel.cities.count > 0 else {
