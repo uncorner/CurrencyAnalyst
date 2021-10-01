@@ -48,7 +48,7 @@ class MainViewController: BaseViewController {
     private lazy var viewModel = MyViewModel(networkService: networkService)
     private let disposedBag = DisposeBag()
     //private var isMainActivityAnimation = true
-    private var isNeedUpdate = true
+    private var isNeedAutoUpdate = true
     
     //    // OUT
     //    private lazy var sectionedItemsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
@@ -123,21 +123,16 @@ class MainViewController: BaseViewController {
                 
                 switch status {
                 case .loading:
-                    if self.isNeedUpdate {
+                    if self.isNeedAutoUpdate {
                         self.startActivityAnimatingAndLock()
                     }
                     break
                 case .success:
-                    if self.isNeedUpdate {
-                        self.stopActivityAnimatingAndUnlock()
-                    }
-                    else {
-                        self.tableView.refreshControl?.endRefreshing()
-                    }
-                    self.isNeedUpdate = false
+                    self.stopAllActivityAnimationAndUnlock()
                     break
                 case .fail(let error):
-                    // todo
+                    self.stopAllActivityAnimationAndUnlock()
+                    self.processResponseError(error)
                     break
                 default:
                     break
@@ -156,6 +151,16 @@ class MainViewController: BaseViewController {
             .drive(cbEuroRateLabel.rx.text)
             .disposed(by: disposedBag)
         
+    }
+    
+    private func stopAllActivityAnimationAndUnlock() {
+        if isNeedAutoUpdate {
+            stopActivityAnimatingAndUnlock()
+        }
+        else {
+            tableView.refreshControl?.endRefreshing()
+        }
+        isNeedAutoUpdate = false
     }
     
     private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
@@ -250,7 +255,7 @@ class MainViewController: BaseViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if isNeedUpdate {
+        if isNeedAutoUpdate {
             viewModel.loadCitiesAndExchanges()
         }
         
@@ -367,9 +372,9 @@ class MainViewController: BaseViewController {
             controller.setSelectedCityIdCallback = { [weak self] cityId in
                 guard let self = self else {return}
                 
-                self.isNeedUpdate = self.viewModel.selectedCityId != cityId
+                self.isNeedAutoUpdate = self.viewModel.selectedCityId != cityId
                 
-                if self.isNeedUpdate {
+                if self.isNeedAutoUpdate {
                     self.viewModel.selectedCityId = cityId
                     //self.isMainActivityAnimation = true
                     
