@@ -40,23 +40,9 @@ class MainViewController: BaseViewController {
     
     private let showBankDetailSegue = "showBankDetail"
     private let showPickCitySegue = "showPickCitySegue"
-//    private var exchangeListResult = ExchangeListResult()
-//    private var cities = [City]()
-//    private var selectedCityId = Constants.defaultCityId
-//    private var isNeedUpdate = true
-    
     private lazy var viewModel = MyViewModel(networkService: networkService)
     private let disposedBag = DisposeBag()
-    //private var isMainActivityAnimation = true
     private var isNeedAutoUpdate = true
-    
-    //    // OUT
-    //    private lazy var sectionedItemsSeq: BehaviorSubject<[ExchangeTableViewSection]> = BehaviorSubject(value: sectionsEmptyData)
-        
-    //    private let sectionsEmptyData = [
-    //        ExchangeTableViewSection(items: []),
-    //        ExchangeTableViewSection(items: [])
-    //    ]
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -65,14 +51,35 @@ class MainViewController: BaseViewController {
         setupOtherViews()
         setupSettingsButton()
         setupNavigationBar()
-        //loadAppSettings()
-        
-        setupBinding()
+        setupBindings()
         viewModel.loadAppSettings()
     }
    
-    private func setupBinding() {
+    private func setupBindings() {
+        setupBindingsForTableView()
         
+        viewModel.cbDollarRate
+            .do(onNext: { [weak self] _ in
+                self?.cbBoxView.isHidden = false
+            })
+            .drive(cbDollarRateLabel.rx.text)
+            .disposed(by: disposedBag)
+        
+        viewModel.cbEuroRate
+            .drive(cbEuroRateLabel.rx.text)
+            .disposed(by: disposedBag)
+        
+        if let settingsButton = navigationItem.rightBarButtonItem {
+            settingsButton.rx.tap
+                .subscribe(onNext: { [weak self] in
+                    guard let self = self else {return}
+                    self.performSegue(withIdentifier: self.showPickCitySegue, sender: self)
+                })
+                .disposed(by: disposedBag)
+        }
+    }
+    
+    private func setupBindingsForTableView() {
         let dataSource = RxTableViewSectionedReloadDataSource<ExchangeTableViewSection>(
             configureCell: { [weak self] dataSource, tableView, indexPath, item in
                 switch item {
@@ -139,26 +146,6 @@ class MainViewController: BaseViewController {
                 }
             })
             .disposed(by: disposedBag)
-     
-        viewModel.cbDollarRate
-            .do(onNext: { [weak self] _ in
-                self?.cbBoxView.isHidden = false
-            })
-            .drive(cbDollarRateLabel.rx.text)
-            .disposed(by: disposedBag)
-        
-        viewModel.cbEuroRate
-            .drive(cbEuroRateLabel.rx.text)
-            .disposed(by: disposedBag)
-        
-        if let settingsButton = navigationItem.rightBarButtonItem {
-            settingsButton.rx.tap
-                .subscribe(onNext: { [weak self] in
-                    guard let self = self else {return}
-                    self.performSegue(withIdentifier: self.showPickCitySegue, sender: self)
-                })
-                .disposed(by: disposedBag)
-        }
     }
     
     private func stopAllActivityAnimationAndUnlock() {
@@ -199,12 +186,6 @@ class MainViewController: BaseViewController {
         }
     }
     
-    
-//    private func loadAppSettings() {
-//        let userDefaults = UserDefaults.standard
-//        viewModel.selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
-//    }
-    
     private func setupNavigationBar() {
         // navigationItem
         navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
@@ -222,9 +203,6 @@ class MainViewController: BaseViewController {
         tableView.register(InfoExchangeTableViewCell.nib(), forCellReuseIdentifier: InfoExchangeTableViewCell.cellId)
         tableView.register(HeadExchangeTableViewCell.nib(), forCellReuseIdentifier: HeadExchangeTableViewCell.cellId)
         
-//        tableView.delegate = self
-//        tableView.dataSource = self
-//
         let refreshControl = UIRefreshControl()
         refreshControl.tintColor = Styles.CommonActivityAnimating.activityColor
         refreshControl.addTarget(self, action: #selector(refreshTableView(sender:)), for: .valueChanged)
@@ -281,84 +259,6 @@ class MainViewController: BaseViewController {
         viewModel.loadCitiesAndExchanges()
     }
     
-//    @objc func settingsButtonPressed() {
-//        performSegue(withIdentifier: showPickCitySegue, sender: self)
-//    }
-    
-//    private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
-//        print(#function)
-//        guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
-//        print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
-//        startActivityAnimatingAndLock(isActivityAnimating: isShownMainActivity)
-//
-//        var citiesSeq: Single<[City]?> = Single.just(nil)
-//        if cities.isEmpty {
-//            citiesSeq = networkService.getCitiesSeq()
-//        }
-//        let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
-//
-//        // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
-//        Single.zip(citiesSeq, exchangesSeq)
-//            .subscribe { [weak self] cities, exchangeListResult in
-//                guard let self = self else {return}
-//                DispatchQueue.printCurrentQueue()
-//
-//                if let cities = cities {
-//                    print("cities loaded")
-//                    self.cities = cities
-//                }
-//                self.exchangeListResult = exchangeListResult
-//                self.cbDollarRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.usdExchangeRate )
-//                self.cbEuroRateLabel.text = self.getCbExchangeRateAsText( self.exchangeListResult.cbInfo.euroExchangeRate )
-//                self.cbBoxView.isHidden = false
-//                // update table
-//                self.isNeedUpdate = false
-//                self.tableView.reloadData()
-//                // scroll table on top
-//                if self.tableView.numberOfRows(inSection: 0) > 0 {
-//                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .none, animated: false)
-//                }
-//
-//                //>>>>>>>>>>>
-//                let items = exchangeListResult.exchanges.map { exchange in
-//                    ExchangeTableViewItem.ExchangeItem(exchange: exchange)
-//                }
-//
-//                let city = self.cities.first(where: {
-//                    $0.id == self.selectedCityId
-//                })
-//                let cityName = city?.name ?? ""
-//                let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
-//
-//                let sectionsWithData = [
-//                    ExchangeTableViewSection(items: [headItem]),
-//                    ExchangeTableViewSection(items: items)]
-//
-//                self.viewModel.sectionedItemsSeq.onNext(sectionsWithData)
-//
-//                print("exchange list loaded")
-//                
-//            } onFailure: { [weak self] (error) in
-//                self?.processResponseError(error)
-//            } onDisposed: { [weak self] in
-//                self?.stopAllActivityAnimatingAndUnlock()
-//            }
-//            .disposed(by: disposeBag)
-//    }
-    
-    
-//    private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
-//        if exchangeRate.rate == 0 {
-//            return Constants.cbRateStub
-//        }
-//        return exchangeRate.rateStr
-//    }
-    
-//    private func stopAllActivityAnimatingAndUnlock() {
-//        tableView.refreshControl?.endRefreshing()
-//        stopActivityAnimatingAndUnlock()
-//    }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showBankDetailSegue {
             guard let exchange = sender as? CurrencyExchange else {return}
@@ -394,117 +294,4 @@ class MainViewController: BaseViewController {
     }
     
 }
-
-// MARK: UITableViewDelegate
-//extension MainViewController : UITableViewDelegate {
-//
-//    // selected row
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        if indexPath.section == 1 && exchangeListResult.exchanges.count > 0 {
-//            performSegue(withIdentifier: showBankDetailSegue, sender: self)
-//        }
-//    }
-//
-//}
-
-
-// MARK: UITableViewDataSource
-//extension MainViewController : UITableViewDataSource {
-//
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        2
-//    }
-    
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        if section == 1 {
-//            let exchangeCount = exchangeListResult.exchanges.count
-//            if exchangeCount > 0 {
-//                return exchangeCount
-//            }
-//
-//            if isNeedUpdate {
-//                return 0
-//            }
-//            else {
-//                // exchanges is empty
-//                return 1
-//            }
-//        }
-//        else if section == 0 {
-//            return 1
-//        }
-//
-//        return 0
-//    }
-//
-//    // show cell
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//
-//        if indexPath.section == 1 {
-//
-//            if exchangeListResult.exchanges.count > 0 {
-//                let cell = tableView.dequeueReusableCell(withIdentifier: ExchangeTableViewCell.cellId, for: indexPath) as! ExchangeTableViewCell
-//                cell.backgroundColor = UIColor.clear
-//                let backgroundView = UIView()
-//                backgroundView.backgroundColor = Styles.MainViewController.TableView.exchangeTableViewCellSelectionColor
-//                cell.selectedBackgroundView = backgroundView
-//
-//                let exchange = exchangeListResult.exchanges[indexPath.row]
-//                cell.exchangeBoxView.setData(exchange)
-//                cell.bankTitleLabel.text = exchange.bankName
-//                cell.exchangeBoxView.hideRubleSign()
-//                setBankLogoImage(exchange: exchange, cell: cell)
-//                return cell
-//            }
-//
-//            // exchanges is empty
-//            let cell = tableView.dequeueReusableCell(withIdentifier: InfoExchangeTableViewCell.cellId, for: indexPath) as! InfoExchangeTableViewCell
-//            cell.infoLabel.text = "Не найдено предложений по обмену валюты"
-//
-//            return cell
-//        }
-//        else if indexPath.section == 0 {
-//            let cell = tableView.dequeueReusableCell(withIdentifier: HeadExchangeTableViewCell.cellId, for: indexPath) as! HeadExchangeTableViewCell
-//
-//            let city = cities.first(where: {
-//                $0.id == selectedCityId
-//            })
-//
-//            let cityName = city?.name ?? ""
-//            cell.locationLabel.text = cityName
-//            return cell
-//        }
-//
-//        return UITableViewCell()
-//    }
-//
-//    private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
-//        if let logoUrl = exchange.bankLogoUrl?.toSiteURL() {
-//            cell.logoImageUrl = logoUrl
-//
-//            imageLoader.getImage(imageUrl: logoUrl, completion: { image, imageUrl in
-//                DispatchQueue.main.async {
-//                    guard let cellLogoUrl = cell.logoImageUrl else {return}
-//                    if cellLogoUrl != imageUrl {return}
-//
-//                    guard let image = image else {
-//                        // error loading image
-//                        cell.logoImageView.isHidden = true
-//                        cell.logoImageView.image = nil
-//                        return
-//                    }
-//
-//                    //cell.logoImageView.image = nil
-//                    cell.logoImageView.isHidden = false
-//                    cell.logoImageView.image = image
-//                }
-//            })
-//        }
-//        else {
-//            cell.logoImageView.isHidden = true
-//            cell.logoImageView.image = nil
-//        }
-//    }
-    
-//}
 
