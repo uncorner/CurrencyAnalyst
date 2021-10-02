@@ -151,6 +151,14 @@ class MainViewController: BaseViewController {
             .drive(cbEuroRateLabel.rx.text)
             .disposed(by: disposedBag)
         
+        if let settingsButton = navigationItem.rightBarButtonItem {
+            settingsButton.rx.tap
+                .subscribe(onNext: { [weak self] in
+                    guard let self = self else {return}
+                    self.performSegue(withIdentifier: self.showPickCitySegue, sender: self)
+                })
+                .disposed(by: disposedBag)
+        }
     }
     
     private func stopAllActivityAnimationAndUnlock() {
@@ -249,7 +257,7 @@ class MainViewController: BaseViewController {
     }
     
     private func setupSettingsButton() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem.menuButton(self, action: #selector(settingsButtonPressed), imageName: "settings_image-1")
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "settings_image-1"), style: UIBarButtonItem.Style.plain, target: self, action: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -273,9 +281,9 @@ class MainViewController: BaseViewController {
         viewModel.loadCitiesAndExchanges()
     }
     
-    @objc func settingsButtonPressed() {
-        performSegue(withIdentifier: showPickCitySegue, sender: self)
-    }
+//    @objc func settingsButtonPressed() {
+//        performSegue(withIdentifier: showPickCitySegue, sender: self)
+//    }
     
 //    private func loadCitiesAndExchanges(isShownMainActivity: Bool) {
 //        print(#function)
