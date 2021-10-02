@@ -17,9 +17,11 @@ class PickCityViewController: BaseViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var boxView: UIView!
     
-    var cities = [City]()
-    var filteredCities = [City]()
-    var selectedCityId: String?
+//    var cities = [City]()
+//    var filteredCities = [City]()
+//    var selectedCityId: String?
+    
+    var modelView: PickCityViewModel!
     
     var setSelectedCityIdCallback: ((String)->())?
     
@@ -43,17 +45,28 @@ class PickCityViewController: BaseViewController {
         //        })
 
         
+//        searchBar.rx.text
+//            .subscribe(onNext: { [weak self] query in
+//                guard let self = self else {return}
+//                self.filteredCities = self.cities.filter { city in
+//                    city.name.caseInsensitiveHasPrefix(query ?? "")
+//                }
+//
+//                self.tableView.reloadData()
+//
+//            })
+//            .disposed(by: disposeBag)
+        
         searchBar.rx.text
-            .subscribe(onNext: { [weak self] query in
-                guard let self = self else {return}
-                self.filteredCities = self.cities.filter { city in
-                    city.name.caseInsensitiveHasPrefix(query ?? "")
-                }
-                
+            .bind(to: modelView.query)
+            .disposed(by: disposeBag)
+        
+        modelView.filteredCities
+            .drive(onNext: { _ in
                 self.tableView.reloadData()
-                
             })
             .disposed(by: disposeBag)
+        
     }
     
     private func setupOtherViews() {
@@ -80,10 +93,10 @@ class PickCityViewController: BaseViewController {
         tableView.separatorColor = Styles.PickCityViewController.tableSeparatorColor
         
         // copy array
-        filteredCities = cities
+        //filteredCities = cities
         
-        if let selectedId = selectedCityId {
-            let selectedIndex = cities.firstIndex(where: { item in
+        if let selectedId = modelView.selectedCityId {
+            let selectedIndex = modelView.cities.firstIndex(where: { item in
                 item.id == selectedId
             })
             
@@ -99,8 +112,10 @@ class PickCityViewController: BaseViewController {
 extension PickCityViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let city = filteredCities[indexPath.row]
-        selectedCityId = city.id
+        //let city = filteredCities[indexPath.row]
+        let city = modelView.filteredCitiesValue[indexPath.row]
+        
+        modelView.selectedCityId = city.id
         setSelectedCityIdCallback?(city.id)
         
         tableView.reloadData()
@@ -112,15 +127,15 @@ extension PickCityViewController: UITableViewDelegate {
 extension PickCityViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredCities.count
+        return modelView.filteredCitiesValue.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: PickCityTableViewCell.cellId, for: indexPath) as! PickCityTableViewCell
         
-        let city = filteredCities[indexPath.row]
+        let city = modelView.filteredCitiesValue[indexPath.row]
         cell.titleLabel.text = city.name
-        cell.checkboxImage.isHidden = city.id != selectedCityId
+        cell.checkboxImage.isHidden = city.id != modelView.selectedCityId
         
         return cell
     }

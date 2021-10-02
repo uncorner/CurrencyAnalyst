@@ -270,8 +270,12 @@ class MainViewController: BaseViewController {
                 return
             }
             guard let controller = segue.destination as? PickCityViewController else { return }
-            controller.cities = viewModel.cities
-            controller.selectedCityId = viewModel.selectedCityId
+            
+            //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            //controller.cities = viewModel.cities
+            //controller.selectedCityId = viewModel.selectedCityId
+            controller.modelView = PickCityViewModel(cities: viewModel.cities)
+            controller.modelView.selectedCityId = viewModel.selectedCityId
             
             // set callback
             controller.setSelectedCityIdCallback = { [weak self] cityId in
