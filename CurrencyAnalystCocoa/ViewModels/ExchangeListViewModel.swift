@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-final class MyViewModel {
+final class ExchangeListViewModel {
     
     private static let sectionedItemsEmptyData = [
         ExchangeTableViewSection(items: []),

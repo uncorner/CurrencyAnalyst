@@ -40,7 +40,7 @@ class MainViewController: BaseViewController {
     
     private let showBankDetailSegue = "showBankDetail"
     private let showPickCitySegue = "showPickCitySegue"
-    private lazy var viewModel = MyViewModel(networkService: networkService)
+    private lazy var viewModel = ExchangeListViewModel(networkService: networkService)
     private let disposedBag = DisposeBag()
     private var isNeedAutoUpdate = true
     
