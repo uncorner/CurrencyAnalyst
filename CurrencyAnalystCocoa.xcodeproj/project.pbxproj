@@ -18,6 +18,7 @@
 		92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */; };
 		92B97EE6270616EF00DFEDE1 /* DataLoadingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */; };
 		92B97EE82706435600DFEDE1 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */; };
+		92E0BBB02708BC12000B81BF /* PickCityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92E0BBAF2708BC12000B81BF /* PickCityViewModel.swift */; };
 		AA03864A2503C01200D51C6B /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0386492503C01200D51C6B /* BaseViewController.swift */; };
 		AA09BE8825192446002B9B82 /* UIWindowExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA09BE8725192446002B9B82 /* UIWindowExtension.swift */; };
 		AA2D136824CCA8F20047D379 /* FontExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2D136724CCA8F20047D379 /* FontExtension.swift */; };
@@ -95,6 +96,7 @@
 		92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueExtension.swift; sourceTree = "<group>"; };
 		92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoadingStatus.swift; sourceTree = "<group>"; };
 		92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
+		92E0BBAF2708BC12000B81BF /* PickCityViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickCityViewModel.swift; sourceTree = "<group>"; };
 		AA0386492503C01200D51C6B /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		AA09BE8725192446002B9B82 /* UIWindowExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIWindowExtension.swift; sourceTree = "<group>"; };
 		AA2D136724CCA8F20047D379 /* FontExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontExtension.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 			isa = PBXGroup;
 			children = (
 				921DFA1526FA0E4200769C7D /* ExchangeListViewModel.swift */,
+				92E0BBAF2708BC12000B81BF /* PickCityViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -622,6 +625,7 @@
 				AA6E9748250028DE001F1DB8 /* HeadExchangeTableViewCell.swift in Sources */,
 				AA7B003224F9991400D1D88D /* CurrencyExchangeUnit.swift in Sources */,
 				AAC73E4224F0181F00C3EAF8 /* MessageView.swift in Sources */,
+				92E0BBB02708BC12000B81BF /* PickCityViewModel.swift in Sources */,
 				AA5D687624E9ABC600B56E61 /* UIViewExtension.swift in Sources */,
 				921DFA1626FA0E4200769C7D /* ExchangeListViewModel.swift in Sources */,
 				AA09BE8825192446002B9B82 /* UIWindowExtension.swift in Sources */,

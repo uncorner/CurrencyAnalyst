@@ -7,7 +7,9 @@
 //
 
 import UIKit
-import Alamofire
+//import Alamofire
+import RxSwift
+import RxCocoa
 
 class PickCityViewController: BaseViewController {
     
@@ -27,6 +29,31 @@ class PickCityViewController: BaseViewController {
         setupSearchBar()
         setupTableView()
         setupOtherViews()
+        
+        
+//        searchBar.rx.text // Наблюдаемое свойство. Спасибо RxCocoa
+//            .subscribeNext { [unowned self] (query) in // Здесь мы будем уведомлены о каждом новом значении
+//                self.shownCities = self.allCities.filter { $0.hasPrefix(query) } // Здесь мы выполняем "запрос к API", чтобы найти города
+//                self.tableView.reloadData() // И перезагружаем данные таблицы
+//            }
+//            .addDisposableTo(disposeBag)
+        
+        //        filteredCities = cities.filter({ city -> Bool in
+        //            return city.name.caseInsensitiveHasPrefix(searchText)
+        //        })
+
+        
+        searchBar.rx.text
+            .subscribe(onNext: { [weak self] query in
+                guard let self = self else {return}
+                self.filteredCities = self.cities.filter { city in
+                    city.name.caseInsensitiveHasPrefix(query ?? "")
+                }
+                
+                self.tableView.reloadData()
+                
+            })
+            .disposed(by: disposeBag)
     }
     
     private func setupOtherViews() {
@@ -36,7 +63,7 @@ class PickCityViewController: BaseViewController {
     }
     
     private func setupSearchBar() {
-        searchBar.delegate = self
+        //searchBar.delegate = self
         searchBar.searchBarStyle = .minimal
         searchBar.barStyle = .black
         searchBar.placeholder = "Искать"
@@ -100,20 +127,20 @@ extension PickCityViewController: UITableViewDataSource {
     
 }
 
-// MARK: UISearchBarDelegate
-extension PickCityViewController : UISearchBarDelegate {
-    // Search Bar
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        guard searchText.isEmpty == false else {
-            filteredCities = cities
-            tableView.reloadData()
-            return
-        }
-        
-        filteredCities = cities.filter({ city -> Bool in
-            return city.name.caseInsensitiveHasPrefix(searchText)
-        })
-        
-        tableView.reloadData()
-    }
-}
+//// MARK: UISearchBarDelegate
+//extension PickCityViewController : UISearchBarDelegate {
+//    // Search Bar
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        guard searchText.isEmpty == false else {
+//            filteredCities = cities
+//            tableView.reloadData()
+//            return
+//        }
+//
+//        filteredCities = cities.filter({ city -> Bool in
+//            return city.name.caseInsensitiveHasPrefix(searchText)
+//        })
+//
+//        tableView.reloadData()
+//    }
+//}
