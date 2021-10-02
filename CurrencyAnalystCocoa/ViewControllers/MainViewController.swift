@@ -262,11 +262,8 @@ class MainViewController: BaseViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showBankDetailSegue {
             guard let exchange = sender as? CurrencyExchange else {return}
-            //if let indexPath = tableView.indexPathForSelectedRow {
             guard let controller = segue.destination as? DetailBankViewController else { return }
-            //controller.exchange = viewModel.exchangeListResult.exchanges[indexPath.row]
             controller.exchange = exchange
-            //}
         }
         else if segue.identifier == showPickCitySegue {
             guard viewModel.cities.count > 0 else {
@@ -284,7 +281,6 @@ class MainViewController: BaseViewController {
                 
                 if self.isNeedAutoUpdate {
                     self.viewModel.selectedCityId = cityId
-                    //self.isMainActivityAnimation = true
                     
                     let userDefaults = UserDefaults.standard
                     userDefaults.setCityId(cityId: cityId)
