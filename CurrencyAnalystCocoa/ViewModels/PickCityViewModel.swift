@@ -9,6 +9,9 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import RxDataSources
+
+typealias CitySectionModel = SectionModel<String, City>
 
 class PickCityViewModel {
     
@@ -27,19 +30,27 @@ class PickCityViewModel {
     
     // MARK: OUT
     //var filteredCities = [City]()
-    private let prvFilteredCities: BehaviorRelay<[City]>
+    //private let prvFilteredCities: BehaviorRelay<[City]>
+    private let prvFilteredCities: BehaviorRelay<[CitySectionModel]>
     
-    var filteredCities: Driver<[City]> {
+//    var filteredCities: Driver<[City]> {
+//        prvFilteredCities.asDriver()
+//    }
+    
+    var filteredCities: Driver<[CitySectionModel]> {
         prvFilteredCities.asDriver()
     }
     
-    var filteredCitiesValue: [City] {
-        prvFilteredCities.value
-    }
+//    var filteredCitiesValue: [City] {
+//        prvFilteredCities.value
+//    }
     
     init(cities: [City]) {
         self.prvCities = cities
-        prvFilteredCities = BehaviorRelay<[City]>(value: cities)
+        //prvFilteredCities = BehaviorRelay<[City]>(value: cities)
+        
+        let firstSectionModel = CitySectionModel(model: "города", items: cities)
+        prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [firstSectionModel])
         
         query.subscribe(onNext: { [weak self] query in
             guard let self = self else {return}
@@ -47,7 +58,9 @@ class PickCityViewModel {
                 city.name.caseInsensitiveHasPrefix(query ?? "")
             }
             
-            self.prvFilteredCities.accept(resultCities)
+            //self.prvFilteredCities.accept(resultCities)
+            let sectionModel = CitySectionModel(model: "города", items: resultCities)
+            self.prvFilteredCities.accept([sectionModel])
         })
         .disposed(by: disposeBag)
         
