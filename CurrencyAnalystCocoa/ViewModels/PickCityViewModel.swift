@@ -11,59 +11,40 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-typealias CitySectionModel = SectionModel<String, City>
+typealias CitySectionModel = SectionModel<Void?, City>
 
 class PickCityViewModel {
     
     private let disposeBag = DisposeBag()
-    
-    // MARK: IN
-    private var prvCities = [City]()
-    var selectedCityId: String?
-    
-    //var query: String?
-    let query = PublishSubject<String?>()
-    
-    var cities: [City] {
-        prvCities
-    }
-    
-    // MARK: OUT
-    //var filteredCities = [City]()
-    //private let prvFilteredCities: BehaviorRelay<[City]>
     private let prvFilteredCities: BehaviorRelay<[CitySectionModel]>
     
-//    var filteredCities: Driver<[City]> {
-//        prvFilteredCities.asDriver()
-//    }
+    // MARK: IN
+    var selectedCityId: String?
+    let query = PublishRelay<String?>()
+    
+    // MARK: OUT
+    let cities: [City]
     
     var filteredCities: Driver<[CitySectionModel]> {
         prvFilteredCities.asDriver()
     }
     
-//    var filteredCitiesValue: [City] {
-//        prvFilteredCities.value
-//    }
-    
     init(cities: [City]) {
-        self.prvCities = cities
-        //prvFilteredCities = BehaviorRelay<[City]>(value: cities)
+        self.cities = cities
         
-        let firstSectionModel = CitySectionModel(model: "города", items: cities)
+        let firstSectionModel = CitySectionModel(model: nil, items: cities)
         prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [firstSectionModel])
         
         query.subscribe(onNext: { [weak self] query in
             guard let self = self else {return}
-            let resultCities = self.prvCities.filter { city in
+            let resultCities = self.cities.filter { city in
                 city.name.caseInsensitiveHasPrefix(query ?? "")
             }
             
-            //self.prvFilteredCities.accept(resultCities)
-            let sectionModel = CitySectionModel(model: "города", items: resultCities)
+            let sectionModel = CitySectionModel(model: nil, items: resultCities)
             self.prvFilteredCities.accept([sectionModel])
         })
         .disposed(by: disposeBag)
-        
     }
     
 }
