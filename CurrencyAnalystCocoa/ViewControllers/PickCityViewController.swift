@@ -43,7 +43,7 @@ class PickCityViewController: BaseViewController {
     }
     
     private func setupBindings() {
-        let dataSource = RxTableViewSectionedReloadDataSource<CitySectionModel>{ [weak self] dataSource, tableView, indexPath, city in
+        let dataSource = RxTableViewSectionedAnimatedDataSource<CitySectionModel>{ [weak self] dataSource, tableView, indexPath, city in
             guard let self = self else {return UITableViewCell()}
             
             let cell = tableView.dequeueReusableCell(withIdentifier: PickCityTableViewCell.cellId, for: indexPath) as! PickCityTableViewCell

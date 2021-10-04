@@ -11,10 +11,10 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-typealias CitySectionModel = SectionModel<Void?, City>
+typealias CitySectionModel = AnimatableSectionModel<String, City>
 
 class PickCityViewModel {
-    
+    private static let section1 = "section_1"
     private let disposeBag = DisposeBag()
     private let prvFilteredCities: BehaviorRelay<[CitySectionModel]>
     
@@ -32,7 +32,7 @@ class PickCityViewModel {
     init(cities: [City]) {
         self.cities = cities
         
-        let firstSectionModel = CitySectionModel(model: nil, items: cities)
+        let firstSectionModel = CitySectionModel(model: Self.section1, items: cities)
         prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [firstSectionModel])
         
         query.subscribe(onNext: { [weak self] query in
@@ -41,7 +41,7 @@ class PickCityViewModel {
                 city.name.caseInsensitiveHasPrefix(query ?? "")
             }
             
-            let sectionModel = CitySectionModel(model: nil, items: resultCities)
+            let sectionModel = CitySectionModel(model: Self.section1, items: resultCities)
             self.prvFilteredCities.accept([sectionModel])
         })
         .disposed(by: disposeBag)
