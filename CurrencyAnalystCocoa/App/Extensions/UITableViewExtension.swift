@@ -17,4 +17,10 @@ extension UITableView {
         }
     }
     
+    func deselectRowIfSelected(animated: Bool = false) {
+        if let index = self.indexPathForSelectedRow {
+            self.deselectRow(at: index, animated: animated)
+        }
+    }
+    
 }

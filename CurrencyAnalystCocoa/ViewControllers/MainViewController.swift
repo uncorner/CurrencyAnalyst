@@ -13,6 +13,7 @@ import RxAlamofire
 import RxSwift
 import RxCocoa
 import RxDataSources
+import Action
 
 
 class MainViewController: BaseViewController {
@@ -52,7 +53,7 @@ class MainViewController: BaseViewController {
         setupSettingsButton()
         setupNavigationBar()
         setupBindings()
-        viewModel.loadAppSettings()
+        viewModel.loadAppSettingsAction.execute()
     }
    
     private func setupBindings() {
@@ -203,9 +204,10 @@ class MainViewController: BaseViewController {
         tableView.register(InfoExchangeTableViewCell.nib(), forCellReuseIdentifier: InfoExchangeTableViewCell.cellId)
         tableView.register(HeadExchangeTableViewCell.nib(), forCellReuseIdentifier: HeadExchangeTableViewCell.cellId)
         
-        let refreshControl = UIRefreshControl()
+        var refreshControl = UIRefreshControl()
         refreshControl.tintColor = Styles.CommonActivityAnimating.activityColor
-        refreshControl.addTarget(self, action: #selector(refreshTableView(sender:)), for: .valueChanged)
+        //refreshControl.addTarget(self, action: #selector(refreshTableView(sender:)), for: .valueChanged)
+        refreshControl.rx.action = viewModel.loadCitiesAndExchangesAction
         tableView.refreshControl = refreshControl
         
         tableView.separatorStyle = .none
@@ -242,21 +244,10 @@ class MainViewController: BaseViewController {
         super.viewWillAppear(animated)
         
         if isNeedAutoUpdate {
-            viewModel.loadCitiesAndExchanges()
+            viewModel.loadCitiesAndExchangesAction.execute()
         }
         
-        deselectTableRow()
-    }
-    
-    private func deselectTableRow() {
-        // deselect rows
-        if let index = self.tableView.indexPathForSelectedRow{
-            self.tableView.deselectRow(at: index, animated: false)
-        }
-    }
-    
-    @objc private func refreshTableView(sender: UIRefreshControl) {
-        viewModel.loadCitiesAndExchanges()
+        tableView.deselectRowIfSelected()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

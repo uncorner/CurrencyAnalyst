@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import Action
 
 final class ExchangeListViewModel {
     
@@ -46,18 +47,23 @@ final class ExchangeListViewModel {
         prvCities
     }
     
+    // MARK: Actions
+    lazy var loadAppSettingsAction = CocoaAction(workFactory: loadAppSettings)
+    lazy var loadCitiesAndExchangesAction = CocoaAction(workFactory: loadCitiesAndExchanges)
+    
     init(networkService: NetworkService) {
         self.networkService = networkService
     }
     
-    func loadAppSettings() {
+    private func loadAppSettings() -> Observable<Void> {
         let userDefaults = UserDefaults.standard
         selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
+        return .empty()
     }
     
-    func loadCitiesAndExchanges() {
+    private func loadCitiesAndExchanges() -> Observable<Void> {
         print(#function)
-        guard let exchangeUrl = selectedCityId.toSiteURL() else {return}
+        guard let exchangeUrl = selectedCityId.toSiteURL() else {return .empty()}
         print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
         
         prvLoadingStatus.accept(.loading)
@@ -104,6 +110,8 @@ final class ExchangeListViewModel {
                 self?.prvLoadingStatus.accept(.success)
             }
             .disposed(by: disposeBag)
+        
+        return .empty()
     }
     
     private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
