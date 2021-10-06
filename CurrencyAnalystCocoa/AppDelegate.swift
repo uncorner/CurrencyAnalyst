@@ -13,12 +13,40 @@ import CurrencyAnalystCommon
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    
+//    var window: UIWindow?
+//      func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+//        let service = TaskService()
+//        let sceneCoordinator = SceneCoordinator(window: window!)
+//
+//        let tasksViewModel = TasksViewModel(taskService: service, coordinator: sceneCoordinator)
+//        let firstScene = Scene.tasks(tasksViewModel)
+//        sceneCoordinator.transition(to: firstScene, type: .root)
+//        return true
+//      }
+    
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         GMSServices.provideAPIKey(GmsHelper.getKey())
         GMSPlacesClient.provideAPIKey(GmsHelper.getKey())
+        
+        //>>>>>>>>>>>>>>>
+//        let window = application.windows.first!
+//        let sceneCoordinator = SceneCoordinator(window: window)
+//
+//        let networkService = getNetworkService()
+//        let viewModel = ExchangeListViewModel(networkService: networkService)
+//        let firstScene = Scene.exchangeViewModel(viewModel)
+//        sceneCoordinator.transition(to: firstScene, type: .root)
+        
         return true
     }
+    
+//    private func getNetworkService() -> NetworkService {
+//        let dataSource = ExchangeDataSourceFactory.create()
+//        return NetworkServiceFactory.create(dataSource: dataSource)
+//    }
 
     // MARK: UISceneSession Lifecycle
 
