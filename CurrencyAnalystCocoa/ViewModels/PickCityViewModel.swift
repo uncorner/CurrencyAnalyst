@@ -32,19 +32,28 @@ class PickCityViewModel {
     init(cities: [City]) {
         self.cities = cities
         
-        let firstSectionModel = CitySectionModel(model: Self.section1, items: cities)
-        prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [firstSectionModel])
+        let sectionModel = CitySectionModel(model: Self.section1, items: cities)
+        prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [sectionModel])
         
-        query.subscribe(onNext: { [weak self] query in
-            guard let self = self else {return}
-            let resultCities = self.cities.filter { city in
-                city.name.caseInsensitiveHasPrefix(query ?? "")
-            }
-            
-            let sectionModel = CitySectionModel(model: Self.section1, items: resultCities)
-            self.prvFilteredCities.accept([sectionModel])
-        })
-        .disposed(by: disposeBag)
+        query.throttle(.milliseconds(200), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+            .map({ queryText in
+                queryText?.trimming()
+            })
+            .subscribe(onNext: { [weak self] queryText in
+                guard let self = self else {return}
+                
+                var resultCities: [City] = self.cities
+                if let queryText = queryText, queryText.isEmpty == false {
+                    resultCities = self.cities.filter { city in
+                        city.name.caseInsensitiveHasPrefix(queryText)
+                    }
+                }
+                
+                let sectionModel = CitySectionModel(model: Self.section1, items: resultCities)
+                self.prvFilteredCities.accept([sectionModel])
+            })
+            .disposed(by: disposeBag)
     }
     
 }
