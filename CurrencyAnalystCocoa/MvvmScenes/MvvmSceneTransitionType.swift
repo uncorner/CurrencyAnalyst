@@ -1,6 +1,6 @@
 import Foundation
 
-enum SceneTransitionType {
+enum MvvmSceneTransitionType {
     // you can extend this to add animated transition types,
     // interactive transitions and even child view controllers!
     

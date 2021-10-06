@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import RxSwift
 
-protocol BindableType: AnyObject {
+protocol MvvmBindableType: AnyObject {
     associatedtype ViewModelType
     
     var viewModel: ViewModelType! { get set }
@@ -19,7 +19,7 @@ protocol BindableType: AnyObject {
     func bindViewModel()
 }
 
-extension BindableType where Self: UIViewController {
+extension MvvmBindableType where Self: UIViewController {
     func bindViewModel(to model: Self.ViewModelType) {
         viewModel = model
         loadViewIfNeeded()

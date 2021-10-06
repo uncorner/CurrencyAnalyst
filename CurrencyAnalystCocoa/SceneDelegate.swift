@@ -19,12 +19,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         
-        //>>>>>>>>>>>>>>>
-        let sceneCoordinator = SceneCoordinator(window: window!)
+        setupMvvmSceneCoordinator(window: window!)
+    }
+    
+    private func setupMvvmSceneCoordinator(window: UIWindow) {
+        let sceneCoordinator = MvvmSceneCoordinator(window: window)
         
         let networkService = getNetworkService()
         let viewModel = ExchangeListViewModel(networkService: networkService)
-        let firstScene = Scene.exchangeListViewModel(viewModel)
+        let firstScene = MvvmScene.exchangeListViewModel(viewModel)
         sceneCoordinator.transition(to: firstScene, type: .root)
     }
     

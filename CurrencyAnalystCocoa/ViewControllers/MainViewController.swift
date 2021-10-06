@@ -16,13 +16,7 @@ import RxDataSources
 import Action
 
 
-class MainViewController: BaseViewController, BindableType {
-    //var viewModel: ExchangeListViewModel!
-    
-    
-    
-
-    
+class MainViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var settingsButtonItem: UIBarButtonItem!
     @IBOutlet weak var cbDollarImageView: UIImageView!
@@ -45,29 +39,6 @@ class MainViewController: BaseViewController, BindableType {
     }
     
     var viewModel: ExchangeListViewModel!
-    
-//    func bindViewModel() {
-//        viewModel.sectionedItems
-//          .bind(to: tableView.rx.items(dataSource: dataSource))
-//          .disposed(by: self.rx.disposeBag)
-//
-//        newTaskButton.rx.action = viewModel.onCreateTask()
-//
-//        tableView.rx.itemSelected
-//          .do(onNext: { [unowned self] indexPath in
-//            self.tableView.deselectRow(at: indexPath, animated: false)
-//          })
-//          .map { [unowned self] indexPath in
-//            try! self.dataSource.model(at: indexPath) as! TaskItem
-//          }
-//          .bind(to: viewModel.editAction.inputs)
-//          .disposed(by: self.rx.disposeBag)
-//      }
-    
-    func bindViewModel() {
-        setupBindings()
-    }
-    
     private let showBankDetailSegue = "showBankDetail"
     private let showPickCitySegue = "showPickCitySegue"
     //private lazy var viewModel = ExchangeListViewModel(networkService: networkService)
@@ -83,6 +54,10 @@ class MainViewController: BaseViewController, BindableType {
         setupNavigationBar()
         //setupBindings()
         viewModel.loadAppSettingsAction.execute()
+    }
+    
+    func bindViewModel() {
+        setupBindings()
     }
    
     private func setupBindings() {

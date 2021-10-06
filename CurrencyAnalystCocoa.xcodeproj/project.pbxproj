@@ -11,16 +11,16 @@
 		2EEEC0AE207CFEC305150758 /* Pods_CurrencyAnalystCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11FC675EEE665FADC8E8C552 /* Pods_CurrencyAnalystCocoa.framework */; };
 		921DFA1626FA0E4200769C7D /* ExchangeListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 921DFA1526FA0E4200769C7D /* ExchangeListViewModel.swift */; };
 		922DDE8A26E9340D008122DE /* CachedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922DDE8926E9340D008122DE /* CachedImageLoader.swift */; };
-		9231D929270DBA6000B5A5AC /* BindableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9231D928270DBA6000B5A5AC /* BindableType.swift */; };
+		9231D929270DBA6000B5A5AC /* MvvmBindableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9231D928270DBA6000B5A5AC /* MvvmBindableType.swift */; };
 		923B258D26FCBED70034E04C /* ExchangeTableViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */; };
 		9291429726F350BD00634BF1 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429626F350BD00634BF1 /* NetworkService.swift */; };
 		9291429A26F3520600634BF1 /* NetworkServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429926F3520600634BF1 /* NetworkServiceFactory.swift */; };
 		9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */; };
-		92AA4908270CDBCA00A67813 /* Scene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4903270CDBCA00A67813 /* Scene.swift */; };
-		92AA4909270CDBCA00A67813 /* Scene+ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4904270CDBCA00A67813 /* Scene+ViewController.swift */; };
-		92AA490A270CDBCA00A67813 /* SceneCoordinatorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4905270CDBCA00A67813 /* SceneCoordinatorType.swift */; };
-		92AA490B270CDBCA00A67813 /* SceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4906270CDBCA00A67813 /* SceneCoordinator.swift */; };
-		92AA490C270CDBCA00A67813 /* SceneTransitionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4907270CDBCA00A67813 /* SceneTransitionType.swift */; };
+		92AA4908270CDBCA00A67813 /* MvvmScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4903270CDBCA00A67813 /* MvvmScene.swift */; };
+		92AA4909270CDBCA00A67813 /* MvvmScene+ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4904270CDBCA00A67813 /* MvvmScene+ViewController.swift */; };
+		92AA490A270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4905270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift */; };
+		92AA490B270CDBCA00A67813 /* MvvmSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4906270CDBCA00A67813 /* MvvmSceneCoordinator.swift */; };
+		92AA490C270CDBCA00A67813 /* MvvmSceneTransitionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4907270CDBCA00A67813 /* MvvmSceneTransitionType.swift */; };
 		92AA490E270CDFCD00A67813 /* UINavigationController+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA490D270CDFCD00A67813 /* UINavigationController+Rx.swift */; };
 		92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */; };
 		92B97EE6270616EF00DFEDE1 /* DataLoadingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */; };
@@ -96,16 +96,16 @@
 		68C116AC55F35E96A2FF493B /* Pods-CurrencyAnalystCocoa.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CurrencyAnalystCocoa.debug.xcconfig"; path = "Target Support Files/Pods-CurrencyAnalystCocoa/Pods-CurrencyAnalystCocoa.debug.xcconfig"; sourceTree = "<group>"; };
 		921DFA1526FA0E4200769C7D /* ExchangeListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeListViewModel.swift; sourceTree = "<group>"; };
 		922DDE8926E9340D008122DE /* CachedImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedImageLoader.swift; sourceTree = "<group>"; };
-		9231D928270DBA6000B5A5AC /* BindableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindableType.swift; sourceTree = "<group>"; };
+		9231D928270DBA6000B5A5AC /* MvvmBindableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MvvmBindableType.swift; sourceTree = "<group>"; };
 		923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeTableViewSection.swift; sourceTree = "<group>"; };
 		9291429626F350BD00634BF1 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9291429926F3520600634BF1 /* NetworkServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceFactory.swift; sourceTree = "<group>"; };
 		9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeNetworkService.swift; sourceTree = "<group>"; };
-		92AA4903270CDBCA00A67813 /* Scene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Scene.swift; sourceTree = "<group>"; };
-		92AA4904270CDBCA00A67813 /* Scene+ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Scene+ViewController.swift"; sourceTree = "<group>"; };
-		92AA4905270CDBCA00A67813 /* SceneCoordinatorType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneCoordinatorType.swift; sourceTree = "<group>"; };
-		92AA4906270CDBCA00A67813 /* SceneCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneCoordinator.swift; sourceTree = "<group>"; };
-		92AA4907270CDBCA00A67813 /* SceneTransitionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneTransitionType.swift; sourceTree = "<group>"; };
+		92AA4903270CDBCA00A67813 /* MvvmScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmScene.swift; sourceTree = "<group>"; };
+		92AA4904270CDBCA00A67813 /* MvvmScene+ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MvvmScene+ViewController.swift"; sourceTree = "<group>"; };
+		92AA4905270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmSceneCoordinatorType.swift; sourceTree = "<group>"; };
+		92AA4906270CDBCA00A67813 /* MvvmSceneCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmSceneCoordinator.swift; sourceTree = "<group>"; };
+		92AA4907270CDBCA00A67813 /* MvvmSceneTransitionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmSceneTransitionType.swift; sourceTree = "<group>"; };
 		92AA490D270CDFCD00A67813 /* UINavigationController+Rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Rx.swift"; sourceTree = "<group>"; };
 		92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueExtension.swift; sourceTree = "<group>"; };
 		92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoadingStatus.swift; sourceTree = "<group>"; };
@@ -240,17 +240,17 @@
 			path = NetworkService;
 			sourceTree = "<group>";
 		};
-		92AA4902270CDB4D00A67813 /* Scenes */ = {
+		92AA4902270CDB4D00A67813 /* MvvmScenes */ = {
 			isa = PBXGroup;
 			children = (
-				92AA4903270CDBCA00A67813 /* Scene.swift */,
-				92AA4904270CDBCA00A67813 /* Scene+ViewController.swift */,
-				92AA4906270CDBCA00A67813 /* SceneCoordinator.swift */,
-				92AA4905270CDBCA00A67813 /* SceneCoordinatorType.swift */,
-				92AA4907270CDBCA00A67813 /* SceneTransitionType.swift */,
-				9231D928270DBA6000B5A5AC /* BindableType.swift */,
+				92AA4903270CDBCA00A67813 /* MvvmScene.swift */,
+				92AA4904270CDBCA00A67813 /* MvvmScene+ViewController.swift */,
+				92AA4906270CDBCA00A67813 /* MvvmSceneCoordinator.swift */,
+				92AA4905270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift */,
+				92AA4907270CDBCA00A67813 /* MvvmSceneTransitionType.swift */,
+				9231D928270DBA6000B5A5AC /* MvvmBindableType.swift */,
 			);
-			path = Scenes;
+			path = MvvmScenes;
 			sourceTree = "<group>";
 		};
 		AA07FE042508EFD400AEB006 /* ExchangeTable */ = {
@@ -327,7 +327,7 @@
 		AA474DCF24B0BEB600F0B120 /* CurrencyAnalystCocoa */ = {
 			isa = PBXGroup;
 			children = (
-				92AA4902270CDB4D00A67813 /* Scenes */,
+				92AA4902270CDB4D00A67813 /* MvvmScenes */,
 				921DFA1426FA0DEA00769C7D /* ViewModels */,
 				AA92808F24CB2A0E00B7A1F1 /* App */,
 				AA92808E24CB29FC00B7A1F1 /* Models */,
@@ -635,11 +635,11 @@
 				AAC6DBBF24B3A02E00345678 /* ExchangeTableViewCell.swift in Sources */,
 				AA9280A124CB339E00B7A1F1 /* CurrencyExchange.swift in Sources */,
 				AAC1066E24C623D4008DEE82 /* ExchangeBoxView.swift in Sources */,
-				92AA490C270CDBCA00A67813 /* SceneTransitionType.swift in Sources */,
+				92AA490C270CDBCA00A67813 /* MvvmSceneTransitionType.swift in Sources */,
 				AAAC691324B2250800BCB7FE /* MainViewController.swift in Sources */,
 				9291429726F350BD00634BF1 /* NetworkService.swift in Sources */,
-				92AA490A270CDBCA00A67813 /* SceneCoordinatorType.swift in Sources */,
-				92AA4909270CDBCA00A67813 /* Scene+ViewController.swift in Sources */,
+				92AA490A270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift in Sources */,
+				92AA4909270CDBCA00A67813 /* MvvmScene+ViewController.swift in Sources */,
 				AA9280A724CB339E00B7A1F1 /* ExchangeListResult.swift in Sources */,
 				9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */,
 				92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */,
@@ -678,11 +678,11 @@
 				AA31235F24D329BB000A8EFE /* OfficeTableViewCell.swift in Sources */,
 				AAE7649024F17FBF00B78CFC /* UIColorExtension.swift in Sources */,
 				AA6D8E0424FEDB43005CAA99 /* CentralBankInfo.swift in Sources */,
-				9231D929270DBA6000B5A5AC /* BindableType.swift in Sources */,
+				9231D929270DBA6000B5A5AC /* MvvmBindableType.swift in Sources */,
 				922DDE8A26E9340D008122DE /* CachedImageLoader.swift in Sources */,
-				92AA490B270CDBCA00A67813 /* SceneCoordinator.swift in Sources */,
+				92AA490B270CDBCA00A67813 /* MvvmSceneCoordinator.swift in Sources */,
 				AA474DD324B0BEB600F0B120 /* SceneDelegate.swift in Sources */,
-				92AA4908270CDBCA00A67813 /* Scene.swift in Sources */,
+				92AA4908270CDBCA00A67813 /* MvvmScene.swift in Sources */,
 				AA450D3024E178AA005D48F7 /* PickCityViewController.swift in Sources */,
 				AA450D3324E182B9005D48F7 /* PickCityTableViewCell.swift in Sources */,
 				AA9280A324CB339E00B7A1F1 /* ParsedGeoData.swift in Sources */,
