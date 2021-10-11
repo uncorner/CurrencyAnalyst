@@ -15,6 +15,7 @@ typealias CitySectionModel = AnimatableSectionModel<String, City>
 
 class PickCityViewModel {
     private static let section1 = "section_1"
+    private let sceneCoordinator: MvvmSceneCoordinator
     private let disposeBag = DisposeBag()
     private let prvFilteredCities: BehaviorRelay<[CitySectionModel]>
     
@@ -25,12 +26,16 @@ class PickCityViewModel {
     // MARK: OUT
     let cities: [City]
     
+    let setSelectedCityIdCallback: (String)->Void
+    
     var filteredCities: Driver<[CitySectionModel]> {
         prvFilteredCities.asDriver()
     }
     
-    init(cities: [City]) {
+    init(sceneCoordinator: MvvmSceneCoordinator, cities: [City], setSelectedCityIdCallback: @escaping (String)->Void) {
+        self.sceneCoordinator = sceneCoordinator
         self.cities = cities
+        self.setSelectedCityIdCallback = setSelectedCityIdCallback
         
         let sectionModel = CitySectionModel(model: Self.section1, items: cities)
         prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [sectionModel])

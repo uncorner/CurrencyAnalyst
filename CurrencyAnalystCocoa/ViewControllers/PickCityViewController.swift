@@ -11,14 +11,13 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 
-class PickCityViewController: BaseViewController {
-    
+class PickCityViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var boxView: UIView!
     
-    var modelView: PickCityViewModel!
-    var setSelectedCityIdCallback: ((String)->())?
+    var viewModel: PickCityViewModel!
+    //var setSelectedCityIdCallback: ((String)->())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,13 +25,17 @@ class PickCityViewController: BaseViewController {
         setupSearchBar()
         setupTableView()
         setupOtherViews()
-        setupBindings()
+        //setupBindings()
         scrollTableViewToSelectedItem()
     }
     
+    func bindViewModel() {
+        setupBindings()
+    }
+    
     private func scrollTableViewToSelectedItem() {
-        if let selectedId = modelView.selectedCityId {
-            let selectedIndex = modelView.cities.firstIndex(where: { item in
+        if let selectedId = viewModel.selectedCityId {
+            let selectedIndex = viewModel.cities.firstIndex(where: { item in
                 item.id == selectedId
             })
             
@@ -48,25 +51,26 @@ class PickCityViewController: BaseViewController {
             
             let cell = tableView.dequeueReusableCell(withIdentifier: PickCityTableViewCell.cellId, for: indexPath) as! PickCityTableViewCell
             cell.titleLabel.text = city.name
-            cell.checkboxImage.isHidden = city.id != self.modelView.selectedCityId
+            cell.checkboxImage.isHidden = city.id != self.viewModel.selectedCityId
             return cell
         }
         
-        modelView.filteredCities
+        viewModel.filteredCities
             .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
         tableView.rx.modelSelected(City.self)
             .asDriver()
             .drive { [weak self] city in
-                self?.modelView.selectedCityId = city.id
-                self?.setSelectedCityIdCallback?(city.id)
+                self?.viewModel.selectedCityId = city.id
+                //self?.setSelectedCityIdCallback?(city.id)
+                self?.viewModel.setSelectedCityIdCallback(city.id)
                 self?.tableView.reloadData()
             }
             .disposed(by: disposeBag)
         
         searchBar.rx.text
-            .bind(to: modelView.query)
+            .bind(to: viewModel.query)
             .disposed(by: disposeBag)
         
     }

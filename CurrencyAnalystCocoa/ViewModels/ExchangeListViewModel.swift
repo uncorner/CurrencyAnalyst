@@ -18,8 +18,10 @@ final class ExchangeListViewModel {
         ExchangeTableViewSection(items: [])
     ]
     
+    private let sceneCoordinator: MvvmSceneCoordinator
     private let disposeBag = DisposeBag()
     private let networkService: NetworkService
+    
     
     private let prvExchangeItems = BehaviorRelay(value: sectionedItemsEmptyData)
     private let prvLoadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
@@ -31,6 +33,8 @@ final class ExchangeListViewModel {
     var selectedCityId = Constants.defaultCityId
     
     // MARK: OUT
+    var isNeedAutoUpdate = true
+    
     var exchangeItems: Driver<[ExchangeTableViewSection]> {
         prvExchangeItems.asDriver()
     }
@@ -50,9 +54,46 @@ final class ExchangeListViewModel {
     // MARK: Actions
     lazy var loadAppSettingsAction = CocoaAction(workFactory: loadAppSettings)
     lazy var loadCitiesAndExchangesAction = CocoaAction(workFactory: loadCitiesAndExchanges)
+    lazy var showPickCityAction = CocoaAction(workFactory: showToPickCity)
     
-    init(networkService: NetworkService) {
+    init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService) {
+        self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
+    }
+    
+    private func showToPickCity() -> Observable<Void> {
+        //>>>>>>>>
+        print(#function)
+        
+//        return self.sceneCoordinator
+//                    .transition(to: Scene.editTask(editViewModel), type: .modal)
+//                    .asObservable()
+//                    .map { _ in }
+        
+        // viewodel = PickCityViewModel()
+        //sceneCoordinator
+        
+        
+        // set callback
+        let callback: (String)->Void = { [weak self] cityId in
+            guard let self = self else {return}
+
+            self.isNeedAutoUpdate = self.selectedCityId != cityId
+
+            if self.isNeedAutoUpdate {
+                self.selectedCityId = cityId
+
+                let userDefaults = UserDefaults.standard
+                userDefaults.setCityId(cityId: cityId)
+            }
+        }
+        
+        let viewModel = PickCityViewModel(sceneCoordinator: sceneCoordinator, cities: cities,setSelectedCityIdCallback: callback)
+        
+        sceneCoordinator.transition(to: MvvmScene.pickCityViewModel(viewModel), type: .push)
+        
+        
+        return .empty()
     }
     
     private func loadAppSettings() -> Observable<Void> {

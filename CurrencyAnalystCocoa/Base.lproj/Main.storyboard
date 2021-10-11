@@ -137,11 +137,7 @@
                         </variation>
                     </view>
                     <navigationItem key="navigationItem" title="Root View Controller" id="0fG-66-Rrk">
-                        <barButtonItem key="rightBarButtonItem" title="settings" id="71x-DN-GBd" userLabel="Settings">
-                            <connections>
-                                <segue destination="lSe-FC-dEI" kind="show" identifier="showPickCitySegue" id="EGM-TJ-oVt"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="settings" id="71x-DN-GBd" userLabel="Settings"/>
                     </navigationItem>
                     <connections>
                         <outlet property="cbBoxView" destination="aX0-OS-zcE" id="mtO-YQ-kLd"/>
@@ -349,20 +345,20 @@
         <!--Pick City View Controller-->
         <scene sceneID="IgW-zf-Ffj">
             <objects>
-                <viewController id="lSe-FC-dEI" customClass="PickCityViewController" customModule="CurrencyAnalystCocoa" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PickCity" id="lSe-FC-dEI" customClass="PickCityViewController" customModule="CurrencyAnalystCocoa" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="e1Y-XD-mJu">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="smD-Rf-b2L" userLabel="View Box">
-                                <rect key="frame" x="5" y="88" width="404" height="769"/>
+                                <rect key="frame" x="5" y="44" width="404" height="813"/>
                                 <subviews>
                                     <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="k2N-pr-jGM">
                                         <rect key="frame" x="0.0" y="0.0" width="404" height="51"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </searchBar>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="dlU-dQ-Zpd">
-                                        <rect key="frame" x="0.0" y="61" width="404" height="708"/>
+                                        <rect key="frame" x="0.0" y="61" width="404" height="752"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                     </tableView>
                                 </subviews>
@@ -396,7 +392,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hmv-TL-bI1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="69.565217391304358" y="-621.42857142857144"/>
+            <point key="canvasLocation" x="979.71014492753636" y="-621.42857142857144"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="3ie-Fm-nVs">

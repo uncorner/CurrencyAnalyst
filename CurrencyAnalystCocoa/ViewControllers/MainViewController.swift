@@ -43,7 +43,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
     private let showPickCitySegue = "showPickCitySegue"
     //private lazy var viewModel = ExchangeListViewModel(networkService: networkService)
     private let disposedBag = DisposeBag()
-    private var isNeedAutoUpdate = true
+    //private var isNeedAutoUpdate = true
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -74,14 +74,21 @@ class MainViewController: BaseViewController, MvvmBindableType {
             .drive(cbEuroRateLabel.rx.text)
             .disposed(by: disposedBag)
         
-        if let settingsButton = navigationItem.rightBarButtonItem {
-            settingsButton.rx.tap
-                .subscribe(onNext: { [weak self] in
-                    guard let self = self else {return}
-                    self.performSegue(withIdentifier: self.showPickCitySegue, sender: self)
-                })
-                .disposed(by: disposedBag)
-        }
+        //>>>>>>>>>>>
+        // barButton bind to viewModel.transitionAction
+//        if let settingsButton = navigationItem.rightBarButtonItem {
+//            settingsButton.rx.tap
+//                .subscribe(onNext: { [weak self] in
+//                    guard let self = self else {return}
+//                    self.performSegue(withIdentifier: self.showPickCitySegue, sender: self)
+//
+//                })
+//                .disposed(by: disposedBag)
+//        }
+        
+        var settingsButton = navigationItem.rightBarButtonItem
+        settingsButton?.rx.action = viewModel.showPickCityAction
+        
     }
     
     private func setupBindingsForTableView() {
@@ -135,7 +142,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
                 
                 switch status {
                 case .loading:
-                    if self.isNeedAutoUpdate {
+                    if self.viewModel.isNeedAutoUpdate {
                         self.startActivityAnimatingAndLock()
                     }
                     break
@@ -154,13 +161,13 @@ class MainViewController: BaseViewController, MvvmBindableType {
     }
     
     private func stopAllActivityAnimationAndUnlock() {
-        if isNeedAutoUpdate {
+        if viewModel.isNeedAutoUpdate {
             stopActivityAnimatingAndUnlock()
         }
         else {
             tableView.refreshControl?.endRefreshing()
         }
-        isNeedAutoUpdate = false
+        viewModel.isNeedAutoUpdate = false
     }
     
     private func setBankLogoImage(exchange: CurrencyExchange, cell: ExchangeTableViewCell) {
@@ -247,7 +254,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if isNeedAutoUpdate {
+        if viewModel.isNeedAutoUpdate {
             viewModel.loadCitiesAndExchangesAction.execute()
         }
         
@@ -260,6 +267,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
             guard let controller = segue.destination as? DetailBankViewController else { return }
             controller.exchange = exchange
         }
+        /*
         else if segue.identifier == showPickCitySegue {
             guard viewModel.cities.count > 0 else {
                 return
@@ -285,7 +293,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
                     userDefaults.setCityId(cityId: cityId)
                 }
             }
-        }
+        }*/
     }
     
 }
