@@ -26,16 +26,17 @@ class PickCityViewModel {
     // MARK: OUT
     let cities: [City]
     
-    let setSelectedCityIdCallback: (String)->Void
+    let setSelectedCityIdCallback: (String)->()
     
     var filteredCities: Driver<[CitySectionModel]> {
         prvFilteredCities.asDriver()
     }
     
-    init(sceneCoordinator: MvvmSceneCoordinator, cities: [City], setSelectedCityIdCallback: @escaping (String)->Void) {
+    init(sceneCoordinator: MvvmSceneCoordinator, cities: [City], setSelectedCityIdCallback: @escaping (String)->Void, selectedCityId: String) {
         self.sceneCoordinator = sceneCoordinator
         self.cities = cities
         self.setSelectedCityIdCallback = setSelectedCityIdCallback
+        self.selectedCityId = selectedCityId
         
         let sectionModel = CitySectionModel(model: Self.section1, items: cities)
         prvFilteredCities = BehaviorRelay<[CitySectionModel]>(value: [sectionModel])

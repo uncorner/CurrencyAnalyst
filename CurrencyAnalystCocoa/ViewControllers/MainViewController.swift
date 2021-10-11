@@ -40,10 +40,8 @@ class MainViewController: BaseViewController, MvvmBindableType {
     
     var viewModel: ExchangeListViewModel!
     private let showBankDetailSegue = "showBankDetail"
-    private let showPickCitySegue = "showPickCitySegue"
-    //private lazy var viewModel = ExchangeListViewModel(networkService: networkService)
+    //private let showPickCitySegue = "showPickCitySegue"
     private let disposedBag = DisposeBag()
-    //private var isNeedAutoUpdate = true
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
@@ -52,15 +50,10 @@ class MainViewController: BaseViewController, MvvmBindableType {
         setupOtherViews()
         setupSettingsButton()
         setupNavigationBar()
-        //setupBindings()
-        viewModel.loadAppSettingsAction.execute()
+        viewModel.loadAppSettings()
     }
     
     func bindViewModel() {
-        setupBindings()
-    }
-   
-    private func setupBindings() {
         setupBindingsForTableView()
         
         viewModel.cbDollarRate
@@ -74,21 +67,8 @@ class MainViewController: BaseViewController, MvvmBindableType {
             .drive(cbEuroRateLabel.rx.text)
             .disposed(by: disposedBag)
         
-        //>>>>>>>>>>>
-        // barButton bind to viewModel.transitionAction
-//        if let settingsButton = navigationItem.rightBarButtonItem {
-//            settingsButton.rx.tap
-//                .subscribe(onNext: { [weak self] in
-//                    guard let self = self else {return}
-//                    self.performSegue(withIdentifier: self.showPickCitySegue, sender: self)
-//
-//                })
-//                .disposed(by: disposedBag)
-//        }
-        
         var settingsButton = navigationItem.rightBarButtonItem
-        settingsButton?.rx.action = viewModel.showPickCityAction
-        
+        settingsButton?.rx.action = viewModel.onShowPickCity
     }
     
     private func setupBindingsForTableView() {
@@ -218,7 +198,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
         var refreshControl = UIRefreshControl()
         refreshControl.tintColor = Styles.CommonActivityAnimating.activityColor
         //refreshControl.addTarget(self, action: #selector(refreshTableView(sender:)), for: .valueChanged)
-        refreshControl.rx.action = viewModel.loadCitiesAndExchangesAction
+        refreshControl.rx.action = viewModel.onLoadCitiesAndExchanges
         tableView.refreshControl = refreshControl
         
         tableView.separatorStyle = .none
@@ -255,7 +235,7 @@ class MainViewController: BaseViewController, MvvmBindableType {
         super.viewWillAppear(animated)
         
         if viewModel.isNeedAutoUpdate {
-            viewModel.loadCitiesAndExchangesAction.execute()
+            viewModel.onLoadCitiesAndExchanges.execute()
         }
         
         tableView.deselectRowIfSelected()

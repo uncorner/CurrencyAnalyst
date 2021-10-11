@@ -17,7 +17,6 @@ class PickCityViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var boxView: UIView!
     
     var viewModel: PickCityViewModel!
-    //var setSelectedCityIdCallback: ((String)->())?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,27 +24,9 @@ class PickCityViewController: BaseViewController, MvvmBindableType {
         setupSearchBar()
         setupTableView()
         setupOtherViews()
-        //setupBindings()
-        scrollTableViewToSelectedItem()
     }
     
     func bindViewModel() {
-        setupBindings()
-    }
-    
-    private func scrollTableViewToSelectedItem() {
-        if let selectedId = viewModel.selectedCityId {
-            let selectedIndex = viewModel.cities.firstIndex(where: { item in
-                item.id == selectedId
-            })
-            
-            if let index = selectedIndex {
-                tableView.scrollToRow(at: IndexPath.init(row: index, section: 0), at: .middle, animated: false)
-            }
-        }
-    }
-    
-    private func setupBindings() {
         let dataSource = RxTableViewSectionedAnimatedDataSource<CitySectionModel>{ [weak self] dataSource, tableView, indexPath, city in
             guard let self = self else {return UITableViewCell()}
             
@@ -72,7 +53,21 @@ class PickCityViewController: BaseViewController, MvvmBindableType {
         searchBar.rx.text
             .bind(to: viewModel.query)
             .disposed(by: disposeBag)
-        
+
+        // scroll after content binding
+        scrollTableViewToSelectedItem()
+    }
+    
+    private func scrollTableViewToSelectedItem() {
+        if let selectedId = viewModel.selectedCityId {
+            let selectedIndex = viewModel.cities.firstIndex(where: { item in
+                item.id == selectedId
+            })
+            
+            if let index = selectedIndex {
+                tableView.scrollToRow(at: IndexPath.init(row: index, section: 0), at: .middle, animated: false)
+            }
+        }
     }
     
     private func setupOtherViews() {
