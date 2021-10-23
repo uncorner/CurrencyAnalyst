@@ -1,18 +1,35 @@
 import UIKit
 
 extension MvvmScene {
+    
     func viewController() -> UIViewController {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
         switch self {
         case .exchangeListViewModel(let viewModel):
-            let nc = storyboard.instantiateViewController(withIdentifier: "ExchangeList") as! UINavigationController
-            let vc = nc.viewControllers.first as! ExchangeListViewController
-            vc.bindViewModel(to: viewModel)
-            return nc
+            let result = fetchViewController(id: "ExchangeList", viewModel: viewModel, storyboard: storyboard) as (ExchangeListViewController,UIViewController)
+            return result.1
         case .pickCityViewModel(let viewModel):
-            let vc = storyboard.instantiateViewController(withIdentifier: "PickCity") as! PickCityViewController
-            vc.bindViewModel(to: viewModel)
-            return vc
+            let result = fetchViewController(id: "PickCity", viewModel: viewModel, storyboard: storyboard) as (PickCityViewController,UIViewController)
+            return result.1
         }
     }
+    
+    private func fetchViewController<T>(id: String, viewModel: T.ViewModelType, storyboard: UIStoryboard) -> (T, UIViewController)
+    where T:(MvvmBindableType & UIViewController)
+    {
+        let vc = storyboard.instantiateViewController(withIdentifier: id)
+        var bindableVc: T
+        
+        if let navigationVc = vc as? UINavigationController {
+            bindableVc = navigationVc.viewControllers.first as! T
+            bindableVc.bindViewModel(to: viewModel)
+            return (bindableVc,navigationVc)
+        }
+        
+        bindableVc = vc as! T
+        bindableVc.bindViewModel(to: viewModel)
+        return (bindableVc,bindableVc)
+    }
+    
 }
