@@ -27,10 +27,10 @@ final class ExchangeListViewModel {
     private let prvCbEuroRate = PublishRelay<String>()
     private var prvCities = [City]()
     
-    // MARK: IN
+    // MARK: In
     var selectedCityId = Constants.defaultCityId
     
-    // MARK: OUT
+    // MARK: Out
     var isNeedAutoUpdate = true
     
     var exchangeItems: Driver<[ExchangeTableViewSection]> {

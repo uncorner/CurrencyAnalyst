@@ -12,7 +12,7 @@
         <!--Root View Controller-->
         <scene sceneID="12w-Mb-dNB">
             <objects>
-                <viewController id="sPv-0K-8ak" customClass="MainViewController" customModule="CurrencyAnalystCocoa" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="sPv-0K-8ak" customClass="ExchangeListViewController" customModule="CurrencyAnalystCocoa" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="MIm-2B-ryY">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

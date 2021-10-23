@@ -16,7 +16,7 @@ import RxDataSources
 import Action
 
 
-class MainViewController: BaseViewController, MvvmBindableType {
+class ExchangeListViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var settingsButtonItem: UIBarButtonItem!
     @IBOutlet weak var cbDollarImageView: UIImageView!

@@ -13,17 +13,17 @@ import RxDataSources
 
 typealias CitySectionModel = AnimatableSectionModel<String, City>
 
-class PickCityViewModel {
+final class PickCityViewModel {
     private static let section1 = "section_1"
     private let sceneCoordinator: MvvmSceneCoordinator
     private let disposeBag = DisposeBag()
     private let prvFilteredCities: BehaviorRelay<[CitySectionModel]>
     
-    // MARK: IN
+    // MARK: In
     var selectedCityId: String?
     let query = PublishRelay<String?>()
     
-    // MARK: OUT
+    // MARK: Out
     let cities: [City]
     
     let setSelectedCityIdCallback: (String)->()

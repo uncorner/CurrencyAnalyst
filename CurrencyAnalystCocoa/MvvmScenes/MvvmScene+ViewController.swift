@@ -6,7 +6,7 @@ extension MvvmScene {
         switch self {
         case .exchangeListViewModel(let viewModel):
             let nc = storyboard.instantiateViewController(withIdentifier: "ExchangeList") as! UINavigationController
-            let vc = nc.viewControllers.first as! MainViewController
+            let vc = nc.viewControllers.first as! ExchangeListViewController
             vc.bindViewModel(to: viewModel)
             return nc
         case .pickCityViewModel(let viewModel):
