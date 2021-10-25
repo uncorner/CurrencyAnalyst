@@ -7,15 +7,15 @@ extension MvvmScene {
         
         switch self {
         case .exchangeListViewModel(let viewModel):
-            let result = fetchViewController(id: "ExchangeList", viewModel: viewModel, storyboard: storyboard) as (ExchangeListViewController,UIViewController)
+            let result = fetchViewController(id: "ExchangeList", viewModel, storyboard) as (ExchangeListViewController,UIViewController)
             return result.1
         case .pickCityViewModel(let viewModel):
-            let result = fetchViewController(id: "PickCity", viewModel: viewModel, storyboard: storyboard) as (PickCityViewController,UIViewController)
+            let result = fetchViewController(id: "PickCity", viewModel, storyboard) as (PickCityViewController,UIViewController)
             return result.1
         }
     }
     
-    private func fetchViewController<T>(id: String, viewModel: T.ViewModelType, storyboard: UIStoryboard) -> (T, UIViewController)
+    private func fetchViewController<T>(id: String, _ viewModel: T.ViewModelType, _ storyboard: UIStoryboard) -> (T, UIViewController)
     where T:(MvvmBindableType & UIViewController)
     {
         let vc = storyboard.instantiateViewController(withIdentifier: id)
