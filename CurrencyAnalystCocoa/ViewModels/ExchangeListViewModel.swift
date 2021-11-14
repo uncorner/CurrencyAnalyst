@@ -51,14 +51,14 @@ final class ExchangeListViewModel {
     
     // MARK: Actions
     lazy var onLoadCitiesAndExchanges = CocoaAction(workFactory: loadCitiesAndExchanges)
-    lazy var onShowPickCity = CocoaAction(workFactory: showToPickCity)
+    lazy var onShowPickCity = CocoaAction(workFactory: showPickCity)
     
     init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService) {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
     }
     
-    private func showToPickCity() -> Observable<Void> {
+    private func showPickCity() -> Observable<Void> {
         let callback: (String)->() = { [weak self] cityId in
             guard let self = self else {return}
             self.isNeedAutoUpdate = self.selectedCityId != cityId
@@ -72,6 +72,11 @@ final class ExchangeListViewModel {
         let viewModel = PickCityViewModel(sceneCoordinator: sceneCoordinator, cities: cities, setSelectedCityIdCallback: callback,selectedCityId: selectedCityId)
         sceneCoordinator.transition(to: MvvmScene.pickCityViewModel(viewModel), type: .push)
         return .empty()
+    }
+    
+    func showDetailBank(exchange: CurrencyExchange) {
+        let viewModel = DetailBankViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService, exchange: exchange)
+        sceneCoordinator.transition(to: MvvmScene.detailBankViewModel(viewModel), type: .push)
     }
     
     func loadAppSettings() {

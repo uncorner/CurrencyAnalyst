@@ -39,7 +39,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
     }
     
     var viewModel: ExchangeListViewModel!
-    private let showBankDetailSegue = "showBankDetail"
+    //private let showBankDetailSegue = "showBankDetail"
     //private let showPickCitySegue = "showPickCitySegue"
     private let disposedBag = DisposeBag()
     
@@ -110,7 +110,9 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
                     // do nothing
                     break
                 case .ExchangeItem(let exchange):
-                    self.performSegue(withIdentifier: self.showBankDetailSegue, sender: exchange)
+                    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+                    //self.performSegue(withIdentifier: self.showBankDetailSegue, sender: exchange)
+                    self.viewModel.showDetailBank(exchange: exchange)
                     break
                 }
             }
@@ -241,12 +243,12 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
         tableView.deselectRowIfSelected()
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showBankDetailSegue {
-            guard let exchange = sender as? CurrencyExchange else {return}
-            guard let controller = segue.destination as? DetailBankViewController else { return }
-            controller.exchange = exchange
-        }
+    //override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == showBankDetailSegue {
+//            guard let exchange = sender as? CurrencyExchange else {return}
+//            guard let controller = segue.destination as? DetailBankViewController else { return }
+//            controller.exchange = exchange
+//        }
         /*
         else if segue.identifier == showPickCitySegue {
             guard viewModel.cities.count > 0 else {
@@ -274,7 +276,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
                 }
             }
         }*/
-    }
+    //}
     
 }
 

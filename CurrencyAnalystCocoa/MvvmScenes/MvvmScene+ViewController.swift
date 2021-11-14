@@ -12,6 +12,9 @@ extension MvvmScene {
         case .pickCityViewModel(let viewModel):
             let result = fetchViewController(id: "PickCity", viewModel, storyboard) as (PickCityViewController,UIViewController)
             return result.1
+        case .detailBankViewModel(let viewModel):
+            let result = fetchViewController(id: "DetailBank", viewModel, storyboard) as (DetailBankViewController,UIViewController)
+            return result.1
         }
     }
     
