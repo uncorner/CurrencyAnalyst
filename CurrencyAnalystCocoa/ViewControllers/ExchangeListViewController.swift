@@ -39,8 +39,6 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
     }
     
     var viewModel: ExchangeListViewModel!
-    //private let showBankDetailSegue = "showBankDetail"
-    //private let showPickCitySegue = "showPickCitySegue"
     private let disposedBag = DisposeBag()
     
     override func viewDidLoad() {
@@ -110,8 +108,6 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
                     // do nothing
                     break
                 case .ExchangeItem(let exchange):
-                    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-                    //self.performSegue(withIdentifier: self.showBankDetailSegue, sender: exchange)
                     self.viewModel.showDetailBank(exchange: exchange)
                     break
                 }
@@ -242,41 +238,6 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
         
         tableView.deselectRowIfSelected()
     }
-    
-    //override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == showBankDetailSegue {
-//            guard let exchange = sender as? CurrencyExchange else {return}
-//            guard let controller = segue.destination as? DetailBankViewController else { return }
-//            controller.exchange = exchange
-//        }
-        /*
-        else if segue.identifier == showPickCitySegue {
-            guard viewModel.cities.count > 0 else {
-                return
-            }
-            guard let controller = segue.destination as? PickCityViewController else { return }
-            
-            //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-            //controller.cities = viewModel.cities
-            //controller.selectedCityId = viewModel.selectedCityId
-            controller.modelView = PickCityViewModel(cities: viewModel.cities)
-            controller.modelView.selectedCityId = viewModel.selectedCityId
-            
-            // set callback
-            controller.setSelectedCityIdCallback = { [weak self] cityId in
-                guard let self = self else {return}
-                
-                self.isNeedAutoUpdate = self.viewModel.selectedCityId != cityId
-                
-                if self.isNeedAutoUpdate {
-                    self.viewModel.selectedCityId = cityId
-                    
-                    let userDefaults = UserDefaults.standard
-                    userDefaults.setCityId(cityId: cityId)
-                }
-            }
-        }*/
-    //}
     
 }
 

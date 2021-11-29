@@ -26,15 +26,11 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var mapButton: UIButton!
     @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
     
+    var viewModel: DetailBankViewModel!
     var exchange: CurrencyExchange = CurrencyExchange()
-    
-    //>>>>>>>>>>>
-    //var officeCellDatas = [ExpandedCellData]()
-    
     var mapUrl: URL?
     let showMapSegue = "showMapSegue"
     private var shouldBeDisplayedOfficeTableBoxView = false
-    var viewModel: DetailBankViewModel!
     
     func bindViewModel() {
         let dataSource = RxTableViewSectionedAnimatedDataSource<BankOfficeTableViewSection>(
@@ -54,7 +50,6 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
                     return headerCell
                 }
                 else if let dataItem = item as? BankOfficeTableViewItemData {
-                    // content cell
                     let cell = tableView.dequeueReusableCell(withIdentifier: OfficeTableViewCell.cellId, for: indexPath) as! OfficeTableViewCell
                     cell.contentStackView.removeAllArrangedSubviews()
                     
@@ -78,7 +73,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
             })
         
         // bankOfficeItems
-        viewModel.prvBankOfficeItems
+        viewModel.bankOfficeItems
             .asDriver()
             .drive(officeTableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
@@ -90,10 +85,14 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
                 guard let indexPath = event.element else {return}
                 print(indexPath)
                 
-                var sections = self.viewModel.prvBankOfficeItems.value
+                var sections = self.viewModel.bankOfficeItems.value
                 sections[indexPath.section].isExpanded = !sections[indexPath.section].isExpanded
                 sections[indexPath.section].uniqueId = UUID().uuidString
-                self.viewModel.prvBankOfficeItems.accept(sections)
+                
+                let sectionIndex = IndexSet.init(integer: indexPath.section)
+                self.officeTableView.reloadSections(sectionIndex, with: .automatic)
+                
+                self.viewModel.bankOfficeItems.accept(sections)
             }
             .disposed(by: disposeBag)
         
