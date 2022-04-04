@@ -12,8 +12,8 @@ struct CurrencyExchangeUnit {
     
     var amountBuy: Decimal = 0
     var amountSell: Decimal = 0
-    var strAmountBuy = "0"
-    var strAmountSell = "0"
+    var strAmountBuy = Constants.rateStub
+    var strAmountSell = Constants.rateStub
     
     var isBestBuy = false
     var isBestSell = false

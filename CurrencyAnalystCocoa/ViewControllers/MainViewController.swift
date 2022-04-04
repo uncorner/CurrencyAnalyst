@@ -181,7 +181,7 @@ class MainViewController: BaseViewController {
     
     private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
         if exchangeRate.rate == 0 {
-            return Constants.cbRateStub
+            return Constants.rateStub
         }
         return exchangeRate.rateStr
     }

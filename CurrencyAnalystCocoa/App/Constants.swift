@@ -12,7 +12,7 @@ import UIKit
 class Constants {
     static let defaultCityId = "/kurs/moskva/"
     static let commonErrorMessage = "Произошла ошибка. Действие не может быть выполнено."
-    static let cbRateStub = "----"
+    static let rateStub = "----"
     
     struct Urls {
         static let sourceSiteUrl = "https://kovalut.ru/"
