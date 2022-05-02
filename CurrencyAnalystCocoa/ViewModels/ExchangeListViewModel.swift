@@ -40,10 +40,10 @@ final class ExchangeListViewModel {
         prvLoadingStatus.asDriver()
     }
     var cbDollarRate: Driver<String> {
-        prvCbDollarRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+        prvCbDollarRate.asDriver(onErrorJustReturn: Constants.rateStub)
     }
     var cbEuroRate: Driver<String> {
-        prvCbEuroRate.asDriver(onErrorJustReturn: Constants.cbRateStub)
+        prvCbEuroRate.asDriver(onErrorJustReturn: Constants.rateStub)
     }
     var cities: [City] {
         prvCities
@@ -139,7 +139,7 @@ final class ExchangeListViewModel {
     
     private func getCbExchangeRateAsText(_ exchangeRate: CbCurrencyExchangeRate) -> String {
         if exchangeRate.rate == 0 {
-            return Constants.cbRateStub
+            return Constants.rateStub
         }
         return exchangeRate.rateStr
     }
