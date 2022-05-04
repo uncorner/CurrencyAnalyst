@@ -17,7 +17,7 @@ final class DetailBankViewModel {
     private let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     
     // MARK: Out
-    let exchange: CurrencyExchange
+    let exchangeSeq: BehaviorRelay<CurrencyExchange>
     var mapUrl: URL?
     let bankOfficeItems = BehaviorRelay<[BankOfficeTableViewSection]>(value: [])
     
@@ -28,12 +28,12 @@ final class DetailBankViewModel {
     init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService, exchange: CurrencyExchange) {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
-        self.exchange = exchange
+        self.exchangeSeq = BehaviorRelay<CurrencyExchange>(value: exchange)
     }
     
     func loadBankOfficeData() {
         print(#function)
-        guard let url = exchange.bankUrl?.toSiteURL() else {return}
+        guard let url = exchangeSeq.value.bankUrl?.toSiteURL() else {return}
         //startActivityAnimatingAndLock()
         loadingStatus.accept(.loading)
         
