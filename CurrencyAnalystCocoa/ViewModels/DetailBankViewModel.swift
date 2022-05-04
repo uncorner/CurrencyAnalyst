@@ -15,9 +15,9 @@ final class DetailBankViewModel {
     private let disposeBag = DisposeBag()
     private var networkService: NetworkService
     private let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
-    private let exchange: CurrencyExchange
     
     // MARK: Out
+    let exchange: CurrencyExchange
     var mapUrl: URL?
     let bankOfficeItems = BehaviorRelay<[BankOfficeTableViewSection]>(value: [])
     
@@ -25,43 +25,11 @@ final class DetailBankViewModel {
         bankOfficeItems.value
     }
     
-//    var loadingStatus: Driver<DataLoadingStatus> {
-//        prvLoadingStatus.asDriver()
-//    }
-    
     init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService, exchange: CurrencyExchange) {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
         self.exchange = exchange
     }
-    
-    //    private func loadBankDetailedData() {
-    //        print(#function)
-    //        guard let url = exchange.bankUrl?.toSiteURL() else {return}
-    //        startActivityAnimatingAndLock()
-    //
-    //        networkService.getBankDetailSeq(url: url).subscribe { [weak self] result in
-    //            guard let self = self else {return}
-    //            DispatchQueue.printCurrentQueue()
-    //
-    //            self.officeCellDatas = result.dataTables.map({
-    //                ExpandedCellData(isExpanded: false, officeDataTable: $0)
-    //            })
-    //            self.mapUrl = result.mapUrl
-    //
-    //            self.shouldBeDisplayedOfficeTableBoxView = true
-    //            if UIWindow.isLandscape == false {
-    //                // portrait mode
-    //                self.showOfficeTableBoxView()
-    //            }
-    //            print("bank details loaded")
-    //        } onFailure: { [weak self] error in
-    //            self?.processResponseError(error)
-    //        } onDisposed: { [weak self] in
-    //            self?.stopActivityAnimatingAndUnlock()
-    //        }
-    //        .disposed(by: disposeBag)
-    //    }
     
     func loadBankOfficeData() {
         print(#function)
@@ -73,10 +41,6 @@ final class DetailBankViewModel {
             guard let self = self else {return}
             DispatchQueue.printCurrentQueue()
             
-//            self.officeCellDatas = result.dataTables.map({
-//                ExpandedCellData(isExpanded: false, officeDataTable: $0)
-//            })
-            
             let sections: [BankOfficeTableViewSection] =  result.dataTables.map({
                 let item1 = BankOfficeTableViewItemData(officeDataTable: $0)
                 let item2 = BankOfficeTableViewItemHeader(text: $0.header)
@@ -85,6 +49,7 @@ final class DetailBankViewModel {
             
             self.mapUrl = result.mapUrl
             
+            //>>> TODO
 //            self.shouldBeDisplayedOfficeTableBoxView = true
 //            if UIWindow.isLandscape == false {
 //                // portrait mode

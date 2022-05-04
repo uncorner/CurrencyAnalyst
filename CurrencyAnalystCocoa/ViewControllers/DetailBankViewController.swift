@@ -27,8 +27,6 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
     
     var viewModel: DetailBankViewModel!
-    var exchange: CurrencyExchange = CurrencyExchange()
-    var mapUrl: URL?
     let showMapSegue = "showMapSegue"
     private var shouldBeDisplayedOfficeTableBoxView = false
     
@@ -42,7 +40,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
                     let section = self.viewModel.bankOfficeItemsValue[indexPath.section]
                     headerCell.headerLabel.text = headerItem.text
                     headerCell.show(isExpanded: section.isExpanded)
-                    print("isExpanded: \(section.isExpanded)")
+                    //print("isExpanded: \(section.isExpanded)")
                     
                     let backgroundView = UIView()
                     backgroundView.backgroundColor = .clear
@@ -83,7 +81,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
             .subscribe { [weak self] event in
                 guard let self = self else {return}
                 guard let indexPath = event.element else {return}
-                print(indexPath)
+                //print(indexPath)
                 
                 var sections = self.viewModel.bankOfficeItems.value
                 sections[indexPath.section].isExpanded = !sections[indexPath.section].isExpanded
@@ -111,7 +109,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = exchange.bankName
+        title = viewModel.exchange.bankName
         setupOfficeTable()
         setupDetailBoxView()
         setupOfficeTableBoxView()
@@ -168,16 +166,16 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
         detailBoxTitleLabel.textColor = Styles.DetailBankViewController.titleLabelColor
         detailBoxTitleLabel.font = Styles.DetailBankViewController.boxTitleFont
         
-        exchangeBoxView.setData(exchange, bestRateBackColor: Styles.DetailBankViewController.DetailBoxView.bestRateBackColor)
-        updatedTimeLabel.text = "Обновлено \(exchange.updatedTime)"
+        exchangeBoxView.setData(viewModel.exchange, bestRateBackColor: Styles.DetailBankViewController.DetailBoxView.bestRateBackColor)
+        updatedTimeLabel.text = "Обновлено \(viewModel.exchange.updatedTime)"
         updatedTimeLabel.textColor = Styles.DetailBankViewController.DetailBoxView.updatedTimeLabelColor
         
-        let euroMessage = getBestExchangeMessage(currencyKind: .Euro, currencyExchange: exchange.euroExchange)
+        let euroMessage = getBestExchangeMessage(currencyKind: .Euro, currencyExchange: viewModel.exchange.euroExchange)
         if !euroMessage.isEmpty {
             addExtraInfo(euroMessage)
         }
         
-        let usdMessage = getBestExchangeMessage(currencyKind: .DollarUSA, currencyExchange: exchange.usdExchange)
+        let usdMessage = getBestExchangeMessage(currencyKind: .DollarUSA, currencyExchange: viewModel.exchange.usdExchange)
         if !usdMessage.isEmpty {
             addExtraInfo(usdMessage)
         }
@@ -209,7 +207,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     }
     
     @IBAction func shareCurrencyRates(_ sender: UIBarButtonItem) {
-        let contentText = "\(exchange.bankName) курсы валют на \(exchange.updatedTime) / USD покупка \(exchange.usdExchange.strAmountBuy) ₽ / USD продажа \(exchange.usdExchange.strAmountSell) ₽ / Euro покупка \(exchange.euroExchange.strAmountBuy) ₽ / Euro продажа \(exchange.euroExchange.strAmountSell) ₽"
+        let contentText = "\(viewModel.exchange.bankName) курсы валют на \(viewModel.exchange.updatedTime) / USD покупка \(viewModel.exchange.usdExchange.strAmountBuy) ₽ / USD продажа \(viewModel.exchange.usdExchange.strAmountSell) ₽ / Euro покупка \(viewModel.exchange.euroExchange.strAmountBuy) ₽ / Euro продажа \(viewModel.exchange.euroExchange.strAmountSell) ₽"
         
         let vc = UIActivityViewController(activityItems: [contentText], applicationActivities: [])
         
@@ -302,11 +300,12 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
 //        officeTableView.reloadData()
 //    }
     
+    // >>>need to remove
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showMapSegue {
             guard let destination = segue.destination as? MapViewController else { return }
-            destination.mapUrl = mapUrl
-            destination.title = "\(exchange.bankName) Офисы"
+            destination.mapUrl = viewModel.mapUrl
+            destination.title = "\(viewModel.exchange.bankName) Офисы"
         }
     }
     

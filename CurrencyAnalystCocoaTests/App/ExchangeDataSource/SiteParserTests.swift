@@ -42,7 +42,7 @@ class SiteParserTests: XCTestCase {
         }
         
         XCTAssertNotNil(result.mapUrl)
-        print(result.mapUrl?.absoluteURL ?? "absoluteURL is nil")
+        print("mapUrl: ", result.mapUrl?.absoluteURL ?? "absoluteURL is nil")
         
         XCTAssertTrue(result.dataTables.count > 0)
         
