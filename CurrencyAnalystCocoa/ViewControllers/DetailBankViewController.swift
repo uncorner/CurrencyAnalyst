@@ -8,9 +8,11 @@
 
 import UIKit
 import Alamofire
+import RxDataSources
+import RxSwift
+import Foundation
 
-class DetailBankViewController: BaseViewController {
-    
+class DetailBankViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var detailBoxTitleLabel: UILabel!
     @IBOutlet weak var exchangeBoxView: ExchangeBoxView!
     @IBOutlet weak var updatedTimeLabel: UILabel!
@@ -24,23 +26,106 @@ class DetailBankViewController: BaseViewController {
     @IBOutlet weak var mapButton: UIButton!
     @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
     
-    var exchange: CurrencyExchange = CurrencyExchange()
-    var officeCellDatas = [ExpandedCellData]()
-    var mapUrl: URL?
+    var viewModel: DetailBankViewModel!
     let showMapSegue = "showMapSegue"
     private var shouldBeDisplayedOfficeTableBoxView = false
+    
+    func bindViewModel() {
+        let dataSource = RxTableViewSectionedAnimatedDataSource<BankOfficeTableViewSection>(
+            configureCell: { [weak self] dataSource, tableView, indexPath, item in
+                guard let self = self else {return UITableViewCell()}
+                
+                if let headerItem = item as? BankOfficeTableViewItemHeader {
+                    let headerCell = tableView.dequeueReusableCell(withIdentifier: OfficeTableViewCellHeader.cellId, for: indexPath) as! OfficeTableViewCellHeader
+                    let section = self.viewModel.bankOfficeItemsValue[indexPath.section]
+                    headerCell.headerLabel.text = headerItem.text
+                    headerCell.show(isExpanded: section.isExpanded)
+                    //print("isExpanded: \(section.isExpanded)")
+                    
+                    let backgroundView = UIView()
+                    backgroundView.backgroundColor = .clear
+                    headerCell.selectedBackgroundView = backgroundView
+                    return headerCell
+                }
+                else if let dataItem = item as? BankOfficeTableViewItemData {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: OfficeTableViewCell.cellId, for: indexPath) as! OfficeTableViewCell
+                    cell.contentStackView.removeAllArrangedSubviews()
+                    
+                    for row in dataItem.officeDataTable.rows {
+                        let label = UILabel()
+                        label.font = Styles.DetailBankViewController.OfficeTableBoxView.OfficeTableViewCell.contentLabelFont
+                        label.textColor = Styles.DetailBankViewController.OfficeTableBoxView.OfficeTableViewCell.contentLabelColor
+                        label.numberOfLines = 0
+                        label.text = row.header + " " + row.getCombinedDatas()
+                        cell.contentStackView.addArrangedSubview(label)
+                    }
+                    
+                    let backgroundView = UIView()
+                    backgroundView.backgroundColor = .clear
+                    cell.selectedBackgroundView = backgroundView
+                    
+                    return cell
+                }
+                
+                return UITableViewCell()
+            })
+        
+        viewModel.bankOfficeItems
+            .asDriver()
+            .drive(officeTableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        officeTableView.rx.itemSelected
+            .observe(on: MainScheduler.instance)
+            .subscribe { [weak self] event in
+                guard let self = self else {return}
+                guard let indexPath = event.element else {return}
+                //print(indexPath)
+                var sections = self.viewModel.bankOfficeItems.value
+                sections[indexPath.section].isExpanded = !sections[indexPath.section].isExpanded
+                sections[indexPath.section].uniqueId = UUID().uuidString
+                
+                let sectionIndex = IndexSet.init(integer: indexPath.section)
+                self.officeTableView.reloadSections(sectionIndex, with: .automatic)
+                
+                self.viewModel.bankOfficeItems.accept(sections)
+            }
+            .disposed(by: disposeBag)
+        
+//        officeTableView.rx.modelSelected(BankOfficeTableViewItem.self)
+//            .asDriver()
+//            .drive { [weak self] item in
+//                guard let self = self else {return}
+//
+//                if let headerItem = item as? BankOfficeTableViewItemHeader {
+//                }
+//            }
+//            .disposed(by: disposeBag)
+        
+        viewModel.exchangeSeq.asDriver()
+            .drive { [weak self] exchange in
+                guard let self = self else {return}
+                self.title = exchange.bankName
+                self.setDetailBoxViewData(exchange: exchange)
+            }
+            .disposed(by: disposeBag)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = exchange.bankName
+        //title = viewModel.exchangeSeq.value.bankName
         setupOfficeTable()
         setupDetailBoxView()
         setupOfficeTableBoxView()
         setupOtherViews()
-        loadBankDetailedData()
+        //loadBankDetailedData()
+        
+        viewModel.loadBankOfficeData()
     }
     
+    // >>> TODO
+    /*
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
         print(#function)
@@ -58,13 +143,14 @@ class DetailBankViewController: BaseViewController {
             }
         })
     }
+     */
 
     private func setupOfficeTable() {
         officeTableView.register(OfficeTableViewCell.nib(), forCellReuseIdentifier: OfficeTableViewCell.cellId)
         officeTableView.register(OfficeTableViewCellHeader.nib(), forCellReuseIdentifier: OfficeTableViewCellHeader.cellId)
         officeTableView.tableFooterView = UIView()
-        officeTableView.delegate = self
-        officeTableView.dataSource = self
+//        officeTableView.delegate = self
+//        officeTableView.dataSource = self
         
         officeTableView.rowHeight = UITableView.automaticDimension
         officeTableView.estimatedRowHeight = 44
@@ -84,10 +170,12 @@ class DetailBankViewController: BaseViewController {
         
         detailBoxTitleLabel.textColor = Styles.DetailBankViewController.titleLabelColor
         detailBoxTitleLabel.font = Styles.DetailBankViewController.boxTitleFont
-        
+        updatedTimeLabel.textColor = Styles.DetailBankViewController.DetailBoxView.updatedTimeLabelColor
+    }
+    
+    private func setDetailBoxViewData(exchange: CurrencyExchange) {
         exchangeBoxView.setData(exchange, bestRateBackColor: Styles.DetailBankViewController.DetailBoxView.bestRateBackColor)
         updatedTimeLabel.text = "Обновлено \(exchange.updatedTime)"
-        updatedTimeLabel.textColor = Styles.DetailBankViewController.DetailBoxView.updatedTimeLabelColor
         
         let euroMessage = getBestExchangeMessage(currencyKind: .Euro, currencyExchange: exchange.euroExchange)
         if !euroMessage.isEmpty {
@@ -111,7 +199,7 @@ class DetailBankViewController: BaseViewController {
         officeTableTitleLabel.textColor = Styles.DetailBankViewController.titleLabelColor
         
         officeTableBoxWrapperView.backgroundColor = .clear
-        officeTableBoxView.isHidden = true
+        //officeTableBoxView.isHidden = true
         shouldBeDisplayedOfficeTableBoxView = false
     }
     
@@ -126,6 +214,7 @@ class DetailBankViewController: BaseViewController {
     }
     
     @IBAction func shareCurrencyRates(_ sender: UIBarButtonItem) {
+        let exchange = viewModel.exchangeSeq.value
         let contentText = "\(exchange.bankName) курсы валют на \(exchange.updatedTime) / USD покупка \(exchange.usdExchange.strAmountBuy) ₽ / USD продажа \(exchange.usdExchange.strAmountSell) ₽ / Euro покупка \(exchange.euroExchange.strAmountBuy) ₽ / Euro продажа \(exchange.euroExchange.strAmountSell) ₽"
         
         let vc = UIActivityViewController(activityItems: [contentText], applicationActivities: [])
@@ -178,58 +267,62 @@ class DetailBankViewController: BaseViewController {
         return text
     }
 
-    private func loadBankDetailedData() {
-        print(#function)
-        guard let url = exchange.bankUrl?.toSiteURL() else {return}
-        startActivityAnimatingAndLock()
-        
-        networkService.getBankDetailSeq(url: url).subscribe { [weak self] result in
-            guard let self = self else {return}
-            DispatchQueue.printCurrentQueue()
-            
-            self.officeCellDatas = result.dataTables.map({
-                ExpandedCellData(isExpanded: false, officeDataTable: $0)
-            })
-            self.mapUrl = result.mapUrl
-            
-            self.shouldBeDisplayedOfficeTableBoxView = true
-            if UIWindow.isLandscape == false {
-                // portrait mode
-                self.showOfficeTableBoxView()
-            }
-            print("bank details loaded")
-        } onFailure: { [weak self] error in
-            self?.processResponseError(error)
-        } onDisposed: { [weak self] in
-            self?.stopActivityAnimatingAndUnlock()
-        }
-        .disposed(by: disposeBag)
-    }
+//    private func loadBankDetailedData() {
+//        print(#function)
+//        guard let url = exchange.bankUrl?.toSiteURL() else {return}
+//        startActivityAnimatingAndLock()
+//
+//        networkService.getBankDetailSeq(url: url).subscribe { [weak self] result in
+//            guard let self = self else {return}
+//            DispatchQueue.printCurrentQueue()
+//
+//            self.officeCellDatas = result.dataTables.map({
+//                ExpandedCellData(isExpanded: false, officeDataTable: $0)
+//            })
+//            self.mapUrl = result.mapUrl
+//
+//            self.shouldBeDisplayedOfficeTableBoxView = true
+//            if UIWindow.isLandscape == false {
+//                // portrait mode
+//                self.showOfficeTableBoxView()
+//            }
+//            print("bank details loaded")
+//        } onFailure: { [weak self] error in
+//            self?.processResponseError(error)
+//        } onDisposed: { [weak self] in
+//            self?.stopActivityAnimatingAndUnlock()
+//        }
+//        .disposed(by: disposeBag)
+//    }
     
-    private func showOfficeTableBoxView() {
-        if officeCellDatas.isEmpty {
-            return
-        }
-        
-        if mapUrl == nil {
-            mapButton.isHidden = true
-        }
-        
-        officeTableBoxView.isHidden = false
-        officeTableView.reloadData()
-    }
+//    private func showOfficeTableBoxView() {
+//        if officeCellDatas.isEmpty {
+//            return
+//        }
+//
+//        if mapUrl == nil {
+//            mapButton.isHidden = true
+//        }
+//
+//        officeTableBoxView.isHidden = false
+//        officeTableView.reloadData()
+//    }
     
+    // >>>need to remove
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showMapSegue {
             guard let destination = segue.destination as? MapViewController else { return }
-            destination.mapUrl = mapUrl
-            destination.title = "\(exchange.bankName) Офисы"
+            destination.mapUrl = viewModel.mapUrl
+            destination.title = "\(viewModel.exchangeSeq.value.bankName) Офисы"
         }
     }
     
 }
 
+/*
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TableView Sections
 // MARK: UITableViewDelegate
+// SELECTED ROW
 extension DetailBankViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -304,3 +397,5 @@ extension DetailBankViewController: UITableViewDataSource {
     }
     
 }
+*/
+

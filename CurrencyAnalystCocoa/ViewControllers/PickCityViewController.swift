@@ -7,19 +7,16 @@
 //
 
 import UIKit
-import Alamofire
+import RxSwift
+import RxCocoa
+import RxDataSources
 
-class PickCityViewController: BaseViewController {
-    
+class PickCityViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var boxView: UIView!
     
-    var cities = [City]()
-    var filteredCities = [City]()
-    var selectedCityId: String?
-    
-    var setSelectedCityIdCallback: ((String)->())?
+    var viewModel: PickCityViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,34 +26,41 @@ class PickCityViewController: BaseViewController {
         setupOtherViews()
     }
     
-    private func setupOtherViews() {
-        title = "Ваш город"
-        boxView.backgroundColor = Styles.PickCityViewController.boxViewBackColor
-        boxView.layer.cornerRadius = Styles.cornerRadius1
+    func bindViewModel() {
+        let dataSource = RxTableViewSectionedAnimatedDataSource<CitySectionModel>{ [weak self] dataSource, tableView, indexPath, city in
+            guard let self = self else {return UITableViewCell()}
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: PickCityTableViewCell.cellId, for: indexPath) as! PickCityTableViewCell
+            cell.titleLabel.text = city.name
+            cell.checkboxImage.isHidden = city.id != self.viewModel.selectedCityId
+            return cell
+        }
+        
+        viewModel.filteredCities
+            .drive(tableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        tableView.rx.modelSelected(City.self)
+            .asDriver()
+            .drive { [weak self] city in
+                self?.viewModel.selectedCityId = city.id
+                //self?.setSelectedCityIdCallback?(city.id)
+                self?.viewModel.setSelectedCityIdCallback(city.id)
+                self?.tableView.reloadData()
+            }
+            .disposed(by: disposeBag)
+        
+        searchBar.rx.text
+            .bind(to: viewModel.query)
+            .disposed(by: disposeBag)
+
+        // scroll after content binding
+        scrollTableViewToSelectedItem()
     }
     
-    private func setupSearchBar() {
-        searchBar.delegate = self
-        searchBar.searchBarStyle = .minimal
-        searchBar.barStyle = .black
-        searchBar.placeholder = "Искать"
-        
-        searchBar.setupStyle(style: Styles.PickCityViewController.searchBarStyle)
-    }
-    
-    private func setupTableView() {
-        tableView.register(PickCityTableViewCell.nib(), forCellReuseIdentifier: PickCityTableViewCell.cellId)
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.backgroundColor = .clear
-        
-        tableView.separatorColor = Styles.PickCityViewController.tableSeparatorColor
-        
-        // copy array
-        filteredCities = cities
-        
-        if let selectedId = selectedCityId {
-            let selectedIndex = cities.firstIndex(where: { item in
+    private func scrollTableViewToSelectedItem() {
+        if let selectedId = viewModel.selectedCityId {
+            let selectedIndex = viewModel.cities.firstIndex(where: { item in
                 item.id == selectedId
             })
             
@@ -66,54 +70,24 @@ class PickCityViewController: BaseViewController {
         }
     }
     
-}
-
-// MARK: UITableViewDelegate
-extension PickCityViewController: UITableViewDelegate {
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let city = filteredCities[indexPath.row]
-        selectedCityId = city.id
-        setSelectedCityIdCallback?(city.id)
-        
-        tableView.reloadData()
+    private func setupOtherViews() {
+        title = "Ваш город"
+        boxView.backgroundColor = Styles.PickCityViewController.boxViewBackColor
+        boxView.layer.cornerRadius = Styles.cornerRadius1
     }
     
-}
-
-// MARK: UITableViewDataSource
-extension PickCityViewController: UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredCities.count
+    private func setupSearchBar() {
+        searchBar.searchBarStyle = .minimal
+        searchBar.barStyle = .black
+        searchBar.placeholder = "Искать"
+        
+        searchBar.setupStyle(style: Styles.PickCityViewController.searchBarStyle)
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: PickCityTableViewCell.cellId, for: indexPath) as! PickCityTableViewCell
-        
-        let city = filteredCities[indexPath.row]
-        cell.titleLabel.text = city.name
-        cell.checkboxImage.isHidden = city.id != selectedCityId
-        
-        return cell
+    private func setupTableView() {
+        tableView.register(PickCityTableViewCell.nib(), forCellReuseIdentifier: PickCityTableViewCell.cellId)
+        tableView.backgroundColor = .clear
+        tableView.separatorColor = Styles.PickCityViewController.tableSeparatorColor
     }
     
-}
-
-// MARK: UISearchBarDelegate
-extension PickCityViewController : UISearchBarDelegate {
-    // Search Bar
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        guard searchText.isEmpty == false else {
-            filteredCities = cities
-            tableView.reloadData()
-            return
-        }
-        
-        filteredCities = cities.filter({ city -> Bool in
-            return city.name.caseInsensitiveHasPrefix(searchText)
-        })
-        
-        tableView.reloadData()
-    }
 }

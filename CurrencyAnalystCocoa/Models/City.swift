@@ -7,8 +7,14 @@
 //
 
 import Foundation
+import RxDataSources
 
-struct City : Identifiable {
+struct City : IdentifiableType, Equatable {
+    typealias Identity = String
+    
+    var identity : String {
+        id
+    }
     
     var id: String {
         url

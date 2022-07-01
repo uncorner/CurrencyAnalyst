@@ -18,6 +18,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
+        
+        setupMvvmSceneCoordinator(window: window!)
+    }
+    
+    private func setupMvvmSceneCoordinator(window: UIWindow) {
+        let sceneCoordinator = MvvmSceneCoordinator(window: window)
+        
+        let networkService = getNetworkService()
+        let viewModel = ExchangeListViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService)
+        let firstScene = MvvmScene.exchangeListViewModel(viewModel)
+        sceneCoordinator.transition(to: firstScene, type: .root)
+    }
+    
+    private func getNetworkService() -> NetworkService {
+        let dataSource = ExchangeDataSourceFactory.create()
+        return NetworkServiceFactory.create(dataSource: dataSource)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

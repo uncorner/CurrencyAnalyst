@@ -13,6 +13,7 @@ import Alamofire
 extension UIViewController {
     
     func startActivityAnimatingAndLock(isActivityAnimating: Bool = true) {
+        print(#function)
         navigationController?.navigationBar.isUserInteractionEnabled = false
         if isActivityAnimating {
             activityStartAnimating()
@@ -20,6 +21,7 @@ extension UIViewController {
     }
     
     func stopActivityAnimatingAndUnlock() {
+        print(#function)
         navigationController?.navigationBar.isUserInteractionEnabled = true
         activityStopAnimating()
     }
@@ -70,7 +72,7 @@ extension UIViewController {
         var attributes = EKAttributes()
         
         attributes = .float
-        attributes.displayMode = .dark
+        attributes.displayMode = .light
         attributes.name = "error message"
         attributes.hapticFeedbackType = .success
         attributes.entryBackground = .color(color: .white)
@@ -95,7 +97,8 @@ extension UIViewController {
                 radius: 10
             )
         )
-        attributes.statusBar = .dark
+        //attributes.statusBar = .dark
+        attributes.statusBar = .light
         attributes.scroll = .enabled(
             swipeable: true,
             pullbackAnimation: .easeOut
