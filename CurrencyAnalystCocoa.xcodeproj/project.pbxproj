@@ -14,10 +14,15 @@
 		922DDE8A26E9340D008122DE /* CachedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 922DDE8926E9340D008122DE /* CachedImageLoader.swift */; };
 		9231D929270DBA6000B5A5AC /* MvvmBindableType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9231D928270DBA6000B5A5AC /* MvvmBindableType.swift */; };
 		923B258D26FCBED70034E04C /* ExchangeTableViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */; };
+		923B78A928B52D440065DCAE /* DecimalExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923B78A828B52D440065DCAE /* DecimalExtension.swift */; };
+		923E434728B2BB8A004F8ECB /* CurrencyExchangeData+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E434628B2BB8A004F8ECB /* CurrencyExchangeData+CoreDataClass.swift */; };
+		923E434928B2BB91004F8ECB /* CurrencyExchangeData+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 923E434828B2BB91004F8ECB /* CurrencyExchangeData+CoreDataProperties.swift */; };
 		9257603D2738581B001D86AB /* BankOfficeTableViewSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9257603C2738581B001D86AB /* BankOfficeTableViewSection.swift */; };
 		9291429726F350BD00634BF1 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429626F350BD00634BF1 /* NetworkService.swift */; };
 		9291429A26F3520600634BF1 /* NetworkServiceFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429926F3520600634BF1 /* NetworkServiceFactory.swift */; };
 		9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */; };
+		92A7E1F928B13E2F0040FFDF /* StorageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A7E1F828B13E2F0040FFDF /* StorageRepository.swift */; };
+		92A7E1FB28B13E620040FFDF /* CoreDataStorageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92A7E1FA28B13E620040FFDF /* CoreDataStorageRepository.swift */; };
 		92AA4908270CDBCA00A67813 /* MvvmScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4903270CDBCA00A67813 /* MvvmScene.swift */; };
 		92AA4909270CDBCA00A67813 /* MvvmScene+ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4904270CDBCA00A67813 /* MvvmScene+ViewController.swift */; };
 		92AA490A270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4905270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift */; };
@@ -101,10 +106,15 @@
 		922DDE8926E9340D008122DE /* CachedImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedImageLoader.swift; sourceTree = "<group>"; };
 		9231D928270DBA6000B5A5AC /* MvvmBindableType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MvvmBindableType.swift; sourceTree = "<group>"; };
 		923B258C26FCBED70034E04C /* ExchangeTableViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeTableViewSection.swift; sourceTree = "<group>"; };
+		923B78A828B52D440065DCAE /* DecimalExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalExtension.swift; sourceTree = "<group>"; };
+		923E434628B2BB8A004F8ECB /* CurrencyExchangeData+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CurrencyExchangeData+CoreDataClass.swift"; path = "/Users/denis/Documents/Development/CurrencyAnalyst/CurrencyAnalystCocoa/App/Persistent/CurrencyExchangeData+CoreDataClass.swift"; sourceTree = "<absolute>"; };
+		923E434828B2BB91004F8ECB /* CurrencyExchangeData+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CurrencyExchangeData+CoreDataProperties.swift"; path = "/Users/denis/Documents/Development/CurrencyAnalyst/CurrencyAnalystCocoa/App/Persistent/CurrencyExchangeData+CoreDataProperties.swift"; sourceTree = "<absolute>"; };
 		9257603C2738581B001D86AB /* BankOfficeTableViewSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankOfficeTableViewSection.swift; sourceTree = "<group>"; };
 		9291429626F350BD00634BF1 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		9291429926F3520600634BF1 /* NetworkServiceFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceFactory.swift; sourceTree = "<group>"; };
 		9291429B26F352C700634BF1 /* ExchangeNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExchangeNetworkService.swift; sourceTree = "<group>"; };
+		92A7E1F828B13E2F0040FFDF /* StorageRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageRepository.swift; sourceTree = "<group>"; };
+		92A7E1FA28B13E620040FFDF /* CoreDataStorageRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStorageRepository.swift; sourceTree = "<group>"; };
 		92AA4903270CDBCA00A67813 /* MvvmScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmScene.swift; sourceTree = "<group>"; };
 		92AA4904270CDBCA00A67813 /* MvvmScene+ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MvvmScene+ViewController.swift"; sourceTree = "<group>"; };
 		92AA4905270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmSceneCoordinatorType.swift; sourceTree = "<group>"; };
@@ -220,7 +230,11 @@
 		922CB0BD28B01D9B004F4E88 /* Persistent */ = {
 			isa = PBXGroup;
 			children = (
+				923E434628B2BB8A004F8ECB /* CurrencyExchangeData+CoreDataClass.swift */,
+				923E434828B2BB91004F8ECB /* CurrencyExchangeData+CoreDataProperties.swift */,
 				922CB0E128B02477004F4E88 /* StorageDataModel.xcdatamodeld */,
+				92A7E1F828B13E2F0040FFDF /* StorageRepository.swift */,
+				92A7E1FA28B13E620040FFDF /* CoreDataStorageRepository.swift */,
 			);
 			path = Persistent;
 			sourceTree = "<group>";
@@ -313,6 +327,7 @@
 				AA09BE8725192446002B9B82 /* UIWindowExtension.swift */,
 				92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */,
 				92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */,
+				923B78A828B52D440065DCAE /* DecimalExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -650,6 +665,7 @@
 				AA9280A124CB339E00B7A1F1 /* CurrencyExchange.swift in Sources */,
 				AAC1066E24C623D4008DEE82 /* ExchangeBoxView.swift in Sources */,
 				92AA490C270CDBCA00A67813 /* MvvmSceneTransitionType.swift in Sources */,
+				92A7E1FB28B13E620040FFDF /* CoreDataStorageRepository.swift in Sources */,
 				AAAC691324B2250800BCB7FE /* ExchangeListViewController.swift in Sources */,
 				9291429726F350BD00634BF1 /* NetworkService.swift in Sources */,
 				92AA490A270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift in Sources */,
@@ -657,6 +673,7 @@
 				AA9280A724CB339E00B7A1F1 /* ExchangeListResult.swift in Sources */,
 				9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */,
 				92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */,
+				923E434928B2BB91004F8ECB /* CurrencyExchangeData+CoreDataProperties.swift in Sources */,
 				AAB4BE9524F6EB9C00A34F49 /* ExchangeDataSource.swift in Sources */,
 				AAB2399924D6F1FC005F6772 /* StackViewExtensions.swift in Sources */,
 				922CB0E328B02477004F4E88 /* StorageDataModel.xcdatamodeld in Sources */,
@@ -673,6 +690,8 @@
 				AA7B003224F9991400D1D88D /* CurrencyExchangeUnit.swift in Sources */,
 				AAC73E4224F0181F00C3EAF8 /* MessageView.swift in Sources */,
 				92AA490E270CDFCD00A67813 /* UINavigationController+Rx.swift in Sources */,
+				923B78A928B52D440065DCAE /* DecimalExtension.swift in Sources */,
+				92A7E1F928B13E2F0040FFDF /* StorageRepository.swift in Sources */,
 				92E0BBB02708BC12000B81BF /* PickCityViewModel.swift in Sources */,
 				AA5D687624E9ABC600B56E61 /* UIViewExtension.swift in Sources */,
 				921DFA1626FA0E4200769C7D /* ExchangeListViewModel.swift in Sources */,
@@ -691,6 +710,7 @@
 				AA36E2A624CF462100520B35 /* DetailBankViewController.swift in Sources */,
 				AA69EDE52517954F00BCCB99 /* UserDefaultsKeys.swift in Sources */,
 				AA31235F24D329BB000A8EFE /* OfficeTableViewCell.swift in Sources */,
+				923E434728B2BB8A004F8ECB /* CurrencyExchangeData+CoreDataClass.swift in Sources */,
 				AAE7649024F17FBF00B78CFC /* UIColorExtension.swift in Sources */,
 				AA6D8E0424FEDB43005CAA99 /* CentralBankInfo.swift in Sources */,
 				9231D929270DBA6000B5A5AC /* MvvmBindableType.swift in Sources */,

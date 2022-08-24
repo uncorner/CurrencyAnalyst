@@ -19,5 +19,9 @@ class Constants {
         static let citiesUrl = "https://kovalut.ru/cities.htm"
     }
     
+    struct Notifications {
+        static let didEnterBackground = Notification.Name("DidEnterBackground")
+    }
+    
 
 }

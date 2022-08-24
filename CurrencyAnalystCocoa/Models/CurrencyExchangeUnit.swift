@@ -17,5 +17,18 @@ struct CurrencyExchangeUnit {
     
     var isBestBuy = false
     var isBestSell = false
+}
+
+extension CurrencyExchangeUnit {
+    
+    init(amountBuy: Decimal, amountSell: Decimal, isBestBuy: Bool, isBestSell: Bool ) {
+        self.amountBuy = amountBuy
+        self.amountSell = amountSell
+        self.strAmountBuy = amountBuy.formattedAmount ?? Constants.rateStub
+        self.strAmountSell = amountSell.formattedAmount ?? Constants.rateStub
         
+        self.isBestBuy = isBestBuy
+        self.isBestSell = isBestSell
+    }
+    
 }

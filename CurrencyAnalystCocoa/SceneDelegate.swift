@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let sceneCoordinator = MvvmSceneCoordinator(window: window)
         
         let networkService = getNetworkService()
-        let viewModel = ExchangeListViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService)
+        let viewModel = ExchangeListViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService, storageRepository: getStorageRepository() )
         let firstScene = MvvmScene.exchangeListViewModel(viewModel)
         sceneCoordinator.transition(to: firstScene, type: .root)
     }
@@ -34,6 +34,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func getNetworkService() -> NetworkService {
         let dataSource = ExchangeDataSourceFactory.create()
         return NetworkServiceFactory.create(dataSource: dataSource)
+    }
+    
+    private func getStorageRepository() -> StorageRepository {
+        CoreDataStorageRepository()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -59,9 +63,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        let nc = NotificationCenter.default
+        nc.post(name: Constants.Notifications.didEnterBackground, object: nil)
     }
 
 

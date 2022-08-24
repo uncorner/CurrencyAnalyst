@@ -43,12 +43,20 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
     
     override func viewDidLoad() {
         super.viewDidLoad(isRoot: true)
+        
+        let nc = NotificationCenter.default
+        nc.addObserver(self, selector: #selector(appDidEnterBackground), name: Constants.Notifications.didEnterBackground, object: nil)
 
         setupTableView()
         setupOtherViews()
         setupSettingsButton()
         setupNavigationBar()
         viewModel.loadAppSettings()
+    }
+    
+    deinit {
+        let nc = NotificationCenter.default
+        nc.removeObserver(self)
     }
     
     func bindViewModel() {
@@ -67,6 +75,11 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
         
         var settingsButton = navigationItem.rightBarButtonItem
         settingsButton?.rx.action = viewModel.onShowPickCity
+    }
+    
+    @objc private func appDidEnterBackground() {
+        print(#function)
+        viewModel.saveLastExchangeData()
     }
     
     private func setupBindingsForTableView() {
@@ -104,7 +117,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
             .drive { [weak self] item in
                 guard let self = self else {return}
                 switch item{
-                case .HeadItem(_):
+                case .HeadItem(_): // HeadItem with any cityName
                     // do nothing
                     break
                 case .ExchangeItem(let exchange):

@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import Action
+import CoreData
 
 final class ExchangeListViewModel {
     
@@ -21,11 +22,13 @@ final class ExchangeListViewModel {
     private let sceneCoordinator: MvvmSceneCoordinator
     private let disposeBag = DisposeBag()
     private let networkService: NetworkService
+    private let storageRepository: StorageRepository
     private let prvExchangeItems = BehaviorRelay(value: sectionedItemsEmptyData)
     private let prvLoadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     private let prvCbDollarRate = PublishRelay<String>()
     private let prvCbEuroRate = PublishRelay<String>()
     private var prvCities = [City]()
+    private var exchangeListResult = ExchangeListResult()
     
     // MARK: In
     var selectedCityId = Constants.defaultCityId
@@ -53,9 +56,10 @@ final class ExchangeListViewModel {
     lazy var onLoadCitiesAndExchanges = CocoaAction(workFactory: loadCitiesAndExchanges)
     lazy var onShowPickCity = CocoaAction(workFactory: showPickCity)
     
-    init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService) {
+    init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService, storageRepository: StorageRepository) {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
+        self.storageRepository = storageRepository
     }
     
     private func showPickCity() -> Observable<Void> {
@@ -84,6 +88,94 @@ final class ExchangeListViewModel {
         selectedCityId = userDefaults.getCityId() ?? Constants.defaultCityId
     }
     
+    func saveLastExchangeData() {
+        if !exchangeListResult.exchanges.isEmpty {
+            storageRepository.saveExchangeListResult(listResult: exchangeListResult)
+        }
+    }
+    
+//    private func loadFromCache() -> Observable<Void> {
+//        print(#function)
+//        guard let exchangeUrl = selectedCityId.toSiteURL() else {return .empty()}
+//        print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
+//
+//        prvLoadingStatus.accept(.loading)
+//        var citiesSeq: Single<[City]?> = Single.just(nil)
+//        if prvCities.isEmpty {
+//            citiesSeq = networkService.getCitiesSeq()
+//        }
+//
+//        //let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
+//        //>>>>>>>>>>
+//        let datas = self.storageRepository.fetchData()
+//        let exchangesSeq = Single.just(datas)
+//
+//        // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
+//        Single.zip(citiesSeq, exchangesSeq)
+//            .subscribe { [weak self] cities, exchangeListResult in
+//                guard let self = self else {return}
+//                DispatchQueue.printCurrentQueue()
+//
+//                if let cities = cities {
+//                    print("cities loaded")
+//                    self.prvCities = cities
+//                }
+//
+//                self.exchangeListResult = exchangeListResult
+//
+//                self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
+//                self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
+//
+//                let items = exchangeListResult.exchanges.map { exchange in
+//                    ExchangeTableViewItem.ExchangeItem(exchange: exchange)
+//                }
+//
+//                let city = self.prvCities.first(where: {
+//                    $0.id == self.selectedCityId
+//                })
+//                let cityName = city?.name ?? ""
+//                let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
+//
+//                let sectionsWithData = [
+//                    ExchangeTableViewSection(items: [headItem]),
+//                    ExchangeTableViewSection(items: items)]
+//
+//                self.prvExchangeItems.accept(sectionsWithData)
+//                print("exchange list loaded")
+//            } onFailure: { [weak self] (error) in
+//                self?.prvLoadingStatus.accept(.fail(error: error))
+//            } onDisposed: { [weak self] in
+//                print("onDisposed")
+//                self?.prvLoadingStatus.accept(.success)
+//            }
+//            .disposed(by: disposeBag)
+//
+//        return .empty()
+//    }
+    
+    
+    private func acceptExchangeList(_ self: ExchangeListViewModel, _ exchangeListResult: ExchangeListResult) {
+        self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
+        self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
+        
+        let items = exchangeListResult.exchanges.map { exchange in
+            ExchangeTableViewItem.ExchangeItem(exchange: exchange)
+        }
+        
+        let city = self.prvCities.first(where: {
+            $0.id == self.selectedCityId
+        })
+        let cityName = city?.name ?? ""
+        let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
+        
+        let sectionsWithData = [
+            ExchangeTableViewSection(items: [headItem]),
+            ExchangeTableViewSection(items: items)]
+        
+        self.prvExchangeItems.accept(sectionsWithData)
+    }
+    
+    // вызывать два метода preload и потом loadCitiesAndExchanges в viewDidLoad of ViewController
     private func loadCitiesAndExchanges() -> Observable<Void> {
         print(#function)
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return .empty()}
@@ -94,6 +186,14 @@ final class ExchangeListViewModel {
         if prvCities.isEmpty {
             citiesSeq = networkService.getCitiesSeq()
         }
+        
+        //>>>>>>>>>>
+        let cachedExchangeList = self.storageRepository.fetchData()
+        //let exchangesSeq = Single.just(datas)
+        self.acceptExchangeList(self, cachedExchangeList)
+        print("exchange list loaded from cache")
+        
+        
         let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
         
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
@@ -107,25 +207,10 @@ final class ExchangeListViewModel {
                     self.prvCities = cities
                 }
                 
-                self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
-                self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
-                
-                let items = exchangeListResult.exchanges.map { exchange in
-                    ExchangeTableViewItem.ExchangeItem(exchange: exchange)
-                }
-                
-                let city = self.prvCities.first(where: {
-                    $0.id == self.selectedCityId
-                })
-                let cityName = city?.name ?? ""
-                let headItem = ExchangeTableViewItem.HeadItem(cityName: cityName)
-                
-                let sectionsWithData = [
-                    ExchangeTableViewSection(items: [headItem]),
-                    ExchangeTableViewSection(items: items)]
-                
-                self.prvExchangeItems.accept(sectionsWithData)
+                self.exchangeListResult = exchangeListResult
+                self.acceptExchangeList(self, exchangeListResult)
                 print("exchange list loaded")
+                
             } onFailure: { [weak self] (error) in
                 self?.prvLoadingStatus.accept(.fail(error: error))
             } onDisposed: { [weak self] in
