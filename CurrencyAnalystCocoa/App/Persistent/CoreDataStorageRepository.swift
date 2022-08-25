@@ -30,14 +30,12 @@ class CoreDataStorageRepository : StorageRepository {
         
         let exchanges = datas.map { data -> CurrencyExchange in
             var exchange = CurrencyExchange()
-            
             exchange.bankName = data.bankName ?? ""
             exchange.bankUrl = data.bankUrl ?? ""
             exchange.bankLogoUrl = data.bankLogoUrl ?? ""
             exchange.updatedTime = data.updatedTime ?? ""
             exchange.usdExchange = CurrencyExchangeUnit(amountBuy: data.usdAmountBuy as? Decimal ?? 0, amountSell: data.usdAmountSell as? Decimal ?? 0, isBestBuy: data.usdIsBestBuy, isBestSell: data.usdIsBestSell)
             exchange.euroExchange = CurrencyExchangeUnit(amountBuy: data.euroAmountBuy as? Decimal ?? 0, amountSell: data.euroAmountSell as? Decimal ?? 0, isBestBuy: data.euroIsBestBuy, isBestSell: data.euroIsBestSell)
-            
             return exchange
         }
         
