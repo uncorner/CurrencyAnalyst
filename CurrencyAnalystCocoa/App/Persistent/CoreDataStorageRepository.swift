@@ -13,6 +13,7 @@ import UIKit
 class CoreDataStorageRepository : StorageRepository {
     
     func fetchData() -> ExchangeListResult {
+        print(#function)
         var result = ExchangeListResult()
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return result}
@@ -45,6 +46,7 @@ class CoreDataStorageRepository : StorageRepository {
     }
     
     func saveExchangeListResult(listResult: ExchangeListResult) {
+        print(#function)
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {return}
         let context = appDelegate.persistentContainer.viewContext
         

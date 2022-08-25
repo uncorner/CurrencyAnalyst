@@ -30,6 +30,10 @@ final class ExchangeListViewModel {
     private var prvCities = [City]()
     private var exchangeListResult = ExchangeListResult()
     
+    private var isDataLoaded: Bool {
+        !prvCities.isEmpty && !exchangeListResult.exchanges.isEmpty
+    }
+    
     // MARK: In
     var selectedCityId = Constants.defaultCityId
     
@@ -188,36 +192,76 @@ final class ExchangeListViewModel {
         }
         
         //>>>>>>>>>>
+        /*
         let cachedExchangeList = self.storageRepository.fetchData()
         //let exchangesSeq = Single.just(datas)
         self.acceptExchangeList(self, cachedExchangeList)
         print("exchange list loaded from cache")
+        */
         
+        //let cachedExchangeList = self.storageRepository.fetchData()
         
         let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
-        
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
-        Single.zip(citiesSeq, exchangesSeq)
-            .subscribe { [weak self] cities, exchangeListResult in
-                guard let self = self else {return}
-                DispatchQueue.printCurrentQueue()
-                
-                if let cities = cities {
-                    print("cities loaded")
-                    self.prvCities = cities
-                }
-                
-                self.exchangeListResult = exchangeListResult
-                self.acceptExchangeList(self, exchangeListResult)
-                print("exchange list loaded")
-                
-            } onFailure: { [weak self] (error) in
-                self?.prvLoadingStatus.accept(.fail(error: error))
-            } onDisposed: { [weak self] in
-                print("onDisposed")
-                self?.prvLoadingStatus.accept(.success)
+        let networkSeq = Single.zip(citiesSeq, exchangesSeq).asObservable()
+        var resultSeq = networkSeq
+        
+        if !isDataLoaded {
+            let cachedSeq = Observable.just(self.storageRepository.fetchData()).map { exchangeListResult  in
+                return (nil as ([City]?), exchangeListResult)
+            }.catchAndReturn((nil, ExchangeListResult())) //<<<<<<<<<
+            
+            resultSeq = cachedSeq.concat(networkSeq)
+            print("cached data will be used")
+        }
+        
+        resultSeq.subscribe { [weak self] (cities, exchangeListResult) in
+            guard let self = self else {return}
+            DispatchQueue.printCurrentQueue()
+            
+            if let cities = cities {
+                print("cities loaded")
+                self.prvCities = cities
             }
-            .disposed(by: disposeBag)
+            
+            self.exchangeListResult = exchangeListResult
+            self.acceptExchangeList(self, exchangeListResult)
+            print("exchange list loaded")
+        } onError: { [weak self] error in
+            self?.prvLoadingStatus.accept(.fail(error: error))
+        } onCompleted: {
+            // todo: del this section
+            print("onCompleted")
+        } onDisposed: { [weak self] in
+            print("onDisposed")
+            self?.prvLoadingStatus.accept(.success)
+        }
+        .disposed(by: disposeBag)
+        
+        
+//            .subscribe { [weak self] cities, exchangeListResult in
+//                guard let self = self else {return}
+//                DispatchQueue.printCurrentQueue()
+//
+//                if let cities = cities {
+//                    print("cities loaded")
+//                    self.prvCities = cities
+//                }
+//
+//                self.exchangeListResult = exchangeListResult
+//                self.acceptExchangeList(self, exchangeListResult)
+//                print("exchange list loaded")
+//            }
+//
+//            } onFailure: { [weak self] (error) in
+//                self?.prvLoadingStatus.accept(.fail(error: error))
+//            }
+            
+//    onDisposed: { [weak self] in
+//                print("onDisposed")
+//                self?.prvLoadingStatus.accept(.success)
+//            }
+//            .disposed(by: disposeBag)
         
         return .empty()
     }
