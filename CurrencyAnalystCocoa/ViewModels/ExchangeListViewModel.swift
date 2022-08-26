@@ -138,33 +138,35 @@ final class ExchangeListViewModel {
                     return (nil as ([City]?), exchangeListResult)
                 }
                 .catchAndReturn((nil, ExchangeListResult()))
+                .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
             
             resultSeq = cachedSeq.concat(citiesAndExchangesSeq)
             print("cached data will be used")
         }
         
-        resultSeq.subscribe { [weak self] (cities, exchangeListResult) in
-            guard let self = self else {return}
-            DispatchQueue.printCurrentQueue()
-            
-            if let cities = cities {
-                print("cities loaded")
-                self.prvCities = cities
+        resultSeq
+            .observe(on: MainScheduler.instance)
+            .subscribe { [weak self] (cities, exchangeListResult) in
+                guard let self = self else {return}
+                DispatchQueue.printCurrentQueue()
+                
+                if let cities = cities {
+                    print("cities loaded")
+                    self.prvCities = cities
+                }
+                
+                self.exchangeListResult = exchangeListResult
+                self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
+                self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
+                self.acceptExchangeList(self, exchangeListResult)
+                print("exchange list loaded")
+            } onError: { [weak self] error in
+                self?.prvLoadingStatus.accept(.fail(error: error))
+            } onDisposed: { [weak self] in
+                print("onDisposed")
+                self?.prvLoadingStatus.accept(.success)
             }
-            
-            self.exchangeListResult = exchangeListResult
-            self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
-            self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
-            self.acceptExchangeList(self, exchangeListResult)
-            print("exchange list loaded")
-        } onError: { [weak self] error in
-            self?.prvLoadingStatus.accept(.fail(error: error))
-        }
-        onDisposed: { [weak self] in
-            print("onDisposed")
-            self?.prvLoadingStatus.accept(.success)
-        }
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
         
         return .empty()
     }
