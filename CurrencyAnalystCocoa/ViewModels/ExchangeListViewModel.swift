@@ -29,10 +29,7 @@ final class ExchangeListViewModel {
     private let prvCbEuroRate = PublishRelay<String>()
     private var prvCities = [City]()
     private var exchangeListResult = ExchangeListResult()
-    
-    private var isDataLoaded: Bool {
-        !prvCities.isEmpty && !exchangeListResult.exchanges.isEmpty
-    }
+    private var isFirstDataLoading = true
     
     // MARK: In
     var selectedCityId = Constants.defaultCityId
@@ -98,6 +95,11 @@ final class ExchangeListViewModel {
         }
     }
     
+    private func fetchExchangeListResult() -> Observable<ExchangeListResult> {
+        Observable.just(self.storageRepository.fetchExchangeListResult())
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+    }
+    
     private func acceptExchangeList(_ self: ExchangeListViewModel, _ exchangeListResult: ExchangeListResult) {
         let items = exchangeListResult.exchanges.map { exchange in
             ExchangeTableViewItem.ExchangeItem(exchange: exchange)
@@ -132,20 +134,18 @@ final class ExchangeListViewModel {
         let citiesAndExchangesSeq = Single.zip(citiesSeq, exchangesSeq).asObservable()
         var resultSeq = citiesAndExchangesSeq
         
-        if !isDataLoaded {
-            let cachedSeq = Observable.just(self.storageRepository.fetchData())
-                .map { exchangeListResult in
-                    return (nil as ([City]?), exchangeListResult)
+        if isFirstDataLoading {
+            let cachedSeq = fetchExchangeListResult()
+                .map { (exchangeListResult) -> ([City]?, ExchangeListResult) in
+                    return (nil, exchangeListResult)
                 }
                 .catchAndReturn((nil, ExchangeListResult()))
-                .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
             
             resultSeq = cachedSeq.concat(citiesAndExchangesSeq)
             print("cached data will be used")
         }
         
-        resultSeq
-            .observe(on: MainScheduler.instance)
+        resultSeq.observe(on: MainScheduler.instance)
             .subscribe { [weak self] (cities, exchangeListResult) in
                 guard let self = self else {return}
                 DispatchQueue.printCurrentQueue()
@@ -154,17 +154,20 @@ final class ExchangeListViewModel {
                     print("cities loaded")
                     self.prvCities = cities
                 }
-                
                 self.exchangeListResult = exchangeListResult
                 self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
                 self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
                 self.acceptExchangeList(self, exchangeListResult)
                 print("exchange list loaded")
             } onError: { [weak self] error in
+                print("onError")
                 self?.prvLoadingStatus.accept(.fail(error: error))
+            } onCompleted: { [weak self] in
+                print("onCompleted")
+                self?.prvLoadingStatus.accept(.success)
             } onDisposed: { [weak self] in
                 print("onDisposed")
-                self?.prvLoadingStatus.accept(.success)
+                self?.isFirstDataLoading = false
             }
             .disposed(by: disposeBag)
         

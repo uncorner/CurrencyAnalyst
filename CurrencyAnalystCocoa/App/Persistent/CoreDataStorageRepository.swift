@@ -12,7 +12,7 @@ import UIKit
 
 class CoreDataStorageRepository : StorageRepository {
     
-    func fetchData() -> ExchangeListResult {
+    func fetchExchangeListResult() -> ExchangeListResult {
         print(#function)
         var result = ExchangeListResult()
         

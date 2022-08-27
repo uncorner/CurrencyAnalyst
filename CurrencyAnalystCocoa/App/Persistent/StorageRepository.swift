@@ -10,6 +10,6 @@ import Foundation
 
 protocol StorageRepository {
     func saveExchangeListResult(listResult: ExchangeListResult)
-    func fetchData() -> ExchangeListResult
+    func fetchExchangeListResult() -> ExchangeListResult
     
 }
