@@ -37,7 +37,7 @@ final class DetailBankViewModel {
         //startActivityAnimatingAndLock()
         loadingStatus.accept(.loading)
         
-        networkService.getBankDetailSeq(url: url).subscribe { [weak self] result in
+        networkService.getBankDetail(url: url).subscribe { [weak self] result in
             guard let self = self else {return}
             DispatchQueue.printCurrentQueue()
             

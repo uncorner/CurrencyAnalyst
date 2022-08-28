@@ -18,7 +18,7 @@ class ExchangeNetworkService: NetworkService {
         self.dataSource = dataSource
     }
     
-    func getCitiesSeq() -> Single<[City]?> {
+    func getCities() -> Single<[City]?> {
         return doRequestData(url: Constants.Urls.citiesUrl.toSiteURL()!)
             .map { response, data -> [City]? in
                 let html = String(decoding: data, as: UTF8.self)
@@ -27,7 +27,7 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
-    func getExchangesSeq(exchangeUrl url: URL) -> Single<ExchangeListResult> {
+    func getExchanges(exchangeUrl url: URL) -> Single<ExchangeListResult> {
         return doRequestData(url: url)
             .map { response, data -> ExchangeListResult in
                 let html = String(decoding: data, as: UTF8.self)
@@ -41,7 +41,7 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
-    func getBankDetailSeq(url: URL) -> Single<BankDetailResult> {
+    func getBankDetail(url: URL) -> Single<BankDetailResult> {
         return doRequestData(url: url)
             .map { response, data -> BankDetailResult in
                 let html = String(decoding: data, as: UTF8.self)
@@ -50,7 +50,7 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
-    func getOfficeGeoDatasSeq(url: URL) -> Single<[OfficeGeoData]> {
+    func getOfficeGeoDatas(url: URL) -> Single<[OfficeGeoData]> {
         return doRequestData(url: url)
             .map { response, data -> [OfficeGeoData] in
                 let html = String(decoding: data, as: UTF8.self)
@@ -59,7 +59,7 @@ class ExchangeNetworkService: NetworkService {
             .asSingle()
     }
     
-    func getImageSeq(url: URL) -> Single<UIImage?> {
+    func getImage(url: URL) -> Single<UIImage?> {
         return doRequestData(url: url)
             .map { response, data in
                 UIImage(data: data)

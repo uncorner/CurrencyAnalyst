@@ -13,14 +13,14 @@ protocol NetworkService {
     
     init(dataSource: ExchangeDataSource)
     
-    func getCitiesSeq() -> Single<[City]?>
+    func getCities() -> Single<[City]?>
     
-    func getExchangesSeq(exchangeUrl: URL) -> Single<ExchangeListResult>
+    func getExchanges(exchangeUrl: URL) -> Single<ExchangeListResult>
     
-    func getBankDetailSeq(url: URL) -> Single<BankDetailResult>
+    func getBankDetail(url: URL) -> Single<BankDetailResult>
     
-    func getOfficeGeoDatasSeq(url: URL) -> Single<[OfficeGeoData]>
+    func getOfficeGeoDatas(url: URL) -> Single<[OfficeGeoData]>
     
-    func getImageSeq(url: URL) -> Single<UIImage?>
+    func getImage(url: URL) -> Single<UIImage?>
     
 }

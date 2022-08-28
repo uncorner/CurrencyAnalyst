@@ -121,10 +121,10 @@ final class ExchangeListViewModel {
         prvLoadingStatus.accept(.loading)
         var citiesSeq: Single<[City]?> = Single.just(nil)
         if prvCities.isEmpty {
-            citiesSeq = networkService.getCitiesSeq()
+            citiesSeq = networkService.getCities()
         }
         
-        let exchangesSeq = networkService.getExchangesSeq(exchangeUrl: exchangeUrl)
+        let exchangesSeq = networkService.getExchanges(exchangeUrl: exchangeUrl)
         // комбинируем две последовательности: города и курсы валют, запросы будут выполняться параллельно
         let citiesAndExchangesSeq = Single.zip(citiesSeq, exchangesSeq).asObservable()
         var resultSeq = citiesAndExchangesSeq

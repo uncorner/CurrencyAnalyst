@@ -62,7 +62,7 @@ class MapViewController: BaseViewController {
         print(#function)
         guard let url = mapUrl else {return}
         
-        networkService.getOfficeGeoDatasSeq(url: url).subscribe { [weak self] result in
+        networkService.getOfficeGeoDatas(url: url).subscribe { [weak self] result in
             guard let self = self else {return}
             DispatchQueue.printCurrentQueue()
             self.officeGeoDatas = result

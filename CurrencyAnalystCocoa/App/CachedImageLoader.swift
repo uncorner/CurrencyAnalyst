@@ -32,7 +32,7 @@ class CachedImageLoader {
                 completion(nil, imageUrl)
             }
             
-            networkService.getImageSeq(url: imageUrl).subscribe { image in
+            networkService.getImage(url: imageUrl).subscribe { image in
                 if let image = image {
                     // set cache
                     self.cache.setObject(image, forKey: imagePath as NSString)
