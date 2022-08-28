@@ -7,9 +7,10 @@
 //
 
 import Foundation
+import RxSwift
 
 protocol StorageRepository {
     func saveExchangeListResult(listResult: ExchangeListResult)
-    func fetchExchangeListResult() -> ExchangeListResult
+    func fetchExchangeListResult() -> Observable<ExchangeListResult>
     
 }

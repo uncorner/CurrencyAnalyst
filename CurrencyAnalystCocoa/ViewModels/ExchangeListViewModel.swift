@@ -95,11 +95,6 @@ final class ExchangeListViewModel {
         }
     }
     
-    private func fetchExchangeListResult() -> Observable<ExchangeListResult> {
-        Observable.just(self.storageRepository.fetchExchangeListResult())
-            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
-    }
-    
     private func acceptExchangeList(_ self: ExchangeListViewModel, _ exchangeListResult: ExchangeListResult) {
         let items = exchangeListResult.exchanges.map { exchange in
             ExchangeTableViewItem.ExchangeItem(exchange: exchange)
@@ -135,7 +130,7 @@ final class ExchangeListViewModel {
         var resultSeq = citiesAndExchangesSeq
         
         if isFirstDataLoading {
-            let cachedSeq = fetchExchangeListResult()
+            let cachedSeq = storageRepository.fetchExchangeListResult()
                 .map { (exchangeListResult) -> ([City]?, ExchangeListResult) in
                     return (nil, exchangeListResult)
                 }

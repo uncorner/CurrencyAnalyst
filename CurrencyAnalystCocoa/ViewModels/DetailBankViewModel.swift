@@ -57,15 +57,13 @@ final class DetailBankViewModel {
 //            }
             
             self.bankOfficeItems.accept(sections)
-            
+            self.loadingStatus.accept(.success)
             print("bank details loaded")
         } onFailure: { [weak self] error in
             //self?.processResponseError(error)
             self?.loadingStatus.accept(.fail(error: error))
-        } onDisposed: { [weak self] in
-            //self?.stopActivityAnimatingAndUnlock()
+        } onDisposed: {
             print("onDisposed")
-            self?.loadingStatus.accept(.success)
         }
         .disposed(by: disposeBag)
     }

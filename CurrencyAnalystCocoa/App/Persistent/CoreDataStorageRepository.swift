@@ -9,10 +9,16 @@
 import Foundation
 import CoreData
 import UIKit
+import RxSwift
 
 class CoreDataStorageRepository : StorageRepository {
     
-    func fetchExchangeListResult() -> ExchangeListResult {
+    func fetchExchangeListResult() -> Observable<ExchangeListResult> {
+        Observable.just(fetchExchangeListResult())
+            .subscribe(on: ConcurrentDispatchQueueScheduler(qos: .background))
+    }
+    
+    private func fetchExchangeListResult() -> ExchangeListResult {
         print(#function)
         var result = ExchangeListResult()
         
