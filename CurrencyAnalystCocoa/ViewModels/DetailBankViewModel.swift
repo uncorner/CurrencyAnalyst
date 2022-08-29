@@ -14,12 +14,12 @@ final class DetailBankViewModel {
     private let sceneCoordinator: MvvmSceneCoordinator
     private let disposeBag = DisposeBag()
     private var networkService: NetworkService
-    private let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     
     // MARK: Out
-    let exchangeSeq: BehaviorRelay<CurrencyExchange>
+    let exchange: BehaviorRelay<CurrencyExchange>
     var mapUrl: URL?
     let bankOfficeItems = BehaviorRelay<[BankOfficeTableViewSection]>(value: [])
+    let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     
     var bankOfficeItemsValue: [BankOfficeTableViewSection] {
         bankOfficeItems.value
@@ -28,13 +28,12 @@ final class DetailBankViewModel {
     init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService, exchange: CurrencyExchange) {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
-        self.exchangeSeq = BehaviorRelay<CurrencyExchange>(value: exchange)
+        self.exchange = BehaviorRelay<CurrencyExchange>(value: exchange)
     }
     
     func loadBankOfficeData() {
         print(#function)
-        guard let url = exchangeSeq.value.bankUrl?.toSiteURL() else {return}
-        //startActivityAnimatingAndLock()
+        guard let url = exchange.value.bankUrl?.toSiteURL() else {return}
         loadingStatus.accept(.loading)
         
         networkService.getBankDetail(url: url).subscribe { [weak self] result in
@@ -60,7 +59,6 @@ final class DetailBankViewModel {
             self.loadingStatus.accept(.success)
             print("bank details loaded")
         } onFailure: { [weak self] error in
-            //self?.processResponseError(error)
             self?.loadingStatus.accept(.fail(error: error))
         } onDisposed: {
             print("onDisposed")

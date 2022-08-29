@@ -62,6 +62,25 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
     func bindViewModel() {
         setupBindingsForTableView()
         
+        viewModel.loadingStatus
+            .drive(onNext: { [weak self] status in
+                guard let self = self else {return}
+                switch status {
+                case .loading:
+                    if self.viewModel.isNeedAutoUpdate {
+                        self.startActivityAnimatingAndLock()
+                    }
+                case .success:
+                    self.stopAllActivityAnimationAndUnlock()
+                case .fail(let error):
+                    self.stopAllActivityAnimationAndUnlock()
+                    self.processResponseError(error)
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposedBag)
+        
         viewModel.cbDollarRate
             .do(onNext: { [weak self] _ in
                 self?.cbBoxView.isHidden = false
@@ -126,29 +145,6 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
                 }
             }
             .disposed(by: disposeBag)
-        
-        viewModel.loadingStatus
-            .drive(onNext: { [weak self] status in
-                guard let self = self else {return}
-                
-                switch status {
-                case .loading:
-                    if self.viewModel.isNeedAutoUpdate {
-                        self.startActivityAnimatingAndLock()
-                    }
-                    break
-                case .success:
-                    self.stopAllActivityAnimationAndUnlock()
-                    break
-                case .fail(let error):
-                    self.stopAllActivityAnimationAndUnlock()
-                    self.processResponseError(error)
-                    break
-                default:
-                    break
-                }
-            })
-            .disposed(by: disposedBag)
     }
     
     private func stopAllActivityAnimationAndUnlock() {

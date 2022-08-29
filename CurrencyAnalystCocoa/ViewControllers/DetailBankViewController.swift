@@ -31,6 +31,46 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     private var shouldBeDisplayedOfficeTableBoxView = false
     
     func bindViewModel() {
+        setupBindingsForTableView()
+        
+        viewModel.exchange.asDriver()
+            .drive { [weak self] exchange in
+                guard let self = self else {return}
+                self.title = exchange.bankName
+                self.setDetailBoxViewData(exchange: exchange)
+            }
+            .disposed(by: disposeBag)
+        
+        viewModel.loadingStatus
+            .asDriver()
+            .drive(onNext: { [weak self] status in
+                guard let self = self else {return}
+                switch status {
+                case .loading:
+                    self.startActivityAnimatingAndLock()
+                case .success:
+                    self.stopActivityAnimatingAndUnlock()
+                case .fail(let error):
+                    self.stopActivityAnimatingAndUnlock()
+                    self.processResponseError(error)
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupOfficeTable()
+        setupDetailBoxView()
+        setupOfficeTableBoxView()
+        setupOtherViews()
+        viewModel.loadBankOfficeData()
+    }
+    
+    private func setupBindingsForTableView() {
         let dataSource = RxTableViewSectionedAnimatedDataSource<BankOfficeTableViewSection>(
             configureCell: { [weak self] dataSource, tableView, indexPath, item in
                 guard let self = self else {return UITableViewCell()}
@@ -75,6 +115,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
             .drive(officeTableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
         
+        // officeTableView.rx.modelSelected(BankOfficeTableViewItem.self)
         officeTableView.rx.itemSelected
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] event in
@@ -91,37 +132,6 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
                 self.viewModel.bankOfficeItems.accept(sections)
             }
             .disposed(by: disposeBag)
-        
-//        officeTableView.rx.modelSelected(BankOfficeTableViewItem.self)
-//            .asDriver()
-//            .drive { [weak self] item in
-//                guard let self = self else {return}
-//
-//                if let headerItem = item as? BankOfficeTableViewItemHeader {
-//                }
-//            }
-//            .disposed(by: disposeBag)
-        
-        viewModel.exchangeSeq.asDriver()
-            .drive { [weak self] exchange in
-                guard let self = self else {return}
-                self.title = exchange.bankName
-                self.setDetailBoxViewData(exchange: exchange)
-            }
-            .disposed(by: disposeBag)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        //title = viewModel.exchangeSeq.value.bankName
-        setupOfficeTable()
-        setupDetailBoxView()
-        setupOfficeTableBoxView()
-        setupOtherViews()
-        //loadBankDetailedData()
-        
-        viewModel.loadBankOfficeData()
     }
     
     // >>> TODO
@@ -149,8 +159,6 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
         officeTableView.register(OfficeTableViewCell.nib(), forCellReuseIdentifier: OfficeTableViewCell.cellId)
         officeTableView.register(OfficeTableViewCellHeader.nib(), forCellReuseIdentifier: OfficeTableViewCellHeader.cellId)
         officeTableView.tableFooterView = UIView()
-//        officeTableView.delegate = self
-//        officeTableView.dataSource = self
         
         officeTableView.rowHeight = UITableView.automaticDimension
         officeTableView.estimatedRowHeight = 44
@@ -214,7 +222,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     }
     
     @IBAction func shareCurrencyRates(_ sender: UIBarButtonItem) {
-        let exchange = viewModel.exchangeSeq.value
+        let exchange = viewModel.exchange.value
         let contentText = "\(exchange.bankName) курсы валют на \(exchange.updatedTime) / USD покупка \(exchange.usdExchange.strAmountBuy) ₽ / USD продажа \(exchange.usdExchange.strAmountSell) ₽ / Euro покупка \(exchange.euroExchange.strAmountBuy) ₽ / Euro продажа \(exchange.euroExchange.strAmountSell) ₽"
         
         let vc = UIActivityViewController(activityItems: [contentText], applicationActivities: [])
@@ -313,7 +321,7 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
         if segue.identifier == showMapSegue {
             guard let destination = segue.destination as? MapViewController else { return }
             destination.mapUrl = viewModel.mapUrl
-            destination.title = "\(viewModel.exchangeSeq.value.bankName) Офисы"
+            destination.title = "\(viewModel.exchange.value.bankName) Офисы"
         }
     }
     
