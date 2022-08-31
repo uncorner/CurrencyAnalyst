@@ -27,7 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let networkService = getNetworkService()
         let viewModel = ExchangeListViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService, storageRepository: getStorageRepository() )
-        let firstScene = MvvmScene.exchangeListViewModel(viewModel)
+        let firstScene = MvvmScene.exchangeList(viewModel)
         sceneCoordinator.transition(to: firstScene, type: .root)
     }
     

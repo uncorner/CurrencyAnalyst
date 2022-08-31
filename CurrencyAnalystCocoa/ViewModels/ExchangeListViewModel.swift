@@ -75,13 +75,13 @@ final class ExchangeListViewModel {
         }
         
         let viewModel = PickCityViewModel(sceneCoordinator: sceneCoordinator, cities: cities, setSelectedCityIdCallback: callback,selectedCityId: selectedCityId)
-        sceneCoordinator.transition(to: MvvmScene.pickCityViewModel(viewModel), type: .push)
+        sceneCoordinator.transition(to: MvvmScene.pickCity(viewModel), type: .push)
         return .empty()
     }
     
     func showDetailBank(exchange: CurrencyExchange) {
         let viewModel = DetailBankViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService, exchange: exchange)
-        sceneCoordinator.transition(to: MvvmScene.detailBankViewModel(viewModel), type: .push)
+        sceneCoordinator.transition(to: MvvmScene.detailBank(viewModel), type: .push)
     }
     
     func loadAppSettings() {

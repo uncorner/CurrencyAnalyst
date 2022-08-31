@@ -9,6 +9,7 @@
 import Foundation
 import RxCocoa
 import RxSwift
+import Action
 
 final class DetailBankViewModel {
     private let sceneCoordinator: MvvmSceneCoordinator
@@ -21,6 +22,9 @@ final class DetailBankViewModel {
     let bankOfficeItems = BehaviorRelay<[BankOfficeTableViewSection]>(value: [])
     let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     
+    // MARK: Actions
+    lazy var onShowOfficeMapScreen: CocoaAction = CocoaAction(workFactory: showOfficeMapScreen)
+    
     var bankOfficeItemsValue: [BankOfficeTableViewSection] {
         bankOfficeItems.value
     }
@@ -29,6 +33,13 @@ final class DetailBankViewModel {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
         self.exchange = BehaviorRelay<CurrencyExchange>(value: exchange)
+    }
+    
+    private func showOfficeMapScreen() -> Observable<Void> {
+        let viewModel = OfficeMapViewModel(sceneCoordinator: sceneCoordinator, mapUrl: mapUrl)
+        sceneCoordinator.transition(to: .officeMap(viewModel), type: .push)
+     
+        return .empty()
     }
     
     func loadBankOfficeData() {
@@ -47,14 +58,6 @@ final class DetailBankViewModel {
             })
             
             self.mapUrl = result.mapUrl
-            
-            //>>> TODO
-//            self.shouldBeDisplayedOfficeTableBoxView = true
-//            if UIWindow.isLandscape == false {
-//                // portrait mode
-//                self.showOfficeTableBoxView()
-//            }
-            
             self.bankOfficeItems.accept(sections)
             self.loadingStatus.accept(.success)
             print("bank details loaded")

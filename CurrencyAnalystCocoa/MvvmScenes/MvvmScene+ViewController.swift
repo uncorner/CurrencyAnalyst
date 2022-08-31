@@ -6,14 +6,17 @@ extension MvvmScene {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
         switch self {
-        case .exchangeListViewModel(let viewModel):
+        case .exchangeList(let viewModel):
             let result = fetchViewController(id: "ExchangeList", viewModel, storyboard) as (ExchangeListViewController,UIViewController)
             return result.1
-        case .pickCityViewModel(let viewModel):
+        case .pickCity(let viewModel):
             let result = fetchViewController(id: "PickCity", viewModel, storyboard) as (PickCityViewController,UIViewController)
             return result.1
-        case .detailBankViewModel(let viewModel):
+        case .detailBank(let viewModel):
             let result = fetchViewController(id: "DetailBank", viewModel, storyboard) as (DetailBankViewController,UIViewController)
+            return result.1
+        case .officeMap(let viewModel):
+            let result = fetchViewController(id: "OfficeMap", viewModel, storyboard) as (MapViewController,UIViewController)
             return result.1
         }
     }

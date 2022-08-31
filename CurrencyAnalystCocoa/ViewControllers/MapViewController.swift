@@ -11,12 +11,17 @@ import GoogleMaps
 import GooglePlaces
 import Alamofire
 
-class MapViewController: BaseViewController {
-    
+class MapViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var mapView: GMSMapView!
     
-    var mapUrl: URL?
+    // TODO
+//    var mapUrl: URL?
     private var officeGeoDatas = [OfficeGeoData]()
+    
+    var viewModel: OfficeMapViewModel!
+    
+    func bindViewModel() {
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +65,7 @@ class MapViewController: BaseViewController {
     
     private func loadOfficeGeoDatas() {
         print(#function)
-        guard let url = mapUrl else {return}
+        guard let url = viewModel.mapUrl else {return}
         
         networkService.getOfficeGeoDatas(url: url).subscribe { [weak self] result in
             guard let self = self else {return}

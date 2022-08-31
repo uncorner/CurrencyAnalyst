@@ -29,6 +29,7 @@
 		92AA490B270CDBCA00A67813 /* MvvmSceneCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4906270CDBCA00A67813 /* MvvmSceneCoordinator.swift */; };
 		92AA490C270CDBCA00A67813 /* MvvmSceneTransitionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA4907270CDBCA00A67813 /* MvvmSceneTransitionType.swift */; };
 		92AA490E270CDFCD00A67813 /* UINavigationController+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AA490D270CDFCD00A67813 /* UINavigationController+Rx.swift */; };
+		92AAAEDA28BFF658009FD014 /* OfficeMapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92AAAED928BFF658009FD014 /* OfficeMapViewModel.swift */; };
 		92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */; };
 		92B97EE6270616EF00DFEDE1 /* DataLoadingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */; };
 		92B97EE82706435600DFEDE1 /* UITableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */; };
@@ -121,6 +122,7 @@
 		92AA4906270CDBCA00A67813 /* MvvmSceneCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmSceneCoordinator.swift; sourceTree = "<group>"; };
 		92AA4907270CDBCA00A67813 /* MvvmSceneTransitionType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MvvmSceneTransitionType.swift; sourceTree = "<group>"; };
 		92AA490D270CDFCD00A67813 /* UINavigationController+Rx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Rx.swift"; sourceTree = "<group>"; };
+		92AAAED928BFF658009FD014 /* OfficeMapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeMapViewModel.swift; sourceTree = "<group>"; };
 		92B080D726274ADC006B7C1B /* DispatchQueueExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueExtension.swift; sourceTree = "<group>"; };
 		92B97EE5270616EF00DFEDE1 /* DataLoadingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoadingStatus.swift; sourceTree = "<group>"; };
 		92B97EE72706435600DFEDE1 /* UITableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITableViewExtension.swift; sourceTree = "<group>"; };
@@ -223,6 +225,7 @@
 				921DFA1526FA0E4200769C7D /* ExchangeListViewModel.swift */,
 				92E0BBAF2708BC12000B81BF /* PickCityViewModel.swift */,
 				92E5FA8127304C65002EF49C /* DetailBankViewModel.swift */,
+				92AAAED928BFF658009FD014 /* OfficeMapViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -671,6 +674,7 @@
 				92AA490A270CDBCA00A67813 /* MvvmSceneCoordinatorType.swift in Sources */,
 				92AA4909270CDBCA00A67813 /* MvvmScene+ViewController.swift in Sources */,
 				AA9280A724CB339E00B7A1F1 /* ExchangeListResult.swift in Sources */,
+				92AAAEDA28BFF658009FD014 /* OfficeMapViewModel.swift in Sources */,
 				9291429C26F352C700634BF1 /* ExchangeNetworkService.swift in Sources */,
 				92B080D826274ADC006B7C1B /* DispatchQueueExtension.swift in Sources */,
 				923E434928B2BB91004F8ECB /* CurrencyExchangeData+CoreDataProperties.swift in Sources */,

@@ -1,7 +1,8 @@
 import Foundation
 
 enum MvvmScene {
-    case exchangeListViewModel(ExchangeListViewModel)
-    case pickCityViewModel(PickCityViewModel)
-    case detailBankViewModel(DetailBankViewModel)
+    case exchangeList(ExchangeListViewModel)
+    case pickCity(PickCityViewModel)
+    case detailBank(DetailBankViewModel)
+    case officeMap(OfficeMapViewModel)
 }
