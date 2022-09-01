@@ -9,32 +9,46 @@
 import UIKit
 import GoogleMaps
 import GooglePlaces
-import Alamofire
+import RxSwift
 
 class MapViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var mapView: GMSMapView!
-    
-    // TODO
-//    var mapUrl: URL?
-    private var officeGeoDatas = [OfficeGeoData]()
-    
     var viewModel: OfficeMapViewModel!
     
     func bindViewModel() {
+        viewModel.loadingStatus
+            .asDriver()
+            .drive(onNext: { [weak self] status in
+                guard let self = self else {return}
+                switch status {
+                case .loading:
+                    self.startActivityAnimatingAndLock()
+                case .success:
+                    self.setMarkers()
+                    self.stopActivityAnimatingAndUnlock()
+                case .fail(let error):
+                    self.stopActivityAnimatingAndUnlock()
+                    self.processResponseError(error)
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadOfficeGeoDatas()
+        title = "\(viewModel.bankName) Офисы"
+        viewModel.loadOfficeGeoDatas()
     }
     
     private func setMarkers() {
         var markers: [GMSMarker] = []
-        for officeData in officeGeoDatas {
+        for officeData in viewModel.officeGeoDatas {
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2D(latitude: officeData.latitude, longitude: officeData.longitude)
-            
+
             marker.title = officeData.bankName
             if officeData.officeName.isEmptyOrWhitespace() {
                 marker.snippet = officeData.address
@@ -42,12 +56,12 @@ class MapViewController: BaseViewController, MvvmBindableType {
             else {
                 marker.snippet = "\(officeData.officeName)\n\(officeData.address)"
             }
-            
+
             marker.icon = GMSMarker.markerImage(with: Styles.MapViewController.markerColor)
             marker.map = mapView
             markers.append(marker)
         }
-        
+
         if (markers.count > 1) {
             var bounds = GMSCoordinateBounds()
             for marker in markers
@@ -61,22 +75,6 @@ class MapViewController: BaseViewController, MvvmBindableType {
             let update = GMSCameraUpdate.setTarget(markers[0].position, zoom: 15.0)
             mapView.animate(with: update)
         }
-    }
-    
-    private func loadOfficeGeoDatas() {
-        print(#function)
-        guard let url = viewModel.mapUrl else {return}
-        
-        networkService.getOfficeGeoDatas(url: url).subscribe { [weak self] result in
-            guard let self = self else {return}
-            DispatchQueue.printCurrentQueue()
-            self.officeGeoDatas = result
-            self.setMarkers()
-            print("office geo datas loaded")
-        } onFailure: { [weak self] error in
-            self?.processResponseError(error)
-        }
-        .disposed(by: disposeBag)
     }
     
 }

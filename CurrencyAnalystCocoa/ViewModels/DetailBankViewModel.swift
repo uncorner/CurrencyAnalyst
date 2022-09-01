@@ -36,7 +36,7 @@ final class DetailBankViewModel {
     }
     
     private func showOfficeMapScreen() -> Observable<Void> {
-        let viewModel = OfficeMapViewModel(sceneCoordinator: sceneCoordinator, mapUrl: mapUrl)
+        let viewModel = OfficeMapViewModel(sceneCoordinator: sceneCoordinator, networkService: networkService, mapUrl: mapUrl, bankName: exchange.value.bankName)
         sceneCoordinator.transition(to: .officeMap(viewModel), type: .push)
      
         return .empty()
