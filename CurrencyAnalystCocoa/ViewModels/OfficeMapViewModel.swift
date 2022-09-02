@@ -16,11 +16,11 @@ final class OfficeMapViewModel {
     private let disposeBag = DisposeBag()
     
     let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
-    var mapUrl: URL?
+    let mapUrl: URL
     let bankName: String
     var officeGeoDatas = [OfficeGeoData]()
     
-    init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService, mapUrl: URL?, bankName: String) {
+    init(sceneCoordinator: MvvmSceneCoordinator, networkService: NetworkService, mapUrl: URL, bankName: String) {
         self.sceneCoordinator = sceneCoordinator
         self.networkService = networkService
         self.mapUrl = mapUrl
@@ -29,10 +29,9 @@ final class OfficeMapViewModel {
     
     func loadOfficeGeoDatas() {
         print(#function)
-        guard let url = mapUrl else {return}
         loadingStatus.accept(.loading)
         
-        networkService.getOfficeGeoDatas(url: url)
+        networkService.getOfficeGeoDatas(url: mapUrl)
             .subscribe { [weak self] datas in
                 guard let self = self else {return}
                 DispatchQueue.printCurrentQueue()
