@@ -44,7 +44,6 @@ class PickCityViewController: BaseViewController, MvvmBindableType {
             .asDriver()
             .drive { [weak self] city in
                 self?.viewModel.selectedCityId = city.id
-                //self?.setSelectedCityIdCallback?(city.id)
                 self?.viewModel.setSelectedCityIdCallback(city.id)
                 self?.tableView.reloadData()
             }
