@@ -63,6 +63,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
         setupBindingsForTableView()
         
         viewModel.loadingStatus
+            .asDriver()
             .drive(onNext: { [weak self] status in
                 guard let self = self else {return}
                 switch status {
@@ -82,6 +83,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
             .disposed(by: disposedBag)
         
         viewModel.cbDollarRate
+            .asDriver()
             .do(onNext: { [weak self] _ in
                 self?.cbBoxView.isHidden = false
             })
@@ -89,6 +91,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
             .disposed(by: disposedBag)
         
         viewModel.cbEuroRate
+            .asDriver()
             .drive(cbEuroRateLabel.rx.text)
             .disposed(by: disposedBag)
         
@@ -125,6 +128,7 @@ class ExchangeListViewController: BaseViewController, MvvmBindableType {
             })
         
         viewModel.exchangeItems
+            .asDriver()
             .do(afterNext: { [weak self] _ in
                 self?.tableView.scrollOnTop()
             })

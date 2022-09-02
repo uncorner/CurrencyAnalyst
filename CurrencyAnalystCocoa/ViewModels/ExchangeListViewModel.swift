@@ -23,11 +23,6 @@ final class ExchangeListViewModel {
     private let disposeBag = DisposeBag()
     private let networkService: NetworkService
     private let storageRepository: StorageRepository
-    private let prvExchangeItems = BehaviorRelay(value: sectionedItemsEmptyData)
-    private let prvLoadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
-    private let prvCbDollarRate = PublishRelay<String>()
-    private let prvCbEuroRate = PublishRelay<String>()
-    private var prvCities = [City]()
     private var exchangeListResult = ExchangeListResult()
     private var isFirstDataLoading = true
     
@@ -36,22 +31,11 @@ final class ExchangeListViewModel {
     
     // MARK: Out
     var isNeedAutoUpdate = true
-    
-    var exchangeItems: Driver<[ExchangeTableViewSection]> {
-        prvExchangeItems.asDriver()
-    }
-    var loadingStatus: Driver<DataLoadingStatus> {
-        prvLoadingStatus.asDriver()
-    }
-    var cbDollarRate: Driver<String> {
-        prvCbDollarRate.asDriver(onErrorJustReturn: Constants.rateStub)
-    }
-    var cbEuroRate: Driver<String> {
-        prvCbEuroRate.asDriver(onErrorJustReturn: Constants.rateStub)
-    }
-    var cities: [City] {
-        prvCities
-    }
+    let exchangeItems = BehaviorRelay(value: sectionedItemsEmptyData)
+    let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
+    let cbDollarRate = BehaviorRelay<String>(value: Constants.rateStub)
+    let cbEuroRate = BehaviorRelay<String>(value: Constants.rateStub)
+    var cities = [City]()
     
     // MARK: Actions
     lazy var onLoadCitiesAndExchanges = CocoaAction(workFactory: loadCitiesAndExchanges)
@@ -100,7 +84,7 @@ final class ExchangeListViewModel {
             ExchangeTableViewItem.ExchangeItem(exchange: exchange)
         }
         
-        let city = self.prvCities.first(where: {
+        let city = self.cities.first(where: {
             $0.id == self.selectedCityId
         })
         let cityName = city?.name ?? ""
@@ -110,7 +94,7 @@ final class ExchangeListViewModel {
             ExchangeTableViewSection(items: [headItem]),
             ExchangeTableViewSection(items: items)]
         
-        self.prvExchangeItems.accept(sectionsWithData)
+        self.exchangeItems.accept(sectionsWithData)
     }
     
     private func loadCitiesAndExchanges() -> Observable<Void> {
@@ -118,9 +102,9 @@ final class ExchangeListViewModel {
         guard let exchangeUrl = selectedCityId.toSiteURL() else {return .empty()}
         print("loadExchanges url: \(exchangeUrl.absoluteString); selected city id: \(selectedCityId)")
         
-        prvLoadingStatus.accept(.loading)
+        loadingStatus.accept(.loading)
         var citiesSeq: Single<[City]?> = Single.just(nil)
-        if prvCities.isEmpty {
+        if cities.isEmpty {
             citiesSeq = networkService.getCities()
         }
         
@@ -147,19 +131,19 @@ final class ExchangeListViewModel {
                 
                 if let cities = cities {
                     print("cities loaded")
-                    self.prvCities = cities
+                    self.cities = cities
                 }
                 self.exchangeListResult = exchangeListResult
-                self.prvCbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
-                self.prvCbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
+                self.cbDollarRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.usdExchangeRate))
+                self.cbEuroRate.accept(self.getCbExchangeRateAsText( exchangeListResult.cbInfo.euroExchangeRate))
                 self.acceptExchangeList(self, exchangeListResult)
                 print("exchange list loaded")
             } onError: { [weak self] error in
                 print("onError")
-                self?.prvLoadingStatus.accept(.fail(error: error))
+                self?.loadingStatus.accept(.fail(error: error))
             } onCompleted: { [weak self] in
                 print("onCompleted")
-                self?.prvLoadingStatus.accept(.success)
+                self?.loadingStatus.accept(.success)
             } onDisposed: { [weak self] in
                 print("onDisposed")
                 self?.isFirstDataLoading = false
