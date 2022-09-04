@@ -27,8 +27,6 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
     @IBOutlet weak var shareBarButtonItem: UIBarButtonItem!
     
     var viewModel: DetailBankViewModel!
-    //let showMapSegue = "showMapSegue"
-    //private var shouldBeDisplayedOfficeTableBoxView = false
     
     func bindViewModel() {
         setupBindingsForTableView()
@@ -253,15 +251,5 @@ class DetailBankViewController: BaseViewController, MvvmBindableType {
         text += text2 + " \(currency)"
         return text
     }
-    
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // TODO: >>>need to remove
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == showMapSegue {
-//            guard let destination = segue.destination as? MapViewController else { return }
-//            destination.mapUrl = viewModel.mapUrl
-//            destination.title = "\(viewModel.exchange.value.bankName) Офисы"
-//        }
-//    }
     
 }

@@ -15,6 +15,7 @@ final class OfficeMapViewModel {
     private let networkService: NetworkService
     private let disposeBag = DisposeBag()
     
+    // MARK: out
     let loadingStatus = BehaviorRelay<DataLoadingStatus>(value: .none)
     let mapUrl: URL
     let bankName: String
