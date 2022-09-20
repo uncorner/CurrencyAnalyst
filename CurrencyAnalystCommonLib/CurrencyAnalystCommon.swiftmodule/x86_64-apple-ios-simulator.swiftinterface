@@ -1,0 +1,55 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)
+// swift-module-flags: -target x86_64-apple-ios13.4-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -Onone -module-name CurrencyAnalystCommon
+import Foundation
+import Swift
+import _Concurrency
+public class DataTable : Swift.Identifiable, Swift.Hashable {
+  public init()
+  final public let id: Foundation.UUID
+  public var rows: [CurrencyAnalystCommon.DataTableRow]
+  public var header: Swift.String
+  public func addRow(row: CurrencyAnalystCommon.DataTableRow)
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: CurrencyAnalystCommon.DataTable, rhs: CurrencyAnalystCommon.DataTable) -> Swift.Bool
+  public typealias ID = Foundation.UUID
+  @objc deinit
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum SiteParserError : Swift.Error {
+  case parsingError(_: Swift.String? = nil)
+}
+public class DataTableRow : Swift.Identifiable, Swift.Hashable {
+  final public let header: Swift.String
+  final public let datas: [Swift.String]
+  final public let id: Foundation.UUID
+  public init(header: Swift.String, datas: [Swift.String])
+  public var data: Swift.String? {
+    get
+  }
+  public var hasDatas: Swift.Bool {
+    get
+  }
+  public var isSingleData: Swift.Bool {
+    get
+  }
+  public func getCombinedDatas(separator: Swift.String = " ") -> Swift.String
+  public func hash(into hasher: inout Swift.Hasher)
+  public static func == (lhs: CurrencyAnalystCommon.DataTableRow, rhs: CurrencyAnalystCommon.DataTableRow) -> Swift.Bool
+  public typealias ID = Foundation.UUID
+  @objc deinit
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers public class GmsHelper {
+  public static func getKey() -> Swift.String
+  @objc deinit
+}
+extension Swift.Collection {
+  public subscript(safe index: Self.Index) -> Self.Iterator.Element? {
+    get
+  }
+}
