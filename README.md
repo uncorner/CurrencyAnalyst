@@ -1,6 +1,6 @@
 # Currency Analyst
 
-This is an iOS application that shows bank exchange rates. The app uses actual data from third party internet service.  
+This is iOS application that shows bank exchange rates. The app uses actual data from third party internet service.  
 The project has been written in Swift 5.
 Clone this iOS app source code and get started by following the steps below. 
 
